@@ -1,0 +1,56 @@
+html, body {
+    margin : 0;
+}
+
+blockquote {
+    font-size : inherit !important;
+}
+
+.popover-content {
+    padding : 0 !important;
+}
+
+.primaryColor {
+    color : #03a9f4 !important;
+}
+
+.primaryTextColor {
+    color : #212121 !important;
+}
+
+.imageButton {
+    width      : 22px  !important;
+    height     : 22px  !important;
+    padding    :  0    !important;
+    margin-top :  4px  !important;
+    font-size  : small !important;
+}
+
+.filterList {
+    height    : 100vh;
+    display   : flex;
+    flex-flow : column;
+}
+
+.filterList div {
+    overflow : auto !important;
+}
+
+.noteList {
+    height     : calc(100vh - 70px);
+    overflow-y : auto;
+}
+
+.noteList div {
+    overflow : auto !important;
+}
+
+.noteList div .noteListItem {
+    overflow : hidden !important;
+}
+
+.noteList li {
+    padding       : 0 !important;
+    margin-top    : 0 !important;
+    margin-bottom : 0 !important;
+}

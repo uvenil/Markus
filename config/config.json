@@ -1,0 +1,16 @@
+{
+    "widthWidth"         : 725,
+    "windowHeight"       : 544,
+    "widthMinWidth"      : 725,
+    "windowMinHeight"    : 544,
+    "filterListWidth"    : 150,
+    "filterListMinWidth" : 150,
+    "noteListWidth"      : 200,
+    "noteListMinWidth"   : 200,
+    "topBarHeight"       : 40,
+    "bottomBarHeight"    : 28,
+    "paddingX1"          : 8,
+    "paddingX2"          : 16,
+    "databaseName"       : "notes.db",
+    "defaultNoteTitle"   : "(Untitled)"
+}
