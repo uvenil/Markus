@@ -67,17 +67,25 @@ export default class FilterList extends React.Component {
                     }>
                         {this.props.store.items.map(item => {
                             return (
-                                <ListViewRow
-                                    key={item.itemId}
-                                    background={item.selected ? theme.selectedBackgroundColor : null}
-                                    onMouseDown={event => this._handleItemClick(event, item.itemId)}>
-                                    <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
-                                        <div style={{ flex : '1 1 0' }}>
-                                            <Text>{item.primaryText}</Text>
+                                <div style={{ borderLeft : item.selected ? '4px solid #03a9f4' : 'none' }}>
+                                    <ListViewRow
+                                        key={item.itemId}
+                                        background={item.selected ? theme.selectedBackgroundColor : null}
+                                        marginTop={0}
+                                        marginBottom={0}
+                                        paddingLeft={item.selected ? 14 : 18}
+                                        paddingRight={18}
+                                        paddingTop={4}
+                                        paddingBottom={4}
+                                        onMouseDown={event => this._handleItemClick(event, item.itemId)}>
+                                        <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
+                                            <div style={{ flex : '1 1 0' }}>
+                                                <Text>{item.primaryText}</Text>
+                                            </div>
+                                            <Text>{item.secondaryText}</Text>
                                         </div>
-                                        <Text>{item.secondaryText}</Text>
-                                    </div>
-                                </ListViewRow>
+                                    </ListViewRow>
+                                </div>
                             );
                         })}
                     </ListViewSection>
@@ -86,17 +94,25 @@ export default class FilterList extends React.Component {
                     }>
                         {this.props.category.items.map(item => {
                             return (
-                                <ListViewRow
-                                    key={item.itemId}
-                                    background={item.selected ? theme.selectedBackgroundColor : null}
-                                    onMouseDown={event => this._handleCategoryClick(event, item.itemId)}>
-                                    <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
-                                        <div  style={{ flex : '1 1 0' }}>
-                                            <Text>{item.primaryText}</Text>
+                                <div style={{ borderLeft : item.selected ? '4px solid #03a9f4' : 'none' }}>
+                                    <ListViewRow
+                                        key={item.itemId}
+                                        background={item.selected ? theme.selectedBackgroundColor : null}
+                                        marginTop={0}
+                                        marginBottom={0}
+                                        paddingLeft={item.selected ? 14 : 18}
+                                        paddingRight={18}
+                                        paddingTop={4}
+                                        paddingBottom={4}
+                                        onMouseDown={event => this._handleCategoryClick(event, item.itemId)}>
+                                        <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
+                                            <div  style={{ flex : '1 1 0' }}>
+                                                <Text>{item.primaryText}</Text>
+                                            </div>
+                                            <Text>{item.secondaryText}</Text>
                                         </div>
-                                        <Text>{item.secondaryText}</Text>
-                                    </div>
-                                </ListViewRow>
+                                    </ListViewRow>
+                                </div>
                             );
                         })}
                     </ListViewSection>
