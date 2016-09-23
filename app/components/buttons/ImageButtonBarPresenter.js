@@ -234,7 +234,6 @@ export default class ImageButtonBarPresenter {
                 break;
         }
 
-        document.getElementById('noteEditor').click();
         PubSub.publish('noteEditor.focus');
     }
 }

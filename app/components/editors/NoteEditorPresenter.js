@@ -12,7 +12,8 @@ export default class NoteEditorPresenter {
      * @param {Database} database
      */
     constructor(database) {
-        this._database = database;
+        this._database   = database;
+        this._syntaxName = undefined;
 
         this._initNoteEditor();
     }
@@ -31,6 +32,16 @@ export default class NoteEditorPresenter {
         this._imageButtonBarPresenter = imageButtonBarPresenter;
     }
 
+    /**
+     * Sets the syntax to highlight.
+     * @param {String} syntaxName
+     */
+    set syntax(syntaxName) {
+        this._syntaxName = syntaxName;
+
+        this._noteEditorStore.editorState = EditorState.set(this._noteEditorStore.editorState, { decorator : DataUtils.createNewEditorDecorator(syntaxName) });
+    }
+
     _initNoteEditor() {
         this._noteEditorStore = new NoteEditorStore();
         this._noteEditorStore.editorState = EditorState.createWithContent(convertFromRaw(DataUtils.createNewEditorState()));
@@ -44,7 +55,7 @@ export default class NoteEditorPresenter {
         if (selectedNoteListItem) {
             this._database.findById(selectedNoteListItem)
                 .then(record => {
-                    this._noteEditorStore.editorState = EditorState.createWithContent(convertFromRaw(record.contentState));
+                    this._noteEditorStore.editorState = EditorState.createWithContent(convertFromRaw(record.contentState), DataUtils.createNewEditorDecorator(this._syntaxName));
                     this._noteEditorStore.hidden      = false;
 
                     // Enables toolbar buttons

@@ -1,20 +1,41 @@
 'use strict';
 
 import { EditorState, convertToRaw } from 'draft-js';
+import PrismDecorator from 'draftjs-prism';
 
 export default class DataUtils {
-    static createNewEditorState() {
-        return convertToRaw(EditorState.createEmpty().getCurrentContent());
+    /**
+     * Creates a new PrismDecorator that recognizes the specified syntax.
+     * @param {String} [syntaxName] The name of the syntax, defined in http://prismjs.com/#languages-list
+     * @returns {PrismDecorator}
+     */
+    static createNewEditorDecorator(syntaxName) {
+        //return syntaxName ? new PrismDecorator({ defaultSyntax : syntaxName }) : new PrismDecorator();
+        return new PrismDecorator();
     }
 
-    static createNewRecord() {
+    /**
+     * Creates a new EditorState decorated by a PrismDecorator that recognizes the specified syntax.
+     * @param {String} [syntaxName] The name of the syntax, defined in http://prismjs.com/#languages-list
+     * @returns {object}
+     */
+    static createNewEditorState(syntaxName) {
+        return convertToRaw(EditorState.createEmpty(DataUtils.createNewEditorDecorator(syntaxName)).getCurrentContent());
+    }
+
+    /**
+     * Creates a new record object that is suitable for persistence.
+     * @param {String} [syntaxName] The name of the syntax, defined in http://prismjs.com/#languages-list
+     * @returns {{ title : string, description : string, plainText : string, contentState : Object, lastUpdatedAt : number, createdAt : number }}
+     */
+    static createNewRecord(syntaxName) {
         const now = Date.now();
 
         return {
             title         : '',
             description   : '',
             plainText     : '',
-            contentState  : DataUtils.createNewEditorState(),
+            contentState  : DataUtils.createNewEditorState(syntaxName),
             lastUpdatedAt : now,
             createdAt     : now
         };

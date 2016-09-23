@@ -29,6 +29,7 @@ export default class AppPresenter {
 
         this._noteEditorPresenter = new NoteEditorPresenter(this._database);
         this._store.noteEditorStore = this._noteEditorPresenter.noteEditorStore;
+        this._noteEditorPresenter.syntax = 'javascript';
 
         this._imageButtonBarPresenter = new ImageButtonBarPresenter(this._noteListPresenter, this._noteEditorPresenter, this._database);
         this._store.imageButtonBarStore = this._imageButtonBarPresenter.imageButtonBarStore;
