@@ -1,10 +1,10 @@
 'use strict';
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import { Popover, MenuItem, OverlayTrigger } from 'react-bootstrap';
 import { Text } from 'react-desktop/macOs';
 import MenuTextButtonStore from './MenuTextButtonStore';
-import { observer } from 'mobx-react';
 import Theme from '../../Theme';
 
 const theme = new Theme();

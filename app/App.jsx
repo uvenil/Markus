@@ -1,6 +1,7 @@
 'use strict';
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import { SearchField } from 'react-desktop/macOs';
 import SplitPane from 'react-split-pane';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -10,9 +11,10 @@ import ImageButton from './components/buttons/ImageButton';
 import ImageButtonBar from './components/buttons/ImageButtonBar';
 import MenuTextButton from './components/buttons/MenuTextButton';
 import NoteEditor from './components/editors/NoteEditor';
+import AboutDialog from './components/dialogs/AboutDialog';
+import DialogStore from './components/dialogs/DialogStore';
 import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
-import { observer } from 'mobx-react';
 import Settings from './data/Settings';
 import Theme from './Theme';
 import Config from '../config/config.json';
@@ -20,6 +22,8 @@ import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
 if (is.dev()) PubSub.immediateExceptions = true;
+
+const theme = new Theme();
 
 @observer
 export default class App extends React.Component {
@@ -36,8 +40,13 @@ export default class App extends React.Component {
         this._filterListWidth = Config.filterListWidth;
         this._noteListWidth   = Config.noteListWidth;
 
-        this._presenter = new AppPresenter(this.props.store);
-        this._settings  = new Settings();
+        this._presenter     = new AppPresenter(this.props.store);
+        this._settings      = new Settings();
+        this._subscriptions = [];
+
+        this._aboutDialogStore = new DialogStore();
+        this._aboutDialogStore.width  = 240;
+        this._aboutDialogStore.height = 160;
 
         this._handleFilterListClick = () => {
             this._presenter.refreshNoteList();
@@ -68,9 +77,7 @@ export default class App extends React.Component {
 
         this._handleAddNoteButtonClick = () => this._presenter.addNewNote();
 
-        this._handleSortNoteButtonClick = index => {
-            this._presenter.sortNoteList(index);
-        };
+        this._handleSortNoteButtonClick = index => this._presenter.sortNoteList(index);
 
         this._handleImageButtonBarTouchTap = (itemId, index) => this._presenter.handleImageButtonBarTouchTap(itemId, index);
 
@@ -113,16 +120,21 @@ export default class App extends React.Component {
 
     componentDidMount() {
         this._loadSettings();
+
+        this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', (eventName, data) => this._aboutDialogStore.hidden = !data.visible));
     }
 
     componentWillUnmount() {
         this._saveSettings();
+
+        this._subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     render() {
         return (
             <MuiThemeProvider>
                 <div>
+                    <AboutDialog store={this._aboutDialogStore} />
                     <SplitPane
                         split="vertical"
                         minSize={Config.filterListMinWidth}

@@ -1,9 +1,9 @@
 'use strict';
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import { Editor } from 'draft-js';
 import NoteEditorStore from './NoteEditorStore';
-import { observer } from 'mobx-react';
 import Theme from '../../Theme';
 import Config from '../../../config/config.json';
 import PubSub from 'pubsub-js';

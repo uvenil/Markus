@@ -1,11 +1,11 @@
 'use strict';
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import { Popover, MenuItem, OverlayTrigger } from 'react-bootstrap';
 import IconButton from 'material-ui/IconButton';
 import FontIcon from 'material-ui/FontIcon';
 import MenuImageButtonStore from './MenuImageButtonStore';
-import { observer } from 'mobx-react';
 import Theme from '../../Theme';
 
 const theme = new Theme();

@@ -1,9 +1,9 @@
 'use strict';
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import { ListView, ListViewSection, ListViewRow, Text } from 'react-desktop/macOs';
 import ListStore from './ListStore';
-import { observer } from 'mobx-react';
 import Theme from '../../Theme';
 import Config from '../../../config/config.json';
 

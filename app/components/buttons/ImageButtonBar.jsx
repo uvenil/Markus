@@ -1,11 +1,11 @@
 'use strict';
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import ImageButton from './ImageButton';
 import ImageButtonBarStore from './ImageButtonBarStore';
 import MenuImageButton from './MenuImageButton';
 import MenuImageButtonStore from './MenuImageButtonStore';
-import { observer } from 'mobx-react';
 import Config from '../../../config/config.json';
 
 @observer
