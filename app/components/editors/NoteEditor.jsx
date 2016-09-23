@@ -2,7 +2,8 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import { Editor } from 'draft-js';
+import Draft, { Editor, EditorState, RichUtils } from 'draft-js';
+import CodeUtils from 'draft-js-code';
 import NoteEditorStore from './NoteEditorStore';
 import Theme from '../../Theme';
 import Config from '../../../config/config.json';
@@ -21,6 +22,55 @@ export default class NoteEditor extends React.Component {
         this._handleChange = editorState => {
             this.props.store.editorState = editorState;
             this.props.store.editorStateChanges.onNext(editorState);
+        };
+
+        this._keyBindingFn = event => {
+            let command;
+
+            if (CodeUtils.hasSelectionInBlock(this.props.store.editorState)) {
+                command = CodeUtils.getKeyBinding(event);
+            }
+
+            if (command) {
+                return command;
+            }
+
+            return Draft.getDefaultKeyBinding(event);
+        };
+
+        this._handleKeyCommand = command => {
+            let newState;
+
+            if (CodeUtils.hasSelectionInBlock(this.props.store.editorState)) {
+                newState = CodeUtils.handleKeyCommand(this.props.store.editorState, command);
+            }
+
+            if (!newState) {
+                newState = RichUtils.handleKeyCommand(this.props.store.editorState, command);
+            }
+
+            if (newState) {
+                this._handleChange(newState);
+
+                return true;
+            }
+
+            return false;
+        };
+
+        this._handleReturn = event => {
+            if (CodeUtils.hasSelectionInBlock(this.props.store.editorState)) {
+                this._handleChange(CodeUtils.handleReturn(event, this.props.store.editorState));
+            }
+
+            return true;
+
+        };
+
+        this._handleTab = event => {
+            if (CodeUtils.hasSelectionInBlock(this.props.store.editorState)) {
+                this._handleChange(CodeUtils.handleTab(event, this.props.store.editorState));
+            }
         };
     }
 
@@ -56,7 +106,11 @@ export default class NoteEditor extends React.Component {
                         editorState={this.props.store.editorState}
                         spellCheck={true}
                         customStyleMap={customStyleMap}
-                        onChange={this._handleChange} />
+                        onChange={this._handleChange}
+                        keyBindingFn={this._keyBindingFn}
+                        handleKeyCommand={this._handleKeyCommand}
+                        handleReturn={this._handleReturn}
+                        onTab={this._handleTab} />
                 </div>
             </div>
         );
