@@ -76,10 +76,25 @@ export default class NoteEditor extends React.Component {
                 this._handleChange(CodeUtils.handleTab(event, this.props.store.editorState));
             }
         };
+
+        this._handleLineNumbers = show => {};
+
+        this._handleInvisibleCharacters = show => {};
+
+        this._handleTabSize = size => {};
+
+        this._handleSoftTabs = enabled => {};
+
+        this._handleThemeChange = themeCode => {};
     }
 
     componentDidMount() {
-        this._subscriptions.push(PubSub.subscribe(this.props.eventScope + '.focus', this.focus.bind(this)));
+        this._subscriptions.push(PubSub.subscribe(this.props.eventScope + '.focus', () => this.focus()));
+        this._subscriptions.push(PubSub.subscribe(this.props.eventScope + '.lineNumbers', (eventName, show) => this._handleLineNumbers(show)));
+        this._subscriptions.push(PubSub.subscribe(this.props.eventScope + '.invisibleCharacters', (eventName, show) => this._handleInvisibleCharacters(show)));
+        this._subscriptions.push(PubSub.subscribe(this.props.eventScope + '.tabSize', (eventName, size) => this._handleTabSize(size)));
+        this._subscriptions.push(PubSub.subscribe(this.props.eventScope + '.softTabs', (eventName, enabled) => this._handleSoftTabs(enabled)));
+        this._subscriptions.push(PubSub.subscribe('Theme.change', themeCode => this._handleThemeChange(themeCode)));
     }
 
     componentWillUnmount() {

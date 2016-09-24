@@ -38,13 +38,29 @@ export default class SettingsDialog extends Dialog {
             PubSub.publish('Theme.change', itemId);
         };
 
-        let handleLineNumbersChange = show => {};
+        let handleLineNumbersChange = show => {
+            // TODO: Saves setting
 
-        let handleInvisibleCharactersChange = show => {};
+            PubSub.publish('noteEditor.lineNumbers', show);
+        };
 
-        let handleTabSizeChange = size => {};
+        let handleInvisibleCharactersChange = show => {
+            // TODO: Saves setting
 
-        let handleSoftTabsChange = enabled => {};
+            PubSub.publish('noteEditor.invisibleCharacters', show);
+        };
+
+        let handleTabSizeChange = size => {
+            // TODO: Saves tab size setting
+
+            PubSub.publish('noteEditor.tabSize', size);
+        };
+
+        let handleSoftTabsChange = enabled => {
+            // TODO: Saves setting
+
+            PubSub.publish('noteEditor.softTabs', enabled);
+        };
 
         let renderItem = (key, title, content) => {
             return (

@@ -1,6 +1,6 @@
 'use strict';
 
-export default class CssLoader {
+export default class StylesheetLoader {
     static load(path) {
         const element = document.createElement('link');
 
@@ -14,14 +14,14 @@ export default class CssLoader {
     static unload(path) {
         let elements = document.getElementsByTagName('link');
 
-        if (elements && elements.length > 0) {
-            elements.forEach(element => {
-                if (element && element.getAttribute('href') && element.getAttribute('href') === path) {
-                    element.parentNode.removeChild(element);
+        if (elements) {
+            for (let i = 0; i < elements.length; i++) {
+                if (elements[i] && elements[i].outerHTML && elements[i].outerHTML.indexOf(path) > -1) {
+                    elements[i].parentNode.removeChild(elements[i]);
                 }
-            });
+            }
         }
     }
 }
 
-module.exports = CssLoader;
+module.exports = StylesheetLoader;
