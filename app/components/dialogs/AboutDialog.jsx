@@ -19,7 +19,7 @@ export default class AboutDialog extends Dialog {
             <div style={{ width : '100%', textAlign : 'center' }}>
                 <Text>{app.getName()}</Text>
                 <Text>Version {app.getVersion()}</Text>
-                <br />
+                <hr />
                 <Button onClick={() => this.props.store.hidden = true}>Close</Button>
             </div>
         );

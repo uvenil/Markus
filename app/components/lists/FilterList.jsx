@@ -67,7 +67,9 @@ export default class FilterList extends React.Component {
                     }>
                         {this.props.store.items.map(item => {
                             return (
-                                <div style={{ borderLeft : item.selected ? '4px solid #03a9f4' : 'none' }}>
+                                <div
+                                    key={item.itemId + '-container'}
+                                    style={{ borderLeft : item.selected ? '4px solid #03a9f4' : 'none' }}>
                                     <ListViewRow
                                         key={item.itemId}
                                         background={item.selected ? theme.selectedBackgroundColor : null}

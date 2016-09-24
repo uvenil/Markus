@@ -12,6 +12,8 @@ import is from 'electron-is';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
+const theme = new Theme();
+
 @observer
 export default class NoteEditor extends React.Component {
     constructor(props) {
@@ -61,9 +63,11 @@ export default class NoteEditor extends React.Component {
         this._handleReturn = event => {
             if (CodeUtils.hasSelectionInBlock(this.props.store.editorState)) {
                 this._handleChange(CodeUtils.handleReturn(event, this.props.store.editorState));
+
+                return true;
             }
 
-            return true;
+            return false;
 
         };
 
@@ -98,7 +102,7 @@ export default class NoteEditor extends React.Component {
         return (
             <div
                 id={this.props.eventScope}
-                style={{ height : 'calc(100vh - 70px)', padding : Config.paddingX1, backgroundColor : this.props.store.hidden ? Theme.secondayrBackgroundColor : Theme.primaryBackgroundColor, display : 'flex', flexFlow : 'column', overflow : 'auto' }}
+                style={{ height : 'calc(100vh - 70px)', padding : Config.paddingX1, backgroundColor : this.props.store.hidden ? theme.secondaryBackgroundColor : theme.primaryBackgroundColor, display : 'flex', flexFlow : 'column', overflow : 'auto' }}
                 onClick={() => this.focus()}>
                 <div style={{ display : this.props.store.hidden ? 'none' : 'block' }}>
                     <Editor

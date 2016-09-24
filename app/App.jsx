@@ -12,6 +12,7 @@ import ImageButtonBar from './components/buttons/ImageButtonBar';
 import MenuTextButton from './components/buttons/MenuTextButton';
 import NoteEditor from './components/editors/NoteEditor';
 import AboutDialog from './components/dialogs/AboutDialog';
+import SettingsDialog from './components/dialogs/SettingsDialog';
 import DialogStore from './components/dialogs/DialogStore';
 import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
@@ -47,6 +48,10 @@ export default class App extends React.Component {
         this._aboutDialogStore = new DialogStore();
         this._aboutDialogStore.width  = 240;
         this._aboutDialogStore.height = 160;
+
+        this._settingsDialogStore = new DialogStore();
+        this._settingsDialogStore.width  = 480;
+        this._settingsDialogStore.height = 320;
 
         this._handleFilterListClick = () => {
             this._presenter.refreshNoteList();
@@ -121,7 +126,8 @@ export default class App extends React.Component {
     componentDidMount() {
         this._loadSettings();
 
-        this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', (eventName, data) => this._aboutDialogStore.hidden = !data.visible));
+        this._subscriptions.push(PubSub.subscribe('AboutDialog.visible',    (eventName, data) => this._aboutDialogStore.hidden    = !data.visible));
+        this._subscriptions.push(PubSub.subscribe('SettingsDialog.visible', (eventName, data) => this._settingsDialogStore.hidden = !data.visible));
     }
 
     componentWillUnmount() {
@@ -135,6 +141,7 @@ export default class App extends React.Component {
             <MuiThemeProvider>
                 <div>
                     <AboutDialog store={this._aboutDialogStore} />
+                    <SettingsDialog store={this._settingsDialogStore} />
                     <SplitPane
                         split="vertical"
                         minSize={Config.filterListMinWidth}
