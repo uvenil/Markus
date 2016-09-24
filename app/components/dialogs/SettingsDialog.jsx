@@ -5,47 +5,75 @@ import { observer } from 'mobx-react';
 import { View, Text, Checkbox, Radio, Button, SegmentedControl, SegmentedControlItem } from 'react-desktop/macOs';
 import Dialog from './Dialog';
 import DialogStore from './DialogStore';
+import SimpleList from '../lists/SimpleList';
+import ListStore from '../lists/ListStore';
+import ListItemStore from '../lists/ListItemStore';
 import Config from '../../../config/config.json';
+import PubSub from 'pubsub-js';
+import is from 'electron-is';
+
+if (is.dev()) PubSub.immediateExceptions = true;
 
 @observer
 export default class SettingsDialog extends Dialog {
     constructor(props) {
         super(props);
 
-        this._selectedKey = 'settings-theme';
+        let selectedKey = 'settings-theme';
 
-        this._handleLineNumbersChange = show => {};
+        let themeStore = new ListStore();
 
-        this._handleInvisibleCharactersChange = show => {};
+        for (let i = 0; i < Config.themeNames.length; i++) {
+            const item = new ListItemStore();
 
-        this._handleTabSizeChange = size => {};
+            item.itemId      = Config.themeCodes[i];
+            item.primaryText = Config.themeNames[i];
 
-        this._handleSoftTabsChange = enabled => {};
+            themeStore.items.push(item);
+        }
 
-        this._renderItem = (key, title, content) => {
+        let handleThemeClick = itemId => {
+            // TODO: Saves theme setting
+
+            PubSub.publish('Theme.change', itemId);
+        };
+
+        let handleLineNumbersChange = show => {};
+
+        let handleInvisibleCharactersChange = show => {};
+
+        let handleTabSizeChange = size => {};
+
+        let handleSoftTabsChange = enabled => {};
+
+        let renderItem = (key, title, content) => {
             return (
                 <SegmentedControlItem
                     key={key}
                     title={title}
-                    selected={this._selectedKey === key}
+                    selected={selectedKey === key}
                     onSelect={() => {
-                        this._selectedKey = key;
+                        selectedKey = key;
 
-                        props.store.content = this._renderContent();
+                        props.store.content = renderContent();
                     }}>
                     {content}
                 </SegmentedControlItem>
             );
         };
 
-        this._renderContent = () => (
+        let renderContent = () => (
             <div style={{ width : '100%', textAlign : 'center' }}>
                 <SegmentedControl
                     height={200}
                     box>
                     {[
-                        this._renderItem('settings-theme', 'Theme', <div></div>),
-                        this._renderItem('settings-editor', 'Editor', (
+                        renderItem('settings-theme', 'Theme', (
+                            <SimpleList
+                                store={themeStore}
+                                onItemClick={handleThemeClick} />
+                        )),
+                        renderItem('settings-editor', 'Editor', (
                             <table style={{ width : '100%', borderCollapse : 'collapse' }}>
                                 <tr style={{ verticalAlign : 'top' }}>
                                     <td style={{ paddingBottom : Config.paddingX1, textAlign : 'right' }}>
@@ -55,10 +83,10 @@ export default class SettingsDialog extends Dialog {
                                         <View direction="column">
                                             <Checkbox
                                                 label="Line numbers"
-                                                onChange={event => this._handleLineNumbersChange(event.target.checked)} />
+                                                onChange={event => handleLineNumbersChange(event.target.checked)} />
                                             <Checkbox
                                                 label="Invisible characters"
-                                                onChange={event => this._handleInvisibleCharactersChange(event.target.checked)} />
+                                                onChange={event => handleInvisibleCharactersChange(event.target.checked)} />
                                         </View>
                                     </td>
                                 </tr>
@@ -71,18 +99,18 @@ export default class SettingsDialog extends Dialog {
                                             <Radio
                                                 label="2 spaces"
                                                 name="tabSize"
-                                                onChange={event => { if (event.target.checked) this._handleTabSizeChange(2); }} />
+                                                onChange={event => { if (event.target.checked) handleTabSizeChange(2); }} />
                                             <Radio
                                                 label="4 spaces"
                                                 name="tabSize"
-                                                onChange={event => { if (event.target.checked) this._handleTabSizeChange(4); }} />
+                                                onChange={event => { if (event.target.checked) handleTabSizeChange(4); }} />
                                             <Radio
                                                 label="8 spaces"
                                                 name="tabSize"
-                                                onChange={event => { if (event.target.checked) this._handleTabSizeChange(8); }} />
+                                                onChange={event => { if (event.target.checked) handleTabSizeChange(8); }} />
                                             <Checkbox
                                                 label="Use soft tabs"
-                                                onChange={event => this._handleSoftTabsChange(event.target.checked)} />
+                                                onChange={event => handleSoftTabsChange(event.target.checked)} />
                                         </View>
                                     </td>
                                 </tr>
@@ -96,7 +124,7 @@ export default class SettingsDialog extends Dialog {
         );
 
         props.store.title   = 'Settings';
-        props.store.content = this._renderContent();
+        props.store.content = renderContent();
     }
 }
 
