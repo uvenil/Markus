@@ -1,0 +1,61 @@
+exports[`test renders correctly 1`] = `
+<div
+  className="SearchBox"
+  style={
+    Object {
+      "pointerEvents": "auto",
+      "position": "relative",
+      "width": "100%"
+    }
+  }>
+  <i
+    className="fa fa-fw fa-search"
+    style={
+      Object {
+        "color": "#888",
+        "cursor": "default",
+        "fontSize": undefined,
+        "left": "8px",
+        "position": "absolute",
+        "top": "4px"
+      }
+    } />
+  <input
+    id="a"
+    onChange={[Function onChange]}
+    placeholder="Search"
+    style={
+      Object {
+        "WebkitUserSelect": "none",
+        "borderColor": "#bfbfbf",
+        "borderRadius": "16px",
+        "borderStyle": "solid",
+        "borderWidth": "1px",
+        "color": "#000",
+        "fontFamily": undefined,
+        "fontSize": undefined,
+        "outline": "none",
+        "paddingBottom": "4px",
+        "paddingLeft": "calc(2 * 16px)",
+        "paddingRight": "calc(2 * 16px)",
+        "paddingTop": "4px",
+        "width": "calc(100% - 4 * 16px)"
+      }
+    }
+    type="text" />
+  <i
+    className="fa fa-fw fa-times-circle"
+    id="b"
+    onClick={[Function anonymous]}
+    style={
+      Object {
+        "color": "#888",
+        "cursor": "pointer",
+        "display": "none",
+        "position": "absolute",
+        "right": "8px",
+        "top": "4px"
+      }
+    } />
+</div>
+`;

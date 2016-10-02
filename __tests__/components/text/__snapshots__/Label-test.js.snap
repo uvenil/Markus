@@ -1,0 +1,14 @@
+exports[`test renders correctly 1`] = `
+<span
+  className="Label"
+  style={
+    Object {
+      "WebkitUserSelect": "none",
+      "color": "#000",
+      "cursor": "default",
+      "fontFamily": undefined,
+      "fontSize": undefined,
+      "pointerEvents": "auto"
+    }
+  } />
+`;

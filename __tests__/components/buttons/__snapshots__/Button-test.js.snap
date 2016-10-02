@@ -1,0 +1,25 @@
+exports[`test renders correctly 1`] = `
+<button
+  className="Button"
+  onClick={[Function onClick]}
+  style={
+    Object {
+      "WebkitUserSelect": "none",
+      "backgroundColor": "#e5e7ed",
+      "borderColor": "#e5e7ed",
+      "borderRadius": "4px",
+      "borderStyle": "solid",
+      "borderWidth": "1px",
+      "color": "#000",
+      "cursor": "default",
+      "fontFamily": undefined,
+      "fontSize": undefined,
+      "outline": "none",
+      "padding": "4px 8px",
+      "pointerEvents": "auto"
+    }
+  }
+  type="button">
+  Hello, World!
+</button>
+`;

@@ -1,0 +1,26 @@
+exports[`test renders correctly 1`] = `
+<div
+  className="CheckBox"
+  style={
+    Object {
+      "verticalAlign": "middle"
+    }
+  }>
+  <input
+    id="a"
+    type="checkbox" />
+  <label
+    htmlFor="a"
+    style={
+      Object {
+        "WebkitUserSelect": "none",
+        "color": "#000",
+        "cursor": "default",
+        "fontFamily": undefined,
+        "fontSize": undefined
+      }
+    }>
+    Hello, World!
+  </label>
+</div>
+`;

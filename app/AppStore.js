@@ -5,11 +5,9 @@ import { extendObservable } from 'mobx';
 export default class AppStore {
     constructor() {
         extendObservable(this, {
-            filterListStore     : null,
-            categoryListStore   : null,
-            noteListStore       : null,
-            imageButtonBarStore : null,
-            noteEditorStore     : null
+            filterStore   : null,
+            categoryStore : null,
+            noteStore     : null
         });
     }
 }

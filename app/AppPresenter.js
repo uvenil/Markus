@@ -1,138 +1,89 @@
 'use strict';
 
-import { EditorState, convertFromRaw, convertToRaw } from 'draft-js';
-import FilterListPresenter from './components/lists/FilterListPresenter';
-import NoteListPresenter from './components/lists/NoteListPresenter';
-import NoteEditorPresenter from './components/editors/NoteEditorPresenter';
-import ImageButtonBarPresenter from './components/buttons/ImageButtonBarPresenter';
 import AppStore from './AppStore';
-import ImageButtonStore from './components/buttons/ImageButtonStore';
-import MenuTextButtonStore from './components/buttons/MenuTextButtonStore';
-import Database from './data/Database';
-import Config from '../config/config.json';
+import ListViewStore from './components/lists/ListViewStore';
+import ListItemStore from './components/lists/ListItemStore';
 
 export default class AppPresenter {
-    /**
-     * Creates a new instance of AppPresenter.
-     * @param {AppStore} store
-     */
-    constructor(store) {
-        this._store    = store;
-        this._database = new Database();
+    constructor() {
+        this._store = new AppStore();
 
-        this._filterListPresenter = new FilterListPresenter(this._database);
-        this._store.filterListStore   = this._filterListPresenter.filterListStore;
-        this._store.categoryListStore = this._filterListPresenter.categoryListStore;
+        this._store.filterStore = new ListViewStore();
+        this._store.filterStore.headerText = 'Notes';
 
-        this._noteListPresenter = new NoteListPresenter(this._filterListPresenter, this._database);
-        this._store.noteListStore = this._noteListPresenter.noteListStore;
+        const filterEverythingStore = new ListItemStore();
+        filterEverythingStore.itemId        = 'filter-everything';
+        filterEverythingStore.primaryText   = 'Everything';
+        filterEverythingStore.secondaryText = '88';
+        this._store.filterStore.items.push(filterEverythingStore);
 
-        this._noteEditorPresenter = new NoteEditorPresenter(this._database);
-        this._store.noteEditorStore = this._noteEditorPresenter.noteEditorStore;
-        this._noteEditorPresenter.syntax = 'javascript';
+        const filterStarredStore = new ListItemStore();
+        filterStarredStore.itemId        = 'filter-starred';
+        filterStarredStore.primaryText   = 'Starred';
+        filterStarredStore.secondaryText = '17';
+        this._store.filterStore.items.push(filterStarredStore);
 
-        this._imageButtonBarPresenter = new ImageButtonBarPresenter(this._noteListPresenter, this._noteEditorPresenter, this._database);
-        this._store.imageButtonBarStore = this._imageButtonBarPresenter.imageButtonBarStore;
-        this._noteEditorPresenter.imageButtonBarPresenter = this._imageButtonBarPresenter;
+        const filterArchivedStore = new ListItemStore();
+        filterArchivedStore.itemId        = 'filter-archived';
+        filterArchivedStore.primaryText   = 'Archived';
+        filterArchivedStore.secondaryText = '1';
+        this._store.filterStore.items.push(filterArchivedStore);
 
-        this._initAddNoteButtonStore();
-        this._initSortNoteButtonStore();
-        this._initDatabase();
+        this._store.categoryStore = new ListViewStore();
+        this._store.categoryStore.headerText = 'Categories';
+
+        const category1Store = new ListItemStore();
+        category1Store.itemId        = 'a1';
+        category1Store.primaryText   = 'Android';
+        category1Store.secondaryText = '2';
+        this._store.categoryStore.items.push(category1Store);
+
+        const category2Store = new ListItemStore();
+        category2Store.itemId        = 'a2';
+        category2Store.primaryText   = 'iOS';
+        category2Store.secondaryText = '0';
+        this._store.categoryStore.items.push(category2Store);
+
+        this._store.noteStore = new ListViewStore();
+
+        const note1Store = new ListItemStore();
+        note1Store.itemId        = 'b1';
+        note1Store.primaryText   = 'Lorem Ipsum';
+        note1Store.secondaryText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+        note1Store.tertiaryText  = '3 days ago';
+        this._store.noteStore.items.push(note1Store);
+
+        const note2Store = new ListItemStore();
+        note2Store.itemId        = 'b2';
+        note2Store.primaryText   = 'de Finibus Bonorum et Malorum';
+        note2Store.secondaryText = 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?';
+        note2Store.tertiaryText  = '56 minutes ago';
+        this._store.noteStore.items.push(note2Store);
+
+        const note3Store = new ListItemStore();
+        note3Store.itemId        = 'b3';
+        note3Store.primaryText   = 'de Finibus Bonorum et Malorum';
+        note3Store.secondaryText = 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?';
+        note3Store.tertiaryText  = '3 seconds ago';
+        this._store.noteStore.items.push(note3Store);
     }
 
-    /**
-     * @returns {ImageButtonStore}
-     */
-    get addNoteButtonStore() {
-        return this._addNoteButtonStore;
+    get store() {
+        return this._store;
     }
 
-    /**
-     * @returns {MenuTextButtonStore}
-     */
-    get sortNoteButtonStore() {
-        return this._sortNoteButtonStore;
+    handleFilterItemClick(index) {
+        this._store.filterStore.selectedIndex   = index;
+        this._store.categoryStore.selectedIndex = -1;
     }
 
-    /**
-     * @returns {FilterListPresenter}
-     */
-    get filterListPresenter() {
-        return this._filterListPresenter;
+    handleCategoryItemClick(index) {
+        this._store.filterStore.selectedIndex   = -1;
+        this._store.categoryStore.selectedIndex = index;
     }
 
-    _initAddNoteButtonStore() {
-        this._addNoteButtonStore = new ImageButtonStore();
-        this._addNoteButtonStore.itemId   = 'addNote';
-        this._addNoteButtonStore.icon     = 'fa fa-fw fa-plus';
-        this._addNoteButtonStore.tooltip  = 'Add note';
-        this._addNoteButtonStore.disabled = true;
-    }
-
-    _initSortNoteButtonStore() {
-        this._sortNoteButtonStore = new MenuTextButtonStore();
-        this._sortNoteButtonStore.itemId        = 'sortNote';
-        this._sortNoteButtonStore.text          = 'Sort by last updated ▼';
-        this._sortNoteButtonStore.selectedIndex = NoteListPresenter.DEFAULT_SORTING;
-        this._sortNoteButtonStore.disabled      = true;
-
-        this._sortNoteButtonStore.items.push('Sort by title ▼');
-        this._sortNoteButtonStore.items.push('Sort by title ▲');
-        this._sortNoteButtonStore.items.push('Sort by last updated ▼');
-        this._sortNoteButtonStore.items.push('Sort by last updated ▲');
-        this._sortNoteButtonStore.items.push('Sort by created ▼');
-        this._sortNoteButtonStore.items.push('Sort by created ▲');
-    }
-
-    _initDatabase() {
-        this._database.load(Config.databaseName)
-            .then(() => {
-                this.refreshFilterList();
-                this.refreshCategoryList();
-                this.refreshNoteList();
-            }).catch(error => console.error(error));
-    }
-
-    enableNoteList() {
-        this._addNoteButtonStore.disabled  = false;
-        this._sortNoteButtonStore.disabled = false;
-    }
-
-    refreshFilterList() {
-        this._noteListPresenter.noteListStore.selectedItemId = undefined;
-        this._noteEditorPresenter.noteEditorStore.hidden     = true;
-
-        this._filterListPresenter.refreshFilterList();
-        this.refreshNoteList();
-    }
-
-    refreshCategoryList() {
-        this._noteListPresenter.noteListStore.selectedItemId = undefined;
-        this._noteEditorPresenter.noteEditorStore.hidden     = true;
-
-        this._filterListPresenter.refreshCategoryList();
-        this.refreshNoteList();
-    }
-
-    refreshNoteList() {
-        this._noteListPresenter.refreshNoteList();
-        this._noteEditorPresenter.refreshNoteEditor();
-    }
-
-    refreshNoteEditor() {
-        this._noteEditorPresenter.refreshNoteEditor(this._noteListPresenter.noteListStore.selectedItemId);
-    }
-
-    addNewNote() {
-        this._noteListPresenter.addNewNote();
-    }
-
-    sortNoteList(index) {
-        // TODO
-    }
-
-    handleImageButtonBarTouchTap(itemId, index) {
-        this._imageButtonBarPresenter.handleTouchTap(itemId, index);
+    handleNoteItemClick(index) {
+        this._store.noteStore.selectedIndex = index;
     }
 }
 

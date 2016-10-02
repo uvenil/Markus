@@ -2,7 +2,8 @@
 
 import { extendObservable } from 'mobx';
 import moment from 'moment';
-import Config from '../../../config/config.json';
+import Config from '../../../config.json';
+import _ from 'lodash';
 
 export default class ListItemStore {
     constructor() {
@@ -16,15 +17,13 @@ export default class ListItemStore {
     }
 
     /**
-     * Updates this store using the specified record.
-     * @param {object} record The record to update this store.
+     * Updates this store using the specific record.
+     * @param {{ _id : String, title : String|undefined, description : String, lastUpdatedAt : Date }} record The record to update this store.
      */
     update(record) {
         this.itemId        = record._id;
-        this.primaryText   = record.title && record.title.length > 0 ? record.title : Config.defaultNoteTitle;
+        this.primaryText   = _.isEmpty(record.title) ? Config.defaultNoteTitle : record.title;
         this.secondaryText = record.description;
         this.tertiaryText  = moment(record.lastUpdatedAt).fromNow();
     }
 }
-
-module.exports = ListItemStore;

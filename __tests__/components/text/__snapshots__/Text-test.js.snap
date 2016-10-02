@@ -1,0 +1,15 @@
+exports[`test renders correctly 1`] = `
+<span
+  className="Text"
+  style={
+    Object {
+      "WebkitUserSelect": "none",
+      "color": "#000",
+      "cursor": "default",
+      "display": "block",
+      "fontFamily": undefined,
+      "fontSize": undefined,
+      "pointerEvents": "auto"
+    }
+  } />
+`;

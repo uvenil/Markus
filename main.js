@@ -1,9 +1,9 @@
 'use strict';
 
 import { BrowserWindow, app, shell } from 'electron';
-import Config                        from './config/config.json';
-import Path                          from 'path';
-import is                            from 'electron-is';
+import Config from './config.json';
+import Path from 'path';
+import is from 'electron-is';
 
 let win;
 
