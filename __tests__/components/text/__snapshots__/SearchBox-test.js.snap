@@ -5,7 +5,7 @@ exports[`test renders correctly 1`] = `
     Object {
       "pointerEvents": "auto",
       "position": "relative",
-      "width": "100%"
+      "width": "100%",
     }
   }>
   <i
@@ -17,12 +17,12 @@ exports[`test renders correctly 1`] = `
         "fontSize": undefined,
         "left": "8px",
         "position": "absolute",
-        "top": "4px"
+        "top": "4px",
       }
     } />
   <input
     id="a"
-    onChange={[Function onChange]}
+    onChange={[Function]}
     placeholder="Search"
     style={
       Object {
@@ -39,14 +39,14 @@ exports[`test renders correctly 1`] = `
         "paddingLeft": "calc(2 * 16px)",
         "paddingRight": "calc(2 * 16px)",
         "paddingTop": "4px",
-        "width": "calc(100% - 4 * 16px)"
+        "width": "calc(100% - 4 * 16px)",
       }
     }
     type="text" />
   <i
     className="fa fa-fw fa-times-circle"
     id="b"
-    onClick={[Function anonymous]}
+    onClick={[Function]}
     style={
       Object {
         "color": "#888",
@@ -54,7 +54,7 @@ exports[`test renders correctly 1`] = `
         "display": "none",
         "position": "absolute",
         "right": "8px",
-        "top": "4px"
+        "top": "4px",
       }
     } />
 </div>

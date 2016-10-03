@@ -7,7 +7,8 @@ export default class AppStore {
         extendObservable(this, {
             filterStore   : null,
             categoryStore : null,
-            noteStore     : null
+            noteStore     : null,
+            editorStore   : null
         });
     }
 }

@@ -3,6 +3,8 @@
 import React from 'react';
 import Brace from 'brace';
 import AceEditor from 'react-ace';
+import EditorStore from './EditorStore';
+import Record from '../../data/Record';
 import Config from '../../../config.json';
 
 export default class TextEditor extends React.Component {
@@ -11,6 +13,14 @@ export default class TextEditor extends React.Component {
 
         this._handleLoad = editor => {
             // TODO
+        };
+
+        this._handleChange = value => {
+            if (this.props.store.record) {
+                this.props.store.record.update(value);
+            } else {
+                this.props.store.record = Record.from(value);
+            }
         };
     }
 
@@ -23,6 +33,7 @@ export default class TextEditor extends React.Component {
                 ref="editor"
                 mode={this.props.syntax}
                 theme={this.props.theme}
+                value={this.props.store.record ? this.props.store.record.fullText : undefined}
                 width="100%"
                 height={'calc(100vh - ' + (Config.topBarHeight + Config.bottomBarHeight + 2) + 'px)'}
                 fontSize={this.props.textSize}
@@ -30,7 +41,8 @@ export default class TextEditor extends React.Component {
                 highlightActiveLine={this.props.highlightActiveLine}
                 tabSize={this.props.tabSize}
                 editorProps={{ fontFamily : this.props.fontFamily, $blockScrolling : true, showLineNumbers : this.props.showLineNumbers, showInvisibles : this.props.showInvisibles, showFoldWidgets : this.props.showFoldWidgets, displayIndentGuides : this.props.displayIndentGuides, scrollPastEnd : this.props.scrollPastEnd, useSoftTabs : this.props.useSoftTabs, wrap : this.props.wordWrap, spellcheck : this.props.spellcheck }}
-                onLoad={editor => this._handleLoad(editor)} />
+                onLoad={editor => this._handleLoad(editor)}
+                onChange={value => this._handleChange(value)} />
         );
     }
 }
@@ -38,6 +50,7 @@ export default class TextEditor extends React.Component {
 TextEditor.propTypes = {
     syntax              : React.PropTypes.string.isRequired,
     theme               : React.PropTypes.string.isRequired,
+    store               : React.PropTypes.instanceOf(EditorStore).isRequired,
     fontFamily          : React.PropTypes.string,
     textSize            : React.PropTypes.number,
     highlightActiveLine : React.PropTypes.bool,

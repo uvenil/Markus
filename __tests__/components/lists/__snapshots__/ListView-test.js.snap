@@ -3,7 +3,7 @@ exports[`test renders correctly 1`] = `
   className="ListView"
   style={
     Object {
-      "backgroundColor": "#f1f2f4"
+      "backgroundColor": "#f1f2f4",
     }
   }>
   <div
@@ -12,7 +12,7 @@ exports[`test renders correctly 1`] = `
         "paddingBottom": "4px",
         "paddingLeft": "8px",
         "paddingRight": "8px",
-        "paddingTop": "4px"
+        "paddingTop": "4px",
       }
     }>
     <span
@@ -25,17 +25,17 @@ exports[`test renders correctly 1`] = `
           "display": "block",
           "fontFamily": undefined,
           "fontSize": undefined,
-          "pointerEvents": "auto"
+          "pointerEvents": "auto",
         }
       }>
       Section
     </span>
   </div>
   <div
-    onClick={[Function onClick]}
+    onClick={[Function]}
     style={
       Object {
-        "backgroundColor": "#f1f2f4"
+        "backgroundColor": "#f1f2f4",
       }
     }>
     <span
@@ -48,17 +48,17 @@ exports[`test renders correctly 1`] = `
           "display": "block",
           "fontFamily": undefined,
           "fontSize": undefined,
-          "pointerEvents": "auto"
+          "pointerEvents": "auto",
         }
       }>
       Item 1
     </span>
   </div>
   <div
-    onClick={[Function onClick]}
+    onClick={[Function]}
     style={
       Object {
-        "backgroundColor": "#f1f2f4"
+        "backgroundColor": "#f1f2f4",
       }
     }>
     <span
@@ -71,17 +71,17 @@ exports[`test renders correctly 1`] = `
           "display": "block",
           "fontFamily": undefined,
           "fontSize": undefined,
-          "pointerEvents": "auto"
+          "pointerEvents": "auto",
         }
       }>
       Item 2
     </span>
   </div>
   <div
-    onClick={[Function onClick]}
+    onClick={[Function]}
     style={
       Object {
-        "backgroundColor": "#f1f2f4"
+        "backgroundColor": "#f1f2f4",
       }
     }>
     <span
@@ -94,7 +94,7 @@ exports[`test renders correctly 1`] = `
           "display": "block",
           "fontFamily": undefined,
           "fontSize": undefined,
-          "pointerEvents": "auto"
+          "pointerEvents": "auto",
         }
       }>
       Item 3
