@@ -3,47 +3,21 @@
 import AppStore from './AppStore';
 import ListViewStore from './components/lists/ListViewStore';
 import ListItemStore from './components/lists/ListItemStore';
+import FilterListViewPresenter from './components/lists/FilterListViewPresenter';
+import CategoryListViewPresenter from './components/lists/CategoryListViewPresenter';
 import EditorStore from './components/text/EditorStore';
+import Database from './data/Database';
 
 export default class AppPresenter {
     constructor() {
-        this._store = new AppStore();
+        this._store    = new AppStore();
+        this._database = new Database();
 
-        this._store.filterStore = new ListViewStore();
-        this._store.filterStore.headerText = 'Notes';
+        this._filterPresenter   = new FilterListViewPresenter(this._database);
+        this._categoryPresenter = new CategoryListViewPresenter(this._database);
 
-        const filterEverythingStore = new ListItemStore();
-        filterEverythingStore.itemId        = 'filter-everything';
-        filterEverythingStore.primaryText   = 'Everything';
-        filterEverythingStore.secondaryText = '88';
-        this._store.filterStore.items.push(filterEverythingStore);
-
-        const filterStarredStore = new ListItemStore();
-        filterStarredStore.itemId        = 'filter-starred';
-        filterStarredStore.primaryText   = 'Starred';
-        filterStarredStore.secondaryText = '17';
-        this._store.filterStore.items.push(filterStarredStore);
-
-        const filterArchivedStore = new ListItemStore();
-        filterArchivedStore.itemId        = 'filter-archived';
-        filterArchivedStore.primaryText   = 'Archived';
-        filterArchivedStore.secondaryText = '1';
-        this._store.filterStore.items.push(filterArchivedStore);
-
-        this._store.categoryStore = new ListViewStore();
-        this._store.categoryStore.headerText = 'Categories';
-
-        const category1Store = new ListItemStore();
-        category1Store.itemId        = 'a1';
-        category1Store.primaryText   = 'Android';
-        category1Store.secondaryText = '2';
-        this._store.categoryStore.items.push(category1Store);
-
-        const category2Store = new ListItemStore();
-        category2Store.itemId        = 'a2';
-        category2Store.primaryText   = 'iOS';
-        category2Store.secondaryText = '0';
-        this._store.categoryStore.items.push(category2Store);
+        this._store.filterStore   = this._filterPresenter.store;
+        this._store.categoryStore = this._categoryPresenter.store;
 
         this._store.noteStore = new ListViewStore();
 
