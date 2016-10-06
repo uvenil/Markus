@@ -32,25 +32,27 @@ export default class FilterListViewPresenter extends ListViewPresenter {
     }
 
     initStore() {
+        super.initStore();
+        
         this.store.headerText = 'Notes';
 
         const filterEverythingStore = new ListItemStore();
         filterEverythingStore.itemId        = FilterListViewPresenter.FILTER_EVERYTHING_ID;
         filterEverythingStore.primaryText   = 'Everything';
         filterEverythingStore.secondaryText = '0';
-        this._store.items.push(filterEverythingStore);
+        this.store.items.push(filterEverythingStore);
 
         const filterStarredStore = new ListItemStore();
         filterStarredStore.itemId        = FilterListViewPresenter.FILTER_STARRED_ID;
         filterStarredStore.primaryText   = 'Starred';
         filterStarredStore.secondaryText = '0';
-        this._store.items.push(filterStarredStore);
+        this.store.items.push(filterStarredStore);
 
         const filterArchivedStore = new ListItemStore();
         filterArchivedStore.itemId        = FilterListViewPresenter.FILTER_ARCHIVED_ID;
         filterArchivedStore.primaryText   = 'Archived';
         filterArchivedStore.secondaryText = '0';
-        this._store.items.push(filterArchivedStore);
+        this.store.items.push(filterArchivedStore);
     }
 }
 

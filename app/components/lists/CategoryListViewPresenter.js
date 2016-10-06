@@ -36,7 +36,9 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
     }
 
     initStore() {
-        this._store.headerText = 'Categories';
+        super.initStore();
+
+        this.store.headerText = 'Categories';
     }
 }
 

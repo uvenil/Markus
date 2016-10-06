@@ -35,4 +35,4 @@ export default class ListViewPresenter {
     }
 }
 
-module.exports = ListViewStore();
+module.exports = ListViewPresenter;

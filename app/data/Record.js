@@ -3,11 +3,12 @@
 import { extendObservable } from 'mobx';
 
 export default class Record {
-    constructor(title, description, fullText, lastUpdatedAt, createdAt) {
+    constructor(title, description, fullText, syntax, lastUpdatedAt, createdAt) {
         extendObservable(this, {
             title         : title,
             description   : description,
             fullText      : fullText,
+            syntax        : syntax,
             lastUpdatedAt : lastUpdatedAt,
             createdAt     : createdAt
         });
@@ -47,10 +48,10 @@ export default class Record {
                 title = fullText;
             }
 
-            return new Record(title, description, fullText, now, now);
+            return new Record(title, description, fullText, syntax, now, now);
         }
 
-        return new Record(fullText, '', fullText, now, now);
+        return new Record(fullText, '', fullText, syntax, now, now);
     }
 
     /**
@@ -63,6 +64,7 @@ export default class Record {
         this.title         = record.title;
         this.description   = record.description;
         this.fullText      = record.fullText;
+        this.syntax        = record.syntax;
         this.lastUpdatedAt = Date.now();
     }
 }

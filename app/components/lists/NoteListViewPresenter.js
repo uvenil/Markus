@@ -12,7 +12,7 @@ export default class NoteListViewPresenter {
      * @param {CategoryListViewPresenter} categoryListViewPresenter
      * @param {Database} database
      */
-    construct(filterListViewPresenter, categoryListViewPresenter, database) {
+    constructor(filterListViewPresenter, categoryListViewPresenter, database) {
         this._filterPresenter   = filterListViewPresenter;
         this._categoryPresenter = categoryListViewPresenter;
         this._store             = new ListViewStore();
