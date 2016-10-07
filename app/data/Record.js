@@ -1,7 +1,9 @@
 'use strict';
 
+import React from 'react';
 import { extendObservable } from 'mobx';
 import ListItemStore from '../components/lists/ListItemStore';
+import Unique from '../utils/Unique';
 import moment from 'moment';
 
 export default class Record {
@@ -93,10 +95,10 @@ export default class Record {
     toListItemStore() {
         const store = new ListItemStore();
 
-        store.itemId = this._id;
-        store.primaryText = this.title;
-        store.secondaryText = this.description;
-        store.tertiaryText = moment(this.lastUpdatedAt).fromNow();
+        store.itemId        = this._id;
+        store.primaryText   = this.title;
+        store.secondaryText = this.description ? this.description.split('\n').map(line => <span key={Unique.elementId()}>{line}<br /></span>) : this.description;
+        store.tertiaryText  = moment(this.lastUpdatedAt).fromNow();
 
         return store;
     }
