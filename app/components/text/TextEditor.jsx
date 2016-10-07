@@ -3,7 +3,7 @@
 import React from 'react';
 import Brace from 'brace';
 import AceEditor from 'react-ace';
-import EditorStore from './EditorStore';
+import TextEditorStore from './TextEditorStore';
 import Record from '../../data/Record';
 import Unique from '../../utils/Unique';
 import Config from '../../../config.json';
@@ -25,10 +25,14 @@ export default class TextEditor extends React.Component {
             } else {
                 this.props.store.record = Record.from(value);
             }
+
+            this.props.store.changes.onNext(record);
         };
     }
 
     render() {
+        const theme = this.props.theme === 'dark' ? require('../../theme.dark.json') : require('../../theme.light.json');
+
         require('brace/mode/' + this.props.syntax);
         require('brace/theme/' + this.props.theme);
 
@@ -47,12 +51,12 @@ export default class TextEditor extends React.Component {
                     highlightActiveLine={this.props.highlightActiveLine}
                     tabSize={this.props.tabSize}
                     editorProps={{ fontFamily : this.props.fontFamily, $blockScrolling : true, showLineNumbers : this.props.showLineNumbers, showInvisibles : this.props.showInvisibles, showFoldWidgets : this.props.showFoldWidgets, displayIndentGuides : this.props.displayIndentGuides, scrollPastEnd : this.props.scrollPastEnd, useSoftTabs : this.props.useSoftTabs, wrap : this.props.wordWrap, spellcheck : this.props.spellcheck }}
-                    style={{ visibility : this.props.store.record ? 'visible' : 'hidden' }}
+                    style={{ display : this.props.store.record ? 'block' : 'none' }}
                     onLoad={editor => this._handleLoad(editor)}
                     onChange={value => this._handleChange(value)} />
                 <div
                     id={this._placeHolderId}
-                    style={{ visibility : this.props.store.record ? 'hidden' : 'visible', width : '100%', height : 'calc(100vh - ' + (Config.topBarHeight + Config.bottomBarHeight + 2) + 'px)' }} />
+                    style={{ display : this.props.store.record ? 'none' : 'block', width : '100%', height : 'calc(100vh - ' + (Config.topBarHeight + Config.bottomBarHeight + 2) + 'px)', backgroundColor : theme.disabledBackgroundColor }} />
             </div>
         );
     }
@@ -61,7 +65,7 @@ export default class TextEditor extends React.Component {
 TextEditor.propTypes = {
     syntax              : React.PropTypes.string.isRequired,
     theme               : React.PropTypes.string.isRequired,
-    store               : React.PropTypes.instanceOf(EditorStore).isRequired,
+    store               : React.PropTypes.instanceOf(TextEditorStore).isRequired,
     fontFamily          : React.PropTypes.string,
     textSize            : React.PropTypes.number,
     highlightActiveLine : React.PropTypes.bool,

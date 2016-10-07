@@ -1,6 +1,6 @@
 'use strict';
 
-import EditorStore from './EditorStore';
+import TextEditorStore from './TextEditorStore';
 import Database from '../../data/Database';
 import Record from '../../data/Record';
 
@@ -12,7 +12,7 @@ export default class TextEditorPresenter {
     constructor(database) {
         this._database = database;
 
-        this._store = new EditorStore();
+        this._store = new TextEditorStore();
     }
 
     /**

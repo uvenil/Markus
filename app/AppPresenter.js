@@ -5,7 +5,7 @@ import ListViewStore from './components/lists/ListViewStore';
 import ListItemStore from './components/lists/ListItemStore';
 import FilterListViewPresenter from './components/lists/FilterListViewPresenter';
 import CategoryListViewPresenter from './components/lists/CategoryListViewPresenter';
-import EditorStore from './components/text/EditorStore';
+import TextEditorStore from './components/text/TextEditorStore';
 import Database from './data/Database';
 
 export default class AppPresenter {
@@ -42,7 +42,7 @@ export default class AppPresenter {
         note3Store.tertiaryText  = '3 seconds ago';
         this._store.noteStore.items.push(note3Store);
 
-        this._store.editorStore = new EditorStore();
+        this._store.editorStore = new TextEditorStore();
     }
 
     get store() {
