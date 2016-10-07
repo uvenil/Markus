@@ -33,7 +33,7 @@ export default class FilterListViewPresenter extends ListViewPresenter {
 
     initStore() {
         super.initStore();
-        
+
         this.store.headerText = 'Notes';
 
         const filterEverythingStore = new ListItemStore();

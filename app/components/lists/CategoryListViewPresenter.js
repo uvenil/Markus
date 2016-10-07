@@ -40,6 +40,14 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
 
         this.store.headerText = 'Categories';
     }
+
+    /**
+     * Add a new category to the list.
+     * @param {String} category The category to be added to the list.
+     */
+    addCategory(category) {
+        // TODO
+    }
 }
 
 module.exports = CategoryListViewPresenter;

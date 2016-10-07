@@ -85,10 +85,19 @@ export default function createWindowMenu() {
                 }
             },
             {
-                label : 'Toggle Developer Tools',
+                label       : 'Toggle Developer Tools',
                 accelerator : is.macOS() ? 'Alt+Command+I' : 'Ctrl+Shift+I',
                 click(item, win) {
                     if (win) win.webContents.toggleDevTools();
+                }
+            },
+            {
+                type : 'separator'
+            },
+            {
+                label : 'Reset database',
+                click(item, win) {
+                    if (win) PubSub.publish('Database.reset');
                 }
             }
         ]

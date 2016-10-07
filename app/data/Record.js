@@ -1,6 +1,8 @@
 'use strict';
 
 import { extendObservable } from 'mobx';
+import ListItemStore from '../components/lists/ListItemStore';
+import moment from 'moment';
 
 export default class Record {
     constructor(title, description, fullText, syntax, lastUpdatedAt, createdAt) {
@@ -9,9 +11,20 @@ export default class Record {
             description   : description,
             fullText      : fullText,
             syntax        : syntax,
+            category      : null,
+            starred       : false,
+            archived      : false,
             lastUpdatedAt : lastUpdatedAt,
             createdAt     : createdAt
         });
+    }
+
+    static fromDoc(doc) {
+        const record = new Record(doc.title, doc.description, doc.fullText, doc.syntax, doc.lastUpdatedAt, doc.createdAt);
+
+        record._id = doc._id;
+
+        return record;
     }
 
     /**
@@ -19,7 +32,7 @@ export default class Record {
      * @param {String} fullText
      * @returns {Record}
      */
-    static from(fullText) {
+    static fromText(syntax, fullText) {
         const now = Date.now();
 
         if (fullText && fullText.length > 0 && fullText.indexOf('\n') > -1) {
@@ -55,16 +68,49 @@ export default class Record {
     }
 
     /**
+     * Converts to a plain JavaScript object suitable for database persistence.
+     * @returns {{_id: *, title: *, description: *, fullText: *, syntax: (*|Blocks.syntax), lastUpdatedAt: (number|*), createdAt: (*|number)}}
+     */
+    toDoc() {
+        return {
+            _id           : this._id,
+            title         : this.title,
+            description   : this.description,
+            fullText      : this.fullText,
+            syntax        : this.syntax,
+            category      : this.category,
+            starred       : this.starred,
+            archived      : this.archived,
+            lastUpdatedAt : this.lastUpdatedAt,
+            createdAt     : this.createdAt
+        };
+    }
+
+    /**
+     * Converts this record to a ListItemStore.
+     * @returns {ListItemStore}
+     */
+    toListItemStore() {
+        const store = new ListItemStore();
+
+        store.itemId = this._id;
+        store.primaryText = this.title;
+        store.secondaryText = this.description;
+        store.tertiaryText = moment(this.lastUpdatedAt).fromNow();
+
+        return store;
+    }
+
+    /**
      * Updates this record using the given full text.
      * @param {String} fullText The full text to update the specified record.
      */
     update(fullText) {
-        const record = Record.from(fullText);
+        const record = Record.fromText(this.syntax, fullText);
 
         this.title         = record.title;
         this.description   = record.description;
         this.fullText      = record.fullText;
-        this.syntax        = record.syntax;
         this.lastUpdatedAt = Date.now();
     }
 }

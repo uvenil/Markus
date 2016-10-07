@@ -4,6 +4,8 @@ import FilterListViewPresenter from './FilterListViewPresenter';
 import CategoryListViewPresenter from './CategoryListViewPresenter';
 import ListViewStore from './ListViewStore';
 import Database from '../../data/Database';
+import Record from '../../data/Record';
+import Config from '../../../config.json';
 
 export default class NoteListViewPresenter {
     /**
@@ -13,11 +15,104 @@ export default class NoteListViewPresenter {
      * @param {Database} database
      */
     constructor(filterListViewPresenter, categoryListViewPresenter, database) {
-        this._filterPresenter   = filterListViewPresenter;
-        this._categoryPresenter = categoryListViewPresenter;
-        this._store             = new ListViewStore();
-        this._database          = database;
-        this._sorting           = NoteListViewPresenter.DEFAULT_SORTING;
+        this._filtersPresenter    = filterListViewPresenter;
+        this._categoriesPresenter = categoryListViewPresenter;
+        this._store               = new ListViewStore();
+        this._database            = database;
+        this._sorting             = NoteListViewPresenter.DEFAULT_SORTING;
+    }
+
+    get store() {
+        return this._store;
+    }
+
+    refresh() {
+        this._store.selectedItemId = undefined;
+
+        const selectedFilterItemId   = this._filtersPresenter.store.selectedItemId;
+        const selectedCategoryItemId = this._categoriesPresenter.store.selectedItemId;
+
+        console.trace('selectedFilterItemId = ' + selectedFilterItemId + ', selectedCategoryItemId = ' + selectedCategoryItemId);
+
+        let promise;
+
+        if (selectedFilterItemId === FilterListViewPresenter.FILTER_EVERYTHING_ID) {
+            promise = this._database.findAll(this._sorting);
+        } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_STARRED_ID) {
+            promise = this._database.findStarred(this._sorting);
+        } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_ARCHIVED_ID) {
+            promise = this._database.findArchived(this._sorting);
+        } else if (selectedCategoryItemId) {
+            promise = this._database.findCategory(selectedCategoryItemId, this._sorting);
+        }
+
+        if (promise) {
+            promise.then(docs => {
+                this._store.items = [];
+
+                docs.forEach(doc => {
+                    this._store.items.push(Record.fromDoc(doc).toListItemStore());
+                });
+            }).catch(error => console.error(error));
+        }
+    }
+
+    /**
+     * Adds a new note to the list.
+     * @return {Promise}
+     */
+    addNote(syntax) {
+        const selectedFilterItemId   = this._filtersPresenter.store.selectedItemId;
+        const selectedCategoryItemId = this._categoriesPresenter.store.selectedItemId;
+
+        if (selectedFilterItemId || selectedCategoryItemId) {
+            const record = Record.fromText(syntax, '');
+            record.title = Config.defaultNoteTitle;
+
+            if (selectedFilterItemId === FilterListViewPresenter.FILTER_EVERYTHING_ID) {
+                record.starred  = false;
+                record.archived = false;
+
+                this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_EVERYTHING_ID).secondaryText = 1 + parseInt(this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_EVERYTHING_ID).secondaryText);
+
+                // Force refresh
+                this._filtersPresenter.store.items = this._filtersPresenter.store.items;
+            } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_STARRED_ID) {
+                record.starred  = true;
+                record.archived = false;
+
+                this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_STARRED_ID).secondaryText = 1 + parseInt(this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_STARRED_ID).secondaryText);
+
+                // Force refresh
+                this._filtersPresenter.store.items = this._filtersPresenter.store.items;
+            } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_ARCHIVED_ID) {
+                record.starred  = false;
+                record.archived = true;
+
+                this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_ARCHIVED_ID).secondaryText = 1 + parseInt(this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_ARCHIVED_ID).secondaryText);
+
+                // Force refresh
+                this._filtersPresenter.store.items = this._filtersPresenter.store.items;
+            } else if (selectedCategoryItemId) {
+                record.category = selectedCategoryItemId;
+
+                this._categoriesPresenter.store.getItem(selectedCategoryItemId).secondaryText = 1 + parseInt(this._categoriesPresenter.store.getItem(selectedCategoryItemId).secondaryText);
+
+                // Force refresh
+                this._categoriesPresenter.store.items = this._categoriesPresenter.store.items;
+            }
+
+            return new Promise((resolve, reject) => this._database.addOrUpdate(record.toDoc())
+                .then(doc => {
+                    const persistedRecord = Record.fromDoc(doc);
+
+                    this._store.items.unshift(persistedRecord.toListItemStore());
+
+                    resolve(persistedRecord);
+                }).catch(error => reject(error)));
+        }
+
+        return Promise.reject('No filter or category is selected');
     }
 }
 

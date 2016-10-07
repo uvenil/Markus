@@ -13,5 +13,6 @@
     "paddingX1"          : 8,
     "paddingX2"          : 16,
     "databaseName"       : "notes.db",
+    "defaultSyntax"      : "markdown",
     "defaultNoteTitle"   : "(Untitled)"
 }

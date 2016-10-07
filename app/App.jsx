@@ -14,6 +14,7 @@ import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
 import { observer } from 'mobx-react';
 import Settings from './utils/Settings';
+import PubSub from 'pubsub-js';
 import Config from '../config.json';
 
 @observer
@@ -29,7 +30,8 @@ export default class App extends React.Component {
         this._filterListWidth = Config.filterListWidth;
         this._noteListWidth   = Config.noteListWidth;
 
-        this._settings = new Settings();
+        this._subscriptions = [];
+        this._settings      = new Settings();
 
         this._handleFilterListWidthChange = size => {
             this._filterListWidth = size;
@@ -42,6 +44,14 @@ export default class App extends React.Component {
 
             this._settings.set('noteListWidth', this._noteListWidth).catch(error => console.error(error));
         };
+    }
+
+    componentDidMount() {
+        this._subscriptions.push(PubSub.subscribe('Database.reset', () => this.props.presenter.resetDatabase()));
+    }
+
+    componentWillUnmount() {
+        this._subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     render() {
@@ -62,19 +72,20 @@ export default class App extends React.Component {
                     {/* Filter list */}
                     <div style={{ height : 'calc(100vh - ' + Config.bottomBarHeight + 'px)', display : 'flex', flexFlow : 'column' }}>
                         <FilterListView
-                            store={this.props.store.filterStore}
+                            store={this.props.store.filtersStore}
                             backgroundColor={theme.secondaryBackgroundColor}
                             onItemClick={index => this.props.presenter.handleFilterItemClick(index)} />
                         <div style={{ flex : '1 1 0' }}>
                             <FilterListView
-                                store={this.props.store.categoryStore}
+                                store={this.props.store.categoriesStore}
                                 backgroundColor={theme.secondaryBackgroundColor}
                                 onItemClick={index => this.props.presenter.handleCategoryItemClick(index)} />
                         </div>
                     </div>
                     {/* Add category button */}
                     <Button
-                        backgroundColor="none">
+                        backgroundColor="none"
+                        onClick={() => this.props.presenter.handleAddCategoryClick()}>
                         <i className="fa fa-fw fa-plus" />
                     </Button>
                 </SplitPane>
@@ -99,12 +110,14 @@ export default class App extends React.Component {
                             primary="second">
                             {/* Note list */}
                             <NoteListView
-                                store={this.props.store.noteStore}
+                                store={this.props.store.notesStore}
                                 onItemClick={index => this.props.presenter.handleNoteItemClick(index)} />
                             {/* Note list tools */}
                             <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
                                 <Button
-                                    backgroundColor="none">
+                                    backgroundColor="none"
+                                    disabled={!this.props.store.addNoteEnabled}
+                                    onClick={() => this.props.presenter.handleAddNoteClick()}>
                                     <i className="fa fa-fw fa-plus" />
                                 </Button>
                                 <div style={{ flex : '1 1 0', textAlign : 'right' }}>
@@ -149,7 +162,7 @@ export default class App extends React.Component {
                             <TextEditor
                                 syntax="markdown"
                                 theme="twilight"
-                                store={this.props.presenter.store.editorStore} />
+                                store={this.props.store.editorStore} />
                             {/* Note editor tools */}
                             <div>Note editor tools</div>
                         </SplitPane>

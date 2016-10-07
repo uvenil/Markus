@@ -100,8 +100,8 @@ export default class Database {
     findAll(sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
-                plainText : new RegExp(keyword),
-                archived  : false
+                fullText : new RegExp(keyword),
+                archived : false
             } : {
                 archived : false
             }).sort(SORTINGS[sorting]).exec((error, docs) => {
@@ -141,9 +141,9 @@ export default class Database {
     findStarred(sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
-                plainText : new RegExp(keyword),
-                starred   : true,
-                archived  : false
+                fullText : new RegExp(keyword),
+                starred  : true,
+                archived : false
             } : {
                 starred  : true,
                 archived : false
@@ -185,8 +185,8 @@ export default class Database {
     findArchived(sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
-                plainText : new RegExp(keyword),
-                archived  : true
+                fullText : new RegExp(keyword),
+                archived : true
             } : {
                 archived : true
             }).sort(SORTINGS[sorting]).exec((error, docs) => {
@@ -258,9 +258,9 @@ export default class Database {
     findCategory(category, sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find({
-                plainText : new RegExp(keyword),
-                category  : category,
-                archived  : false
+                fullText : new RegExp(keyword),
+                category : category,
+                archived : false
             }).sort(SORTINGS[sorting]).exec((error, docs) => {
                 if (error) {
                     reject(error);
@@ -311,6 +311,8 @@ export default class Database {
                     if (error) {
                         reject(error);
                     } else {
+                        record._id = doc._id;
+
                         resolve(doc);
                     }
                 });
@@ -334,7 +336,9 @@ export default class Database {
      */
     removeAll() {
         return new Promise((resolve, reject) => {
-            this._db.remove({}, {}, error => {
+            this._db.remove({}, {
+                multi : true
+            }, error => {
                 if (error) {
                     reject(error);
                 } else {

@@ -15,14 +15,20 @@ export default class TextEditorPresenter {
         this._store = new TextEditorStore();
     }
 
+    get store() {
+        return this._store;
+    }
+
     /**
      * @param {String|undefined} recordId
      */
     load(recordId) {
+        console.trace('Loads record ' + recordId);
+
         if (recordId) {
             this._database.findById(recordId)
-                .then(record => {
-                    this._store.record = record;
+                .then(doc => {
+                    this._store.record = Record.fromDoc(doc);
                 }).catch(error => console.error(error));
         } else {
             this._store.record = undefined;

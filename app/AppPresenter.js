@@ -1,48 +1,50 @@
 'use strict';
 
 import AppStore from './AppStore';
-import ListViewStore from './components/lists/ListViewStore';
-import ListItemStore from './components/lists/ListItemStore';
 import FilterListViewPresenter from './components/lists/FilterListViewPresenter';
 import CategoryListViewPresenter from './components/lists/CategoryListViewPresenter';
-import TextEditorStore from './components/text/TextEditorStore';
+import NoteListViewPresenter from './components/lists/NoteListViewPresenter';
+import TextEditorPresenter from './components/text/TextEditorPresenter';
+import Settings from './utils/Settings';
 import Database from './data/Database';
+import Record from './data/Record';
+import Rx from 'rx-lite';
+import Config from '../config.json';
 
 export default class AppPresenter {
     constructor() {
         this._store    = new AppStore();
+        this._settings = new Settings();
         this._database = new Database();
 
-        this._filterPresenter   = new FilterListViewPresenter(this._database);
-        this._categoryPresenter = new CategoryListViewPresenter(this._database);
+        this._defaultSyntax = Config.defaultSyntax;
 
-        this._store.filterStore   = this._filterPresenter.store;
-        this._store.categoryStore = this._categoryPresenter.store;
+        this._filtersPresenter    = new FilterListViewPresenter(this._database);
+        this._categoriesPresenter = new CategoryListViewPresenter(this._database);
+        this._notesPresenter      = new NoteListViewPresenter(this._filtersPresenter, this._categoriesPresenter, this._database);
+        this._editorPresenter     = new TextEditorPresenter(this._database);
 
-        this._store.noteStore = new ListViewStore();
+        this._store.filtersStore    = this._filtersPresenter.store;
+        this._store.categoriesStore = this._categoriesPresenter.store;
+        this._store.notesStore      = this._notesPresenter.store;
+        this._store.editorStore     = this._editorPresenter.store;
 
-        const note1Store = new ListItemStore();
-        note1Store.itemId        = 'b1';
-        note1Store.primaryText   = 'Lorem Ipsum';
-        note1Store.secondaryText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
-        note1Store.tertiaryText  = '3 days ago';
-        this._store.noteStore.items.push(note1Store);
+        this._filterSelection   = new Rx.Subject();
+        this._categorySelection = new Rx.Subject();
+        this._noteSelection     = new Rx.Subject();
 
-        const note2Store = new ListItemStore();
-        note2Store.itemId        = 'b2';
-        note2Store.primaryText   = 'de Finibus Bonorum et Malorum';
-        note2Store.secondaryText = 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?';
-        note2Store.tertiaryText  = '56 minutes ago';
-        this._store.noteStore.items.push(note2Store);
+        Rx.Observable.zip(this._filterSelection, this._categorySelection, (selectedFilterIndex, selectedCategoryIndex) => selectedFilterIndex > -1 || selectedCategoryIndex > -1)
+            .subscribe(hasSelection => {
+                this._store.addNoteEnabled = hasSelection;
 
-        const note3Store = new ListItemStore();
-        note3Store.itemId        = 'b3';
-        note3Store.primaryText   = 'de Finibus Bonorum et Malorum';
-        note3Store.secondaryText = 'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?';
-        note3Store.tertiaryText  = '3 seconds ago';
-        this._store.noteStore.items.push(note3Store);
+                this.refreshNotes();
+            });
 
-        this._store.editorStore = new TextEditorStore();
+        this._initSettings()
+            .then(() => this._initDatabase()
+                .then(() => this._initAutoSave())
+                .catch(error => console.error(error)))
+            .catch(error => console.error(error));
     }
 
     get store() {
@@ -50,17 +52,132 @@ export default class AppPresenter {
     }
 
     handleFilterItemClick(index) {
-        this._store.filterStore.selectedIndex   = index;
-        this._store.categoryStore.selectedIndex = -1;
+        if (this._store.filtersStore.selectedIndex !== index) {
+            console.trace('Selected filter index = ' + index);
+
+            this._store.filtersStore.selectedIndex    = index;
+            this._store.categoriesStore.selectedIndex = -1;
+
+            this._filterSelection.onNext(index);
+            this._categorySelection.onNext(-1);
+        }
     }
 
     handleCategoryItemClick(index) {
-        this._store.filterStore.selectedIndex   = -1;
-        this._store.categoryStore.selectedIndex = index;
+        if (this._store.categoriesStore.selectedIndex !== index) {
+            console.trace('Selected category index = ' + index);
+
+            this._store.filtersStore.selectedIndex    = -1;
+            this._store.categoriesStore.selectedIndex = index;
+
+            this._filterSelection.onNext(-1);
+            this._categorySelection.onNext(index);
+        }
     }
 
     handleNoteItemClick(index) {
-        this._store.noteStore.selectedIndex = index;
+        if (this._store.notesStore.selectedIndex !== index) {
+            console.trace('Selected note index = ' + index);
+
+            this._store.notesStore.selectedIndex = index;
+
+            this._noteSelection.onNext(index);
+
+            this.refreshEditor();
+        }
+    }
+
+    handleAddCategoryClick() {
+        // TODO: Prompts for new category
+
+        // TODO: Checks for duplicate categories
+
+        this._categoriesPresenter.addCategory();
+    }
+
+    handleAddNoteClick() {
+        this._notesPresenter.addNote(this._defaultSyntax)
+            .then(() => {
+                this._store.notesStore.selectedIndex = 0;
+
+                this.refreshEditor();
+
+                this._noteSelection.onNext(0);
+            }).catch(error => console.error(error));
+    }
+
+    refreshFilters() {
+        this._store.notesStore.selectedItemId = undefined;
+
+        this._filtersPresenter.refresh();
+        this.refreshEditor();
+
+        this._noteSelection.onNext(-1);
+    }
+
+    refreshCategories() {
+        this._store.notesStore.selectedItemId = undefined;
+
+        this._categoriesPresenter.refresh();
+        this.refreshEditor();
+
+        this._noteSelection.onNext(-1);
+    }
+
+    refreshNotes() {
+        this._notesPresenter.refresh();
+        this.refreshEditor();
+    }
+
+    refreshEditor() {
+        console.trace('Selected note id = ' + this._store.notesStore.selectedItemId);
+
+        this._editorPresenter.load(this._store.notesStore.selectedItemId);
+    }
+
+    resetDatabase() {
+        this._database.removeAll();
+    }
+
+    _initSettings() {
+        return new Promise((resolve, reject) => {
+            this._settings.get('defaultSyntax', Config.defaultSyntax)
+                .then(value => {
+                    this._defaultSyntax = value;
+
+                    resolve();
+                }).catch(error => reject(error));
+        });
+    }
+
+    _initDatabase() {
+        return new Promise((resolve, reject) => this._database.load(Config.databaseName)
+            .then(() => {
+                this.refreshFilters();
+                this.refreshCategories();
+                this.refreshNotes();
+
+                resolve();
+            }).catch(error => reject(error)));
+    }
+
+    _initAutoSave() {
+        this._store.editorStore.changes.subscribe(record => {
+            console.trace('Auto save record ' + this._store.notesStore.selectedItemId);
+            console.trace(record);
+
+            this._database.findById(this._store.notesStore.selectedItemId)
+                .then(() => {
+                    console.trace('Found record ' + record._id);
+
+                    this._database.addOrUpdate(record.toDoc())
+                        .then(doc => {
+                            console.trace('Saved record ' + doc._id);
+
+                            this._store.notesStore.selectedItem.update(Record.fromDoc(doc));
+                        }).catch(error => console.error(error));
+                }).catch(error => console.error(error));
+        });
     }
 }
 

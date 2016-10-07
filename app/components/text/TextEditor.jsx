@@ -1,6 +1,7 @@
 'use strict';
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import Brace from 'brace';
 import AceEditor from 'react-ace';
 import TextEditorStore from './TextEditorStore';
@@ -8,6 +9,7 @@ import Record from '../../data/Record';
 import Unique from '../../utils/Unique';
 import Config from '../../../config.json';
 
+@observer
 export default class TextEditor extends React.Component {
     constructor(props) {
         super(props);
@@ -23,10 +25,10 @@ export default class TextEditor extends React.Component {
             if (this.props.store.record) {
                 this.props.store.record.update(value);
             } else {
-                this.props.store.record = Record.from(value);
+                this.props.store.record = Record.fromText(value);
             }
 
-            this.props.store.changes.onNext(record);
+            this.props.store.changes.onNext(this.props.store.record);
         };
     }
 

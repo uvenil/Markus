@@ -1,6 +1,5 @@
 'use strict';
 
-import React from 'react';
 import { extendObservable } from 'mobx';
 import Rx from 'rx-lite';
 
