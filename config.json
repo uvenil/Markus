@@ -12,6 +12,8 @@
     "paddingX0"          : 4,
     "paddingX1"          : 8,
     "paddingX2"          : 16,
+    "aboutWindowWidth"   : 320,
+    "aboutWindowHeight"  : 340,
     "databaseName"       : "notes.db",
     "defaultSyntax"      : "markdown",
     "defaultNoteTitle"   : "(Untitled)"

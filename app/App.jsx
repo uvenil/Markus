@@ -48,6 +48,7 @@ export default class App extends React.Component {
 
     componentDidMount() {
         this._subscriptions.push(PubSub.subscribe('Database.reset', () => this.props.presenter.resetDatabase()));
+        this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', () => this.props.presenter.showAboutDialog()));
     }
 
     componentWillUnmount() {

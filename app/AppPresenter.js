@@ -9,7 +9,11 @@ import Settings from './utils/Settings';
 import Database from './data/Database';
 import Record from './data/Record';
 import Rx from 'rx-lite';
+import Path from 'path';
 import Config from '../config.json';
+import Package from '../package.json';
+
+const WindowManager = require('electron').remote.require('electron-window-manager');
 
 export default class AppPresenter {
     constructor() {
@@ -133,6 +137,15 @@ export default class AppPresenter {
         console.trace('Selected note id = ' + this._store.notesStore.selectedItemId);
 
         this._editorPresenter.load(this._store.notesStore.selectedItemId);
+    }
+
+    showAboutDialog() {
+        WindowManager.createNew('AboutDialog', Package.productName, Path.join(__dirname, './about.html'), false, {
+            width         : Config.aboutWindowWidth,
+            height        : Config.aboutWindowHeight,
+            resizable     : false,
+            onLoadFailure : window => window.close()
+        }).open();
     }
 
     resetDatabase() {
