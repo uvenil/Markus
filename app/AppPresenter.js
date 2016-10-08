@@ -141,7 +141,7 @@ export default class AppPresenter {
     }
 
     showAboutDialog() {
-        WindowManager.createNew('AboutDialog', Package.productName, Path.join(__dirname, './about.html'), false, {
+        WindowManager.createNew('AboutDialog', Package.productName, 'file://' + __dirname + '/about.html', false, {
             width         : Config.aboutWindowWidth,
             height        : Config.aboutWindowHeight,
             resizable     : false,
