@@ -16,5 +16,6 @@
     "aboutWindowHeight"  : 340,
     "databaseName"       : "notes.db",
     "defaultSyntax"      : "markdown",
+    "defaultTheme"       : "github",
     "defaultNoteTitle"   : "(Untitled)"
 }

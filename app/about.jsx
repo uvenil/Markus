@@ -10,7 +10,7 @@ import Config from '../config.json';
 
 const WindowManager = require('electron').remote.require('electron-window-manager');
 
-const About = ({ productName, productVersion, copyright, imagePath }) => {
+const AboutDialog = ({ productName, productVersion, copyright, imagePath }) => {
     return (
         <div style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX0, paddingBottom : Config.paddingX0 }}>
             <img src={imagePath} /><br />
@@ -28,7 +28,7 @@ const About = ({ productName, productVersion, copyright, imagePath }) => {
     );
 };
 
-About.propTypes = {
+AboutDialog.propTypes = {
     productName    : React.PropTypes.string.isRequired,
     productVersion : React.PropTypes.string.isRequired,
     copyright      : React.PropTypes.string.isRequired,
@@ -36,7 +36,7 @@ About.propTypes = {
 };
 
 ReactDOM.render(
-    <About
+    <AboutDialog
         productName={Package.productName}
         productVersion={'Version ' + Package.version}
         copyright={'Copyright © ' + new Date().getFullYear()}

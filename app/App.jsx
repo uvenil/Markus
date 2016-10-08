@@ -161,8 +161,8 @@ export default class App extends React.Component {
                             primary="second">
                             {/* Note editor */}
                             <TextEditor
-                                syntax="markdown"
-                                theme="twilight"
+                                syntax={Config.defaultSyntax}
+                                theme={Config.defaultTheme}
                                 store={this.props.store.editorStore} />
                             {/* Note editor tools */}
                             <div>Note editor tools</div>
