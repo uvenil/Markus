@@ -1,5 +1,6 @@
 'use strict';
 
+import { createSyntaxMenu, createThemeMenu } from './MenuUtils.common';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
@@ -71,6 +72,14 @@ export default function createWindowMenu() {
                     if (win) PubSub.publish('PreferencesDialog.visible', { visible : true });
                 }
             }
+        ]
+    });
+
+    template.push({
+        label   : 'View',
+        submenu : [
+            createSyntaxMenu(),
+            createThemeMenu()
         ]
     });
 

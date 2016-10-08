@@ -33,18 +33,19 @@ export default class TextEditor extends React.Component {
     }
 
     render() {
-        const theme = this.props.theme === 'dark' ? require('../../theme.dark.json') : require('../../theme.light.json');
+        const theme  = this.props.theme === 'dark' ? require('../../theme.dark.json') : require('../../theme.light.json');
+        const syntax = this.props.store.record && this.props.store.record.syntax ? this.props.store.record.syntax : this.props.store.syntax;
 
-        require('brace/mode/' + this.props.syntax);
-        require('brace/theme/' + this.props.theme);
+        require('brace/mode/' + syntax);
+        require('brace/theme/' + this.props.store.theme);
 
         return (
             <div style={{ width : '100%', height : 'calc(100vh - ' + (Config.topBarHeight + Config.bottomBarHeight + 2) + 'px)' }}>
                 <AceEditor
                     id={this._editorId}
                     ref="editor"
-                    mode={this.props.syntax}
-                    theme={this.props.theme}
+                    mode={syntax}
+                    theme={this.props.store.theme}
                     value={this.props.store.record ? this.props.store.record.fullText : undefined}
                     width="100%"
                     height={'calc(100vh - ' + (Config.topBarHeight + Config.bottomBarHeight + 2) + 'px)'}
@@ -65,9 +66,8 @@ export default class TextEditor extends React.Component {
 }
 
 TextEditor.propTypes = {
-    syntax              : React.PropTypes.string.isRequired,
-    theme               : React.PropTypes.string.isRequired,
     store               : React.PropTypes.instanceOf(TextEditorStore).isRequired,
+    theme               : React.PropTypes.oneOf([ 'light', 'dark' ]),
     fontFamily          : React.PropTypes.string,
     textSize            : React.PropTypes.number,
     highlightActiveLine : React.PropTypes.bool,
@@ -84,6 +84,7 @@ TextEditor.propTypes = {
 };
 
 TextEditor.defaultProps = {
+    theme               : 'light',
     highlightActiveLine : true,
     tabSize             : 4,
     useSoftTabs         : true,

@@ -49,6 +49,8 @@ export default class App extends React.Component {
     componentDidMount() {
         this._subscriptions.push(PubSub.subscribe('Database.reset', () => this.props.presenter.resetDatabase()));
         this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', () => this.props.presenter.showAboutDialog()));
+        this._subscriptions.push(PubSub.subscribe('Syntax.change', (eventName, syntax) => this.props.presenter.changeSyntax(syntax)));
+        this._subscriptions.push(PubSub.subscribe('Theme.change', (eventName, theme) => this.props.presenter.changeTheme(theme)));
     }
 
     componentWillUnmount() {
@@ -161,8 +163,6 @@ export default class App extends React.Component {
                             primary="second">
                             {/* Note editor */}
                             <TextEditor
-                                syntax={Config.defaultSyntax}
-                                theme={Config.defaultTheme}
                                 store={this.props.store.editorStore} />
                             {/* Note editor tools */}
                             <div>Note editor tools</div>

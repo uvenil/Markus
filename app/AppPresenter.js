@@ -22,6 +22,7 @@ export default class AppPresenter {
         this._database = new Database();
 
         this._defaultSyntax = Config.defaultSyntax;
+        this._theme         = Config.defaultTheme;
 
         this._filtersPresenter    = new FilterListViewPresenter(this._database);
         this._categoriesPresenter = new CategoryListViewPresenter(this._database);
@@ -148,18 +149,47 @@ export default class AppPresenter {
         }).open();
     }
 
+    /**
+     * @param {String} syntax
+     */
+    changeSyntax(syntax) {
+        this._store.editorStore.syntax = syntax;
+
+        if (this._store.editorStore.record) {
+            this._store.editorStore.record.syntax = syntax;
+
+            this._store.editorStore.changes.onNext(this._store.editorStore.record);
+        }
+    }
+
+    /**
+     * @param {String} theme
+     */
+    changeTheme(theme) {
+        this._store.editorStore.theme = theme;
+
+        this._settings.set('theme', theme)
+            .catch(error => console.error(error));
+    }
+
     resetDatabase() {
         this._database.removeAll();
     }
 
     _initSettings() {
         return new Promise((resolve, reject) => {
-            this._settings.get('defaultSyntax', Config.defaultSyntax)
-                .then(value => {
-                    this._defaultSyntax = value;
+            Promise.all([
+                this._settings.get('defaultSyntax', Config.defaultSyntax),
+                this._settings.get('theme', Config.defaultTheme)
+            ]).then(values => {
+                this._defaultSyntax = values[0] ? values[0] : Config.defaultSyntax;
+                this._theme         = values[1] ? values[1] : Config.defaultTheme;
 
-                    resolve();
-                }).catch(error => reject(error));
+                this._store.editorStore.syntax = this._defaultSyntax;
+                this._store.editorStore.theme  = this._theme;
+
+                resolve();
+            }).catch(error => reject(error));
         });
     }
 
