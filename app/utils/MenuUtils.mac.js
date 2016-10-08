@@ -1,6 +1,6 @@
 'use strict';
 
-import { createSyntaxMenu, createThemeMenu } from './MenuUtils.common';
+import { createEditMenu, createSyntaxMenu, createThemeMenu } from './MenuUtils.common';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
@@ -18,15 +18,6 @@ export default function createWindowMenu() {
                 label : 'About ' + app.getName(),
                 click(item, win) {
                     if (win) PubSub.publish('AboutDialog.visible', { visible : true });
-                }
-            },
-            {
-                type : 'separator'
-            },
-            {
-                label : 'Preferences',
-                click(item, win) {
-                    if (win) PubSub.publish('PreferencesDialog.visible', { visible : true });
                 }
             },
             {
@@ -70,38 +61,7 @@ export default function createWindowMenu() {
 
     template.push({
         label   : 'Edit',
-        submenu : [
-            {
-                role        : 'undo',
-                accelerator : 'CmdOrCtrl+Z'
-            },
-            {
-                role        : 'redo',
-                accelerator : 'Shift+CmdOrCtrl+Z'
-            },
-            {
-                type : 'separator'
-            },
-            {
-                role        : 'cut',
-                accelerator : 'CmdOrCtrl+X'
-            },
-            {
-                role        : 'copy',
-                accelerator : 'CmdOrCtrl+C'
-            },
-            {
-                role        : 'paste',
-                accelerator : 'CmdOrCtrl+V'
-            },
-            {
-                type : 'separator'
-            },
-            {
-                role        : 'selectall',
-                accelerator : 'CmdOrCtrl+A'
-            }
-        ]
+        submenu : createEditMenu()
     });
 
     template.push({

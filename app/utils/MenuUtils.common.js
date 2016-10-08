@@ -5,6 +5,41 @@ import is from 'electron-is';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
+const createEditMenu = () => {
+    return [
+        {
+            role        : 'undo',
+            accelerator : 'CmdOrCtrl+Z'
+        },
+        {
+            role        : 'redo',
+            accelerator : 'Shift+CmdOrCtrl+Z'
+        },
+        {
+            type : 'separator'
+        },
+        {
+            role        : 'cut',
+            accelerator : 'CmdOrCtrl+X'
+        },
+        {
+            role        : 'copy',
+            accelerator : 'CmdOrCtrl+C'
+        },
+        {
+            role        : 'paste',
+            accelerator : 'CmdOrCtrl+V'
+        },
+        {
+            type : 'separator'
+        },
+        {
+            role        : 'selectall',
+            accelerator : 'CmdOrCtrl+A'
+        }
+    ];
+};
+
 const createSyntaxMenu = () => {
     const createSyntax = (name, code) => {
         return {
@@ -202,4 +237,4 @@ const createThemeMenu = () => {
     };
 };
 
-module.exports = { createSyntaxMenu, createThemeMenu };
+module.exports = { createEditMenu, createSyntaxMenu, createThemeMenu };
