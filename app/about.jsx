@@ -40,6 +40,6 @@ ReactDOM.render(
         productName={Package.productName}
         productVersion={'Version ' + Package.version}
         copyright={'Copyright © ' + new Date().getFullYear()}
-        imagePath={Path.join(__dirname, './images/logo.png')} />,
+        imagePath={Path.join(__dirname, './images/artisan.png')} />,
     document.getElementById('about')
 );
