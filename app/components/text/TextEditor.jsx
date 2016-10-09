@@ -49,11 +49,11 @@ export default class TextEditor extends React.Component {
                     value={this.props.store.record ? this.props.store.record.fullText : undefined}
                     width="100%"
                     height={'calc(100vh - ' + (Config.topBarHeight + Config.bottomBarHeight + 2) + 'px)'}
-                    fontSize={this.props.textSize}
-                    showGutter={this.props.showGutter}
-                    highlightActiveLine={this.props.highlightActiveLine}
+                    fontSize={this.props.store.textSize}
+                    showGutter={this.props.store.showGutter}
+                    highlightActiveLine={this.props.store.highlightActiveLine}
                     tabSize={this.props.tabSize}
-                    editorProps={{ fontFamily : this.props.fontFamily, $blockScrolling : true, showLineNumbers : this.props.showLineNumbers, showInvisibles : this.props.showInvisibles, showFoldWidgets : this.props.showFoldWidgets, displayIndentGuides : this.props.displayIndentGuides, scrollPastEnd : this.props.scrollPastEnd, useSoftTabs : this.props.useSoftTabs, wrap : this.props.wordWrap, spellcheck : this.props.spellcheck }}
+                    editorProps={{ fontFamily : this.props.store.fontFamily, $blockScrolling : true, showLineNumbers : this.props.store.showLineNumbers, showInvisibles : this.props.store.showInvisibles, showFoldWidgets : this.props.store.showFoldWidgets, displayIndentGuides : this.props.store.displayIndentGuides, scrollPastEnd : this.props.store.scrollPastEnd, useSoftTabs : this.props.store.useSoftTabs, wrap : this.props.store.wordWrap, spellcheck : this.props.store.spellCheck }}
                     style={{ display : this.props.store.record ? 'block' : 'none' }}
                     onLoad={editor => this._handleLoad(editor)}
                     onChange={value => this._handleChange(value)} />
@@ -66,36 +66,12 @@ export default class TextEditor extends React.Component {
 }
 
 TextEditor.propTypes = {
-    store               : React.PropTypes.instanceOf(TextEditorStore).isRequired,
-    theme               : React.PropTypes.oneOf([ 'light', 'dark' ]),
-    fontFamily          : React.PropTypes.string,
-    textSize            : React.PropTypes.number,
-    highlightActiveLine : React.PropTypes.bool,
-    tabSize             : React.PropTypes.number,
-    useSoftTabs         : React.PropTypes.bool,
-    wordWrap            : React.PropTypes.bool,
-    showLineNumbers     : React.PropTypes.bool,
-    showInvisibles      : React.PropTypes.bool,
-    showFoldWidgets     : React.PropTypes.bool,
-    showGutter          : React.PropTypes.bool,
-    displayIndentGuides : React.PropTypes.bool,
-    scrollPastEnd       : React.PropTypes.bool,
-    spellcheck          : React.PropTypes.bool
+    store : React.PropTypes.instanceOf(TextEditorStore).isRequired,
+    theme : React.PropTypes.oneOf([ 'light', 'dark' ])
 };
 
 TextEditor.defaultProps = {
-    theme               : 'light',
-    highlightActiveLine : true,
-    tabSize             : 4,
-    useSoftTabs         : true,
-    wordWrap            : false,
-    showLineNumbers     : true,
-    showInvisibles      : false,
-    showFoldWidgets     : true,
-    showGutter          : true,
-    displayIndentGuides : true,
-    scrollPastEnd       : false,
-    spellcheck          : true
+    theme : 'light',
 };
 
 module.exports = TextEditor;

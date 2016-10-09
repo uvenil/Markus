@@ -9,9 +9,22 @@ export default class TextEditorStore {
         this._changes = new Rx.Subject();
 
         extendObservable(this, {
-            record : null,
-            syntax : Config.defaultSyntax,
-            theme  : Config.defaultTheme
+            record              : null,
+            syntax              : Config.defaultSyntax,
+            theme               : Config.defaultTheme,
+            fontFamily          : undefined,
+            textSize            : undefined,
+            highlightActiveLine : Config.defaultHighlightActiveLine,
+            tabSize             : Config.defaultTabSize,
+            useSoftTabs         : Config.defaultUseSoftTabs,
+            wordWrap            : Config.defaultWordWrap,
+            showLineNumbers     : Config.defaultShowLineNumbers,
+            showInvisibles      : Config.defaultShowInvisibles,
+            showFoldWidgets     : Config.defaultShowFoldWidgets,
+            showGutter          : Config.defaultShowGutter,
+            displayIndentGuides : Config.defaultDisplayIndentGuides,
+            scrollPastEnd       : Config.defaultScrollPastEnd,
+            spellCheck          : Config.defaultSpellCheck
         });
     }
 

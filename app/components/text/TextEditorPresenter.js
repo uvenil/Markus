@@ -21,18 +21,25 @@ export default class TextEditorPresenter {
 
     /**
      * @param {String|undefined} recordId
+     * @return {Promise
      */
     load(recordId) {
         console.trace('Loads record ' + recordId);
 
-        if (recordId) {
-            this._database.findById(recordId)
-                .then(doc => {
-                    this._store.record = Record.fromDoc(doc);
-                }).catch(error => console.error(error));
-        } else {
-            this._store.record = undefined;
-        }
+        return new Promise((resolve, reject) => {
+            if (recordId) {
+                this._database.findById(recordId)
+                    .then(doc => {
+                        this._store.record = Record.fromDoc(doc);
+
+                        resolve();
+                    }).catch(error => reject(error));
+            } else {
+                this._store.record = undefined;
+
+                resolve();
+            }
+        });
     }
 }
 
