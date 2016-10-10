@@ -25,27 +25,23 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            filterListWidth : Config.filterListWidth,
-            noteListWidth   : Config.noteListWidth
-        };
-
-        this._filterListWidth = Config.filterListWidth;
-        this._noteListWidth   = Config.noteListWidth;
-
         this._subscriptions = [];
         this._settings      = new Settings();
 
         this._handleFilterListWidthChange = size => {
-            this._filterListWidth = size;
+            this.props.store.filterListWidth = size;
 
-            this._settings.set('filterListWidth', this._filterListWidth).catch(error => console.error(error));
+            this._settings.set('filterListWidth', this.props.store.filterListWidth)
+                .then(() => console.trace('Saved filterListWidth = ' + size))
+                .catch(error => console.error(error));
         };
 
         this._handleNoteListWidthChange = size => {
-            this._noteListWidth = size;
+            this.props.store.noteListWidth = size;
 
-            this._settings.set('noteListWidth', this._noteListWidth).catch(error => console.error(error));
+            this._settings.set('noteListWidth', this.props.store.noteListWidth)
+                .then(() => console.trace('Saved noteListWidth = ' + size))
+                .catch(error => console.error(error));
         };
     }
 
@@ -53,6 +49,8 @@ export default class App extends React.Component {
         this._subscriptions.push(PubSub.subscribe('Database.reset', () => this.props.presenter.resetDatabase()));
         this._subscriptions.push(PubSub.subscribe('Settings.reset', () => this.props.presenter.resetSettings()));
         this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', () => this.props.presenter.showAboutDialog()));
+        this._subscriptions.push(PubSub.subscribe('View.showFilterList', (eventName, show) => this.props.presenter.showFilterList(show)));
+        this._subscriptions.push(PubSub.subscribe('View.showNoteList', (eventName, show) => this.props.presenter.showNoteList(show)));
         this._subscriptions.push(PubSub.subscribe('Syntax.change', (eventName, syntax) => this.props.presenter.changeSyntax(syntax)));
         this._subscriptions.push(PubSub.subscribe('Theme.change', (eventName, theme) => this.props.presenter.changeTheme(theme)));
         this._subscriptions.push(PubSub.subscribe('TextEditor.settings', (eventName, data) => this.props.presenter.changeSettings(data)));
@@ -70,9 +68,11 @@ export default class App extends React.Component {
         return (
             <SplitPane
                 split="vertical"
-                minSize={Config.filterListMinWidth}
-                defaultSize={this.state.filterListWidth}
-                onChange={this._handleFilterListWidthChange}>
+                minSize={this.props.store.showFilterList ? Config.filterListMinWidth : 0}
+                defaultSize={this.props.store.showFilterList ? this.props.store.filterListWidth : 0}
+                allowResize={this.props.store.showFilterList}
+                pane1Style={{ display : this.props.store.showFilterList ? 'block' : 'none' }}
+                onChange={size => this._handleFilterListWidthChange(size)}>
                 <SplitPane
                     split="horizontal"
                     defaultSize={Config.bottomBarHeight}
@@ -101,9 +101,11 @@ export default class App extends React.Component {
                 </SplitPane>
                 <SplitPane
                     split="vertical"
-                    minSize={Config.noteListMinWidth}
-                    defaultSize={this.state.noteListWidth}
-                    onChange={this._handleNoteListWidthChange}>
+                    minSize={this.props.store.showNoteList ? Config.noteListMinWidth : 0}
+                    defaultSize={this.props.store.showNoteList ? this.props.store.noteListWidth : 0}
+                    allowResize={this.props.store.showNoteList}
+                    pane1Style={{ display : this.props.store.showNoteList ? 'block' : 'none' }}
+                    onChange={size => this._handleNoteListWidthChange(size)}>
                     <SplitPane
                         split="horizontal"
                         defaultSize={Config.topBarHeight}

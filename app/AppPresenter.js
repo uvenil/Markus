@@ -59,6 +59,8 @@ export default class AppPresenter {
             .catch(error => console.error(error));
     }
 
+    //region Event handlers
+
     handleFilterItemClick(index) {
         if (this._store.filtersStore.selectedIndex !== index) {
             console.trace('Selected filter index = ' + index);
@@ -114,6 +116,10 @@ export default class AppPresenter {
             }).catch(error => console.error(error));
     }
 
+    //endregion
+
+    //region Refresh operations
+
     refreshFilters() {
         this._store.notesStore.selectedItemId = undefined;
 
@@ -148,6 +154,8 @@ export default class AppPresenter {
             }).catch(error => console.error(error));
     }
 
+    //endregion
+
     showAboutDialog() {
         if (WindowManager.get('AboutDialog')) return;
 
@@ -157,6 +165,23 @@ export default class AppPresenter {
             resizable     : false,
             onLoadFailure : window => window.close()
         }).open();
+    }
+
+    /**
+     * Shows or hides filter list view.
+     * @param {bool} show
+     */
+    showFilterList(show) {
+        this._store.showFilterList = show;
+
+    }
+
+    /**
+     * Shows or hides note list view.
+     * @param {bool} show
+     */
+    showNoteList(show) {
+        this._store.showNoteList = show;
     }
 
     /**
@@ -222,6 +247,8 @@ export default class AppPresenter {
             .catch(error => console.error(error));
     }
 
+    //region Debug operations
+
     resetDatabase() {
         this._database.removeAll();
     }
@@ -231,9 +258,17 @@ export default class AppPresenter {
             .catch(error => console.error(error));
     }
 
+    //endregion
+
+    //region Private methods
+
     _initSettings() {
         return new Promise((resolve, reject) => {
             Promise.all([
+                this._settings.get('showFilterList',      Config.defaultShowFilterList),
+                this._settings.get('showNoteList',        Config.defaultShowNoteList),
+                this._settings.get('filterListWidth',     Config.filterListWidth),
+                this._settings.get('noteListWidtdh',      Config.noteListWidth),
                 this._settings.get('defaultSyntax',       Config.defaultSyntax),
                 this._settings.get('theme',               Config.defaultTheme),
                 this._settings.get('fontFamily',          undefined),
@@ -251,25 +286,30 @@ export default class AppPresenter {
                 this._settings.get('displayIndentGuides', Config.defaultDisplayIndentGuides),
                 this._settings.get('scrollPastEnd',       Config.defaultScrollPastEnd)
             ]).then(values => {
+                this._store.showFilterList  = values[0] !== undefined ? values[0] : Config.defaultShowFilterList;
+                this._store.showNoteList    = values[1] !== undefined ? values[1] : Config.defaultShowNoteList;
+                this._store.filterListWidth = values[2] !== undefined ? values[2] : Config.filterListWidth;
+                this._store.noteListWidth   = values[3] !== undefined ? values[3] : Config.noteListWidth;
+
                 const data = {};
 
-                data.highlightActiveLine = values[4]  !== undefined ? values[4]  : Config.defaultHighlightActiveLine;
-                data.tabSize             = values[5]  !== undefined ? values[5]  : Config.defaultTabSize;
-                data.useSoftTabs         = values[6]  !== undefined ? values[6]  : Config.defaultUseSoftTabs;
-                data.wordWrap            = values[7]  !== undefined ? values[7]  : Config.defaultWordWrap;
-                data.showLineNumebrs     = values[8]  !== undefined ? values[8]  : Config.defaultShowLineNumbers;
-                data.showPrintMargin     = values[9]  !== undefined ? values[9]  : Config.defaultShowPrintMargin;
-                data.printMarginColumn   = values[10] !== undefined ? values[10] : Config.defaultPrintMarginColumn;
-                data.showInvisibles      = values[11] !== undefined ? values[11] : Config.defaultShowInvisibles;
-                data.showFoldWidgets     = values[12] !== undefined ? values[12] : Config.defaultShowFoldWidgets;
-                data.showGutter          = values[13] !== undefined ? values[13] : Config.defaultShowGutter;
-                data.displayIndentGuides = values[14] !== undefined ? values[14] : Config.defaultDisplayIndentGuides;
-                data.scrollPastEnd       = values[15] !== undefined ? values[15] : Config.defaultScrollPastEnd;
+                data.highlightActiveLine = values[8]  !== undefined ? values[8]  : Config.defaultHighlightActiveLine;
+                data.tabSize             = values[9]  !== undefined ? values[9]  : Config.defaultTabSize;
+                data.useSoftTabs         = values[10] !== undefined ? values[10] : Config.defaultUseSoftTabs;
+                data.wordWrap            = values[11] !== undefined ? values[11] : Config.defaultWordWrap;
+                data.showLineNumebrs     = values[12] !== undefined ? values[12] : Config.defaultShowLineNumbers;
+                data.showPrintMargin     = values[13] !== undefined ? values[13] : Config.defaultShowPrintMargin;
+                data.printMarginColumn   = values[14] !== undefined ? values[14] : Config.defaultPrintMarginColumn;
+                data.showInvisibles      = values[15] !== undefined ? values[15] : Config.defaultShowInvisibles;
+                data.showFoldWidgets     = values[16] !== undefined ? values[16] : Config.defaultShowFoldWidgets;
+                data.showGutter          = values[17] !== undefined ? values[17] : Config.defaultShowGutter;
+                data.displayIndentGuides = values[18] !== undefined ? values[18] : Config.defaultDisplayIndentGuides;
+                data.scrollPastEnd       = values[19] !== undefined ? values[19] : Config.defaultScrollPastEnd;
 
-                this._store.editorStore.syntax              = values[0] ? values[0] : Config.defaultSyntax;
-                this._store.editorStore.theme               = values[1] ? values[1] : Config.defaultTheme;
-                this._store.editorStore.fontFamily          = values[2] ? values[2] : undefined;
-                this._store.editorStore.textSize            = values[3] ? values[3] : undefined;
+                this._store.editorStore.syntax              = values[4] ? values[4] : Config.defaultSyntax;
+                this._store.editorStore.theme               = values[5] ? values[5] : Config.defaultTheme;
+                this._store.editorStore.fontFamily          = values[6] ? values[6] : undefined;
+                this._store.editorStore.textSize            = values[7] ? values[7] : undefined;
                 this._store.editorStore.highlightActiveLine = data.highlightActiveLine;
                 this._store.editorStore.tabSize             = data.tabSize;
                 this._store.editorStore.useSoftTabs         = data.useSoftTabs;
@@ -325,6 +365,11 @@ export default class AppPresenter {
 
     _updateMenu() {
         return new Promise((resolve, reject) => {
+            const viewMenu = Menu.getApplicationMenu().items[is.macOS() ? 3 : 2];
+
+            viewMenu.submenu.items[0].checked = this._store.showFilterList;
+            viewMenu.submenu.items[1].checked = this._store.showNoteList;
+
             const preferencesMenu = Menu.getApplicationMenu().items[is.macOS() ? 0 : 1].submenu.items[is.macOS() ? 2 : 9];
 
             if (this._store.editorStore.tabSize === 2) {
@@ -387,6 +432,8 @@ export default class AppPresenter {
             resolve();
         });
     }
+
+    //endregion
 }
 
 module.exports = AppPresenter;

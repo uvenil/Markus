@@ -3,6 +3,8 @@
     "windowHeight"               : 544,
     "widthMinWidth"              : 725,
     "windowMinHeight"            : 544,
+    "defaultShowFilterList"      : true,
+    "defaultShowNoteList"        : true,
     "filterListWidth"            : 150,
     "filterListMinWidth"         : 150,
     "noteListWidth"              : 200,
