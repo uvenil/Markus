@@ -5,6 +5,16 @@ import is from 'electron-is';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
+const setMenuItemEnabled = (items, enabled) => {
+    items.forEach(item => {
+        if (item.submenu) {
+            setMenuItemEnabled(item.submenu.items, enabled);
+        } else {
+            item.enabled = enabled;
+        }
+    });
+};
+
 const createPreferencesMenu = () => {
     return {
         label   : 'Preferences',
@@ -376,4 +386,4 @@ const createViewMenu = () => {
     };
 }
 
-module.exports = { createPreferencesMenu, createEditMenu, createSyntaxMenu, createThemeMenu, createViewMenu };
+module.exports = { setMenuItemEnabled, createPreferencesMenu, createEditMenu, createSyntaxMenu, createThemeMenu, createViewMenu };

@@ -4,15 +4,25 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Button from './components/buttons/Button.jsx';
 import Text from './components/text/Text.jsx';
+import { setMenuItemEnabled } from './utils/MenuUtils.common';
 import Path from 'path';
 import Package from '../package.json';
 import Config from '../config.json';
 
+const { Menu }      = require('electron').remote;
 const WindowManager = require('electron').remote.require('electron-window-manager');
 
 const AboutDialog = ({ productName, productVersion, copyright, imagePath }) => {
+    setMenuItemEnabled(Menu.getApplicationMenu().items, false);
+
+    const handleClick = () => {
+        setMenuItemEnabled(Menu.getApplicationMenu().items, true);
+
+        WindowManager.getCurrent().close();
+    };
+
     return (
-        <div style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX0, paddingBottom : Config.paddingX0 }}>
+        <div style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX2, paddingBottom : Config.paddingX2 }}>
             <img src={imagePath} /><br />
             <Text textSize="large">{productName}</Text>
             <Text>{productVersion}</Text>
@@ -20,7 +30,7 @@ const AboutDialog = ({ productName, productVersion, copyright, imagePath }) => {
             <div style={{ padding : Config.paddingX2 }}>
                 <Button
                     backgroundColor="primary"
-                    onClick={() => WindowManager.getCurrent().close()}>
+                    onClick={() => handleClick()}>
                     Close
                 </Button>
             </div>

@@ -256,6 +256,7 @@ export default class AppPresenter {
                 this._store.editorStore.spellCheck          = values[14] !== undefined ? values[14] : Config.defaultSpellCheck;
 
                 this._updateMenu();
+                this._updateSyntaxMenu();
 
                 resolve();
             }).catch(error => reject(error));
