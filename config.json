@@ -23,6 +23,8 @@
     "defaultUseSoftTabs"         : true,
     "defaultWordWrap"            : false,
     "defaultShowLineNumbers"     : true,
+    "defaultShowPrintMargin"     : false,
+    "defaultPrintMarginColumn"   : 80,
     "defaultShowInvisibles"      : false,
     "defaultShowFoldWidgets"     : true,
     "defaultShowGutter"          : true,

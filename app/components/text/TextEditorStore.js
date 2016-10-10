@@ -13,6 +13,8 @@ export default class TextEditorStore {
         this.useSoftTabs         = Config.defaultUseSoftTabs;
         this.wordWrap            = Config.defaultWordWrap;
         this.showLineNumbers     = Config.defaultShowLineNumbers;
+        this.showPrintMargin     = Config.defaultShowPrintMargin;
+        this.printMarginColumn   = Config.defaultPrintMarginColumn;
         this.showInvisibles      = Config.defaultShowInvisibles;
         this.showFoldWidgets     = Config.defaultShowFoldWidgets;
         this.showGutter          = Config.defaultShowGutter;

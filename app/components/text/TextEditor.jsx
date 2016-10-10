@@ -44,6 +44,8 @@ export default class TextEditor extends React.Component {
             this.refs.editor.editor.getSession().setUseWrapMode(data.wordWrap);
             this.refs.editor.editor.renderer.showLineNumbers = data.showLineNumebrs;
             this.refs.editor.editor.renderer.$gutterLayer.setShowLineNumbers(data.showLineNumebrs);
+            this.refs.editor.editor.setShowPrintMargin(data.showPrintMargin);
+            this.refs.editor.editor.setPrintMarginColumn(data.printMarginColumn);
             this.refs.editor.editor.renderer.$loop.schedule(this.refs.editor.editor.renderer.CHANGE_GUTTER);
             this.refs.editor.editor.setShowInvisibles(data.showInvisibles);
             this.refs.editor.editor.setShowFoldWidgets(data.showFoldWidgets);
@@ -66,6 +68,10 @@ export default class TextEditor extends React.Component {
                 this.refs.editor.editor.renderer.showLineNumbers = data.value;
                 this.refs.editor.editor.renderer.$gutterLayer.setShowLineNumbers(data.value);
                 this.refs.editor.editor.renderer.$loop.schedule(this.refs.editor.editor.renderer.CHANGE_GUTTER);
+            } else if (data.name === 'showPrintMargin') {
+                this.refs.editor.editor.setShowPrintMargin(data.value);
+            } else if (data.name === 'printMarginColumn') {
+                this.refs.editor.editor.setPrintMarginColumn(data.value);
             } else if (data.name === 'showInvisibles') {
                 this.refs.editor.editor.setShowInvisibles(data.value);
             } else if (data.name === 'showFoldWidgets') {
@@ -113,8 +119,9 @@ export default class TextEditor extends React.Component {
                     fontSize={this.props.store.textSize}
                     showGutter={this.props.store.showGutter}
                     highlightActiveLine={this.props.store.highlightActiveLine}
+                    showPrintMargin={this.props.store.showPrintMargin}
                     tabSize={this.props.tabSize}
-                    editorProps={{ fontFamily : this.props.store.fontFamily, $blockScrolling : true, $showLineNumbers : this.props.store.showLineNumbers, $showInvisibles : this.props.store.showInvisibles, displayIndentGuides : this.props.store.displayIndentGuides, $scrollPastEnd : this.props.store.scrollPastEnd, $useSoftTabs : this.props.store.useSoftTabs, $wrap : this.props.store.wordWrap, $spellcheck : this.props.store.spellCheck }}
+                    editorProps={{ fontFamily : this.props.store.fontFamily, $blockScrolling : true, $showLineNumbers : this.props.store.showLineNumbers, $printMarginColumn : this.props.store.printMarginColumn, $showInvisibles : this.props.store.showInvisibles, displayIndentGuides : this.props.store.displayIndentGuides, $scrollPastEnd : this.props.store.scrollPastEnd, $useSoftTabs : this.props.store.useSoftTabs, $wrap : this.props.store.wordWrap, $spellcheck : this.props.store.spellCheck }}
                     style={{ display : this.props.store.record ? 'block' : 'none' }}
                     onLoad={editor => this._handleLoad(editor)}
                     onChange={value => this._handleChange(value)} />

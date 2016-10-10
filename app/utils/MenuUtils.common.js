@@ -80,6 +80,46 @@ const createPreferencesMenu = () => {
                 }
             },
             {
+                label : 'Show print margin',
+                type  : 'checkbox',
+                click(item, win) {
+                    if (win) PubSub.publish('TextEditor.settings', { name : 'showPrintMargin', value : item.checked });
+                }
+            },
+            {
+                label   : 'Print margin column',
+                submenu : [
+                    {
+                        label : '76',
+                        type  : 'radio',
+                        click(item, win) {
+                            if (win) PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 76 });
+                        }
+                    },
+                    {
+                        label : '80',
+                        type  : 'radio',
+                        click(item, win) {
+                            if (win) PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 80 });
+                        }
+                    },
+                    {
+                        label : '100',
+                        type  : 'radio',
+                        click(item, win) {
+                            if (win) PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 100 });
+                        }
+                    },
+                    {
+                        label : '120',
+                        type  : 'radio',
+                        click(item, win) {
+                            if (win) PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 120 });
+                        }
+                    }
+                ]
+            },
+            {
                 label : 'Show invisibles',
                 type  : 'checkbox',
                 click(item, win) {

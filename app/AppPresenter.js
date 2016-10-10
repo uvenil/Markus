@@ -197,6 +197,10 @@ export default class AppPresenter {
             this._store.editorStore.wordWrap = data.value;
         } else if (data.name === 'showLineNumbers') {
             this._store.editorStore.showLineNumbers = data.value;
+        } else if (data.name === 'showPrintMargin') {
+            this._store.editorStore.showPrintMargin = data.value;
+        } else if (data.name === 'printMarginColumn') {
+            this._store.editorStore.printMarginColumn = data.value;
         } else if (data.name === 'showInvisibles') {
             this._store.editorStore.showInvisibles = data.value;
         } else if (data.name === 'showFoldWidgets') {
@@ -241,6 +245,8 @@ export default class AppPresenter {
                 this._settings.get('useSoftTabs',         Config.defaultUseSoftTabs),
                 this._settings.get('wordWrap',            Config.defaultWordWrap),
                 this._settings.get('showLineNumbers',     Config.defaultShowLineNumbers),
+                this._settings.get('showPrintMargin',     Config.defaultShowPrintMargin),
+                this._settings.get('printMarginColumn',   Config.defaultPrintMarginColumn),
                 this._settings.get('showInvisibles',      Config.defaultShowInvisibles),
                 this._settings.get('showFoldWidgets',     Config.defaultShowFoldWidgets),
                 this._settings.get('showGutter',          Config.defaultShowGutter),
@@ -255,12 +261,14 @@ export default class AppPresenter {
                 data.useSoftTabs         = values[6]  !== undefined ? values[6]  : Config.defaultUseSoftTabs;
                 data.wordWrap            = values[7]  !== undefined ? values[7]  : Config.defaultWordWrap;
                 data.showLineNumebrs     = values[8]  !== undefined ? values[8]  : Config.defaultShowLineNumbers;
-                data.showInvisibles      = values[9]  !== undefined ? values[9]  : Config.defaultShowInvisibles;
-                data.showFoldWidgets     = values[10] !== undefined ? values[10] : Config.defaultShowFoldWidgets;
-                data.showGutter          = values[11] !== undefined ? values[11] : Config.defaultShowGutter;
-                data.displayIndentGuides = values[12] !== undefined ? values[12] : Config.defaultDisplayIndentGuides;
-                data.scrollPastEnd       = values[13] !== undefined ? values[13] : Config.defaultScrollPastEnd;
-                data.spellCheck          = values[14] !== undefined ? values[14] : Config.defaultSpellCheck;
+                data.showPrintMargin     = values[9]  !== undefined ? values[9]  : Config.defaultShowPrintMargin;
+                data.printMarginColumn   = values[10] !== undefined ? values[10] : Config.defaultPrintMarginColumn;
+                data.showInvisibles      = values[11] !== undefined ? values[11] : Config.defaultShowInvisibles;
+                data.showFoldWidgets     = values[12] !== undefined ? values[12] : Config.defaultShowFoldWidgets;
+                data.showGutter          = values[13] !== undefined ? values[13] : Config.defaultShowGutter;
+                data.displayIndentGuides = values[14] !== undefined ? values[14] : Config.defaultDisplayIndentGuides;
+                data.scrollPastEnd       = values[15] !== undefined ? values[15] : Config.defaultScrollPastEnd;
+                data.spellCheck          = values[16] !== undefined ? values[16] : Config.defaultSpellCheck;
 
                 this._store.editorStore.syntax              = values[0] ? values[0] : Config.defaultSyntax;
                 this._store.editorStore.theme               = values[1] ? values[1] : Config.defaultTheme;
@@ -271,6 +279,8 @@ export default class AppPresenter {
                 this._store.editorStore.useSoftTabs         = data.useSoftTabs;
                 this._store.editorStore.wordWrap            = data.wordWrap;
                 this._store.editorStore.showLineNumbers     = data.showLineNumebrs;
+                this._store.editorStore.showPrintMargin     = data.showPrintMargin;
+                this._store.editorStore.printMarginColumn   = data.printMarginColumn;
                 this._store.editorStore.showInvisibles      = data.showInvisibles;
                 this._store.editorStore.showFoldWidgets     = data.showFoldWidgets;
                 this._store.editorStore.showGutter          = data.showGutter;
@@ -328,18 +338,33 @@ export default class AppPresenter {
                 preferencesMenu.submenu.items[2].submenu.items[1].checked = true;
             } else if (this._store.editorStore.tabSize === 8) {
                 preferencesMenu.submenu.items[2].submenu.items[2].checked = true;
+            } else {
+                preferencesMenu.submenu.items[2].submenu.items[1].checked = true;
+            }
+
+            if (this._store.editorStore.printMarginColumn === 76) {
+                preferencesMenu.submenu.items[7].submenu.items[0].checked = true;
+            } else if (this._store.editorStore.printMarginColumn === 80) {
+                preferencesMenu.submenu.items[7].submenu.items[1].checked = true;
+            } else if (this._store.editorStore.printMarginColumn === 100) {
+                preferencesMenu.submenu.items[7].submenu.items[2].checked = true;
+            } else if (this._store.editorStore.printMarginColumn === 120) {
+                preferencesMenu.submenu.items[7].submenu.items[3].checked = true;
+            } else {
+                preferencesMenu.submenu.items[7].submenu.items[1].checked = true;
             }
 
             preferencesMenu.submenu.items[1].checked  = this._store.editorStore.highlightActiveLine;
             preferencesMenu.submenu.items[3].checked  = this._store.editorStore.useSoftTabs;
             preferencesMenu.submenu.items[4].checked  = this._store.editorStore.wordWrap;
             preferencesMenu.submenu.items[5].checked  = this._store.editorStore.showLineNumbers;
-            preferencesMenu.submenu.items[6].checked  = this._store.editorStore.showInvisibles;
-            preferencesMenu.submenu.items[7].checked  = this._store.editorStore.showFoldWidgets;
-            preferencesMenu.submenu.items[8].checked  = this._store.editorStore.showGutter;
-            preferencesMenu.submenu.items[9].checked  = this._store.editorStore.displayIndentGuides;
-            preferencesMenu.submenu.items[10].checked = this._store.editorStore.scrollPastEnd;
-            preferencesMenu.submenu.items[11].checked = this._store.editorStore.spellCheck;
+            preferencesMenu.submenu.items[6].checked  = this._store.editorStore.showPrintMargin;
+            preferencesMenu.submenu.items[8].checked  = this._store.editorStore.showInvisibles;
+            preferencesMenu.submenu.items[9].checked  = this._store.editorStore.showFoldWidgets;
+            preferencesMenu.submenu.items[10].checked = this._store.editorStore.showGutter;
+            preferencesMenu.submenu.items[11].checked = this._store.editorStore.displayIndentGuides;
+            preferencesMenu.submenu.items[12].checked = this._store.editorStore.scrollPastEnd;
+            preferencesMenu.submenu.items[13].checked = this._store.editorStore.spellCheck;
 
             const themeMenu = Menu.getApplicationMenu().items[is.macOS() ? 3 : 2].submenu.items[4];
             const themes    = [ 'ambiance', 'chaos', 'chrome', 'clouds', 'clouds_midnight', 'cobalt', 'crimson_editor', 'dawn', 'dreamweaver', 'eclipse', 'github', 'idle_fingers', 'ipastic', 'katzenmilch', 'kr_theme', 'kuroir', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monkai', 'pastal_on_dark', 'solarized_dark', 'solarized_light', 'sqlserver', 'terminal', 'textmate', 'tomorrow', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink', 'xcode' ];
