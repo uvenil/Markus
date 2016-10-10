@@ -8,23 +8,24 @@ export default class TextEditorStore {
     constructor() {
         this._changes = new Rx.Subject();
 
+        this.highlightActiveLine = Config.defaultHighlightActiveLine;
+        this.tabSize             = Config.defaultTabSize;
+        this.useSoftTabs         = Config.defaultUseSoftTabs;
+        this.wordWrap            = Config.defaultWordWrap;
+        this.showLineNumbers     = Config.defaultShowLineNumbers;
+        this.showInvisibles      = Config.defaultShowInvisibles;
+        this.showFoldWidgets     = Config.defaultShowFoldWidgets;
+        this.showGutter          = Config.defaultShowGutter;
+        this.displayIndentGuides = Config.defaultDisplayIndentGuides;
+        this.scrollPastEnd       = Config.defaultScrollPastEnd;
+        this.spellCheck          = Config.defaultSpellCheck;
+
         extendObservable(this, {
-            record              : null,
-            syntax              : Config.defaultSyntax,
-            theme               : Config.defaultTheme,
-            fontFamily          : undefined,
-            textSize            : undefined,
-            highlightActiveLine : Config.defaultHighlightActiveLine,
-            tabSize             : Config.defaultTabSize,
-            useSoftTabs         : Config.defaultUseSoftTabs,
-            wordWrap            : Config.defaultWordWrap,
-            showLineNumbers     : Config.defaultShowLineNumbers,
-            showInvisibles      : Config.defaultShowInvisibles,
-            showFoldWidgets     : Config.defaultShowFoldWidgets,
-            showGutter          : Config.defaultShowGutter,
-            displayIndentGuides : Config.defaultDisplayIndentGuides,
-            scrollPastEnd       : Config.defaultScrollPastEnd,
-            spellCheck          : Config.defaultSpellCheck
+            record     : null,
+            syntax     : Config.defaultSyntax,
+            theme      : Config.defaultTheme,
+            fontFamily : undefined,
+            textSize   : undefined
         });
     }
 

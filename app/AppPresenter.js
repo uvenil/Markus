@@ -9,10 +9,12 @@ import Settings from './utils/Settings';
 import Database from './data/Database';
 import Record from './data/Record';
 import Rx from 'rx-lite';
-import Path from 'path';
 import Config from '../config.json';
 import Package from '../package.json';
+import PubSub from 'pubsub-js';
 import is from 'electron-is';
+
+if (is.dev()) PubSub.immediateExceptions = true;
 
 const { Menu }      = require('electron').remote;
 const WindowManager = require('electron').remote.require('electron-window-manager');
@@ -43,16 +45,18 @@ export default class AppPresenter {
 
                 this.refreshNotes();
             });
+    }
 
+    get store() {
+        return this._store;
+    }
+
+    init() {
         this._initSettings()
             .then(() => this._initDatabase()
                 .then(() => this._initAutoSave())
                 .catch(error => console.error(error)))
             .catch(error => console.error(error));
-    }
-
-    get store() {
-        return this._store;
     }
 
     handleFilterItemClick(index) {
@@ -220,6 +224,11 @@ export default class AppPresenter {
         this._database.removeAll();
     }
 
+    resetSettings() {
+        this._settings.clear()
+            .catch(error => console.error(error));
+    }
+
     _initSettings() {
         return new Promise((resolve, reject) => {
             Promise.all([
@@ -239,21 +248,37 @@ export default class AppPresenter {
                 this._settings.get('scrollPastEnd',       Config.defaultScrollPastEnd),
                 this._settings.get('spellCheck',          Config.defaultSpellCheck)
             ]).then(values => {
+                const data = {};
+
+                data.highlightActiveLine = values[4]  !== undefined ? values[4]  : Config.defaultHighlightActiveLine;
+                data.tabSize             = values[5]  !== undefined ? values[5]  : Config.defaultTabSize;
+                data.useSoftTabs         = values[6]  !== undefined ? values[6]  : Config.defaultUseSoftTabs;
+                data.wordWrap            = values[7]  !== undefined ? values[7]  : Config.defaultWordWrap;
+                data.showLineNumebrs     = values[8]  !== undefined ? values[8]  : Config.defaultShowLineNumbers;
+                data.showInvisibles      = values[9]  !== undefined ? values[9]  : Config.defaultShowInvisibles;
+                data.showFoldWidgets     = values[10] !== undefined ? values[10] : Config.defaultShowFoldWidgets;
+                data.showGutter          = values[11] !== undefined ? values[11] : Config.defaultShowGutter;
+                data.displayIndentGuides = values[12] !== undefined ? values[12] : Config.defaultDisplayIndentGuides;
+                data.scrollPastEnd       = values[13] !== undefined ? values[13] : Config.defaultScrollPastEnd;
+                data.spellCheck          = values[14] !== undefined ? values[14] : Config.defaultSpellCheck;
+
                 this._store.editorStore.syntax              = values[0] ? values[0] : Config.defaultSyntax;
                 this._store.editorStore.theme               = values[1] ? values[1] : Config.defaultTheme;
                 this._store.editorStore.fontFamily          = values[2] ? values[2] : undefined;
                 this._store.editorStore.textSize            = values[3] ? values[3] : undefined;
-                this._store.editorStore.highlightActiveLine = values[4]  !== undefined ? values[4]  : Config.defaultHighlightActiveLine;
-                this._store.editorStore.tabSize             = values[5]  !== undefined ? values[5]  : Config.defaultTabSize;
-                this._store.editorStore.useSoftTabs         = values[6]  !== undefined ? values[6]  : Config.defaultUseSoftTabs;
-                this._store.editorStore.wordWrap            = values[7]  !== undefined ? values[7]  : Config.defaultWordWrap;
-                this._store.editorStore.showLineNumebrs     = values[8]  !== undefined ? values[8]  : Config.defaultShowLineNumbers;
-                this._store.editorStore.showInvisibles      = values[9]  !== undefined ? values[9]  : Config.defaultShowInvisibles;
-                this._store.editorStore.showFoldWidgets     = values[10] !== undefined ? values[10] : Config.defaultShowFoldWidgets;
-                this._store.editorStore.showGutter          = values[11] !== undefined ? values[11] : Config.defaultShowGutter;
-                this._store.editorStore.displayIndentGuides = values[12] !== undefined ? values[12] : Config.defaultDisplayIndentGuides;
-                this._store.editorStore.scrollPastEnd       = values[13] !== undefined ? values[13] : Config.defaultScrollPastEnd;
-                this._store.editorStore.spellCheck          = values[14] !== undefined ? values[14] : Config.defaultSpellCheck;
+                this._store.editorStore.highlightActiveLine = data.highlightActiveLine;
+                this._store.editorStore.tabSize             = data.tabSize;
+                this._store.editorStore.useSoftTabs         = data.useSoftTabs;
+                this._store.editorStore.wordWrap            = data.wordWrap;
+                this._store.editorStore.showLineNumbers     = data.showLineNumebrs;
+                this._store.editorStore.showInvisibles      = data.showInvisibles;
+                this._store.editorStore.showFoldWidgets     = data.showFoldWidgets;
+                this._store.editorStore.showGutter          = data.showGutter;
+                this._store.editorStore.displayIndentGuides = data.displayIndentGuides;
+                this._store.editorStore.scrollPastEnd       = data.scrollPastEnd;
+                this._store.editorStore.spellCheck          = data.spellCheck;
+
+                PubSub.publish('TextEditor.init', data);
 
                 this._updateMenu();
                 this._updateSyntaxMenu();
@@ -297,19 +322,24 @@ export default class AppPresenter {
         return new Promise((resolve, reject) => {
             const preferencesMenu = Menu.getApplicationMenu().items[is.macOS() ? 0 : 1].submenu.items[is.macOS() ? 2 : 9];
 
-            preferencesMenu.submenu.items[1].checked                  = this._store.editorStore.highlightActiveLine;
-            preferencesMenu.submenu.items[2].submenu.items[0].checked = this._store.editorStore.tabSize === 2;
-            preferencesMenu.submenu.items[2].submenu.items[1].checked = this._store.editorStore.tabSize === 4;
-            preferencesMenu.submenu.items[2].submenu.items[2].checked = this._store.editorStore.tabSize === 8;
-            preferencesMenu.submenu.items[3].checked                  = this._store.editorStore.useSoftTabs;
-            preferencesMenu.submenu.items[4].checked                  = this._store.editorStore.wordWrap;
-            preferencesMenu.submenu.items[5].checked                  = this._store.editorStore.showLineNumbers;
-            preferencesMenu.submenu.items[6].checked                  = this._store.editorStore.showInvisibles;
-            preferencesMenu.submenu.items[7].checked                  = this._store.editorStore.showFoldWidgets;
-            preferencesMenu.submenu.items[8].checked                  = this._store.editorStore.showGutter;
-            preferencesMenu.submenu.items[9].checked                  = this._store.editorStore.displayIndentGuides;
-            preferencesMenu.submenu.items[10].checked                 = this._store.editorStore.scrollPastEnd;
-            preferencesMenu.submenu.items[11].checked                 = this._store.editorStore.spellCheck;
+            if (this._store.editorStore.tabSize === 2) {
+                preferencesMenu.submenu.items[2].submenu.items[0].checked = true;
+            } else if (this._store.editorStore.tabSize === 4) {
+                preferencesMenu.submenu.items[2].submenu.items[1].checked = true;
+            } else if (this._store.editorStore.tabSize === 8) {
+                preferencesMenu.submenu.items[2].submenu.items[2].checked = true;
+            }
+
+            preferencesMenu.submenu.items[1].checked  = this._store.editorStore.highlightActiveLine;
+            preferencesMenu.submenu.items[3].checked  = this._store.editorStore.useSoftTabs;
+            preferencesMenu.submenu.items[4].checked  = this._store.editorStore.wordWrap;
+            preferencesMenu.submenu.items[5].checked  = this._store.editorStore.showLineNumbers;
+            preferencesMenu.submenu.items[6].checked  = this._store.editorStore.showInvisibles;
+            preferencesMenu.submenu.items[7].checked  = this._store.editorStore.showFoldWidgets;
+            preferencesMenu.submenu.items[8].checked  = this._store.editorStore.showGutter;
+            preferencesMenu.submenu.items[9].checked  = this._store.editorStore.displayIndentGuides;
+            preferencesMenu.submenu.items[10].checked = this._store.editorStore.scrollPastEnd;
+            preferencesMenu.submenu.items[11].checked = this._store.editorStore.spellCheck;
 
             const themeMenu = Menu.getApplicationMenu().items[is.macOS() ? 3 : 2].submenu.items[4];
             const themes    = [ 'ambiance', 'chaos', 'chrome', 'clouds', 'clouds_midnight', 'cobalt', 'crimson_editor', 'dawn', 'dreamweaver', 'eclipse', 'github', 'idle_fingers', 'ipastic', 'katzenmilch', 'kr_theme', 'kuroir', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monkai', 'pastal_on_dark', 'solarized_dark', 'solarized_light', 'sqlserver', 'terminal', 'textmate', 'tomorrow', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink', 'xcode' ];

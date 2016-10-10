@@ -8,6 +8,10 @@ import TextEditorStore from './TextEditorStore';
 import Record from '../../data/Record';
 import Unique from '../../utils/Unique';
 import Config from '../../../config.json';
+import PubSub from 'pubsub-js';
+import is from 'electron-is';
+
+if (is.dev()) PubSub.immediateExceptions = true;
 
 @observer
 export default class TextEditor extends React.Component {
@@ -16,6 +20,7 @@ export default class TextEditor extends React.Component {
 
         this._editorId      = Unique.elementId('a');
         this._placeHolderId = Unique.elementId('b');
+        this._subscriptions = [];
 
         this._handleLoad = editor => {
             // TODO
@@ -30,6 +35,62 @@ export default class TextEditor extends React.Component {
 
             this.props.store.changes.onNext(this.props.store.record);
         };
+
+        this._init = data => {
+            this.refs.editor.editor.setHighlightActiveLine(data.highlightActiveLine);
+            this.refs.editor.editor.$updateHighlightActiveLine();
+            this.refs.editor.editor.getSession().setTabSize(data.tabSize);
+            this.refs.editor.editor.getSession().setUseSoftTabs(data.useSoftTabs);
+            this.refs.editor.editor.getSession().setUseWrapMode(data.wordWrap);
+            this.refs.editor.editor.renderer.showLineNumbers = data.showLineNumebrs;
+            this.refs.editor.editor.renderer.$gutterLayer.setShowLineNumbers(data.showLineNumebrs);
+            this.refs.editor.editor.renderer.$loop.schedule(this.refs.editor.editor.renderer.CHANGE_GUTTER);
+            this.refs.editor.editor.setShowInvisibles(data.showInvisibles);
+            this.refs.editor.editor.setShowFoldWidgets(data.showFoldWidgets);
+            this.refs.editor.editor.renderer.setShowGutter(data.showGutter);
+            this.refs.editor.editor.renderer.setDisplayIndentGuides(data.displayIndentGuides);
+            this.refs.editor.editor.renderer.$scrollPastEnd = data.scrollPastEnd;
+        };
+
+        this._changeSettings = data => {
+            if (data.name === 'highlightActiveLine') {
+                this.refs.editor.editor.setHighlightActiveLine(data.value);
+                this.refs.editor.editor.$updateHighlightActiveLine();
+            } else if (data.name === 'tabSize') {
+                this.refs.editor.editor.getSession().setTabSize(data.value);
+            } else if (data.name === 'useSoftTabs') {
+                this.refs.editor.editor.getSession().setUseSoftTabs(data.value);
+            } else if (data.name === 'wordWrap') {
+                this.refs.editor.editor.getSession().setUseWrapMode(data.value);
+            } else if (data.name === 'showLineNumbers') {
+                this.refs.editor.editor.renderer.showLineNumbers = data.value;
+                this.refs.editor.editor.renderer.$gutterLayer.setShowLineNumbers(data.value);
+                this.refs.editor.editor.renderer.$loop.schedule(this.refs.editor.editor.renderer.CHANGE_GUTTER);
+            } else if (data.name === 'showInvisibles') {
+                this.refs.editor.editor.setShowInvisibles(data.value);
+            } else if (data.name === 'showFoldWidgets') {
+                this.refs.editor.editor.setShowFoldWidgets(data.value);
+            } else if (data.name === 'showGutter') {
+                this.refs.editor.editor.renderer.setShowGutter(data.value);
+            } else if (data.name === 'displayIndentGuides') {
+                this.refs.editor.editor.renderer.setDisplayIndentGuides(data.value);
+            } else if (data.name === 'scrollPastEnd') {
+                this.refs.editor.editor.renderer.$scrollPastEnd = data.value;
+            } else if (data.name === 'spellCheck') {
+                //
+            } else {
+                console.warn('Unrecognized setting ' + data.name + ' = ' + data.value);
+            }
+        };
+    }
+
+    componentDidMount() {
+        this._subscriptions.push(PubSub.subscribe('TextEditor.init', (eventName, data) => this._init(data)));
+        this._subscriptions.push(PubSub.subscribe('TextEditor.settings', (eventName, data) => this._changeSettings(data)));
+    }
+
+    componentWillUnmount() {
+        this._subscriptions.forEach(subscription => subscription.unsubscribe());
     }
 
     render() {
@@ -53,7 +114,7 @@ export default class TextEditor extends React.Component {
                     showGutter={this.props.store.showGutter}
                     highlightActiveLine={this.props.store.highlightActiveLine}
                     tabSize={this.props.tabSize}
-                    editorProps={{ fontFamily : this.props.store.fontFamily, $blockScrolling : true, showLineNumbers : this.props.store.showLineNumbers, showInvisibles : this.props.store.showInvisibles, showFoldWidgets : this.props.store.showFoldWidgets, displayIndentGuides : this.props.store.displayIndentGuides, scrollPastEnd : this.props.store.scrollPastEnd, useSoftTabs : this.props.store.useSoftTabs, wrap : this.props.store.wordWrap, spellcheck : this.props.store.spellCheck }}
+                    editorProps={{ fontFamily : this.props.store.fontFamily, $blockScrolling : true, $showLineNumbers : this.props.store.showLineNumbers, $showInvisibles : this.props.store.showInvisibles, displayIndentGuides : this.props.store.displayIndentGuides, $scrollPastEnd : this.props.store.scrollPastEnd, $useSoftTabs : this.props.store.useSoftTabs, $wrap : this.props.store.wordWrap, $spellcheck : this.props.store.spellCheck }}
                     style={{ display : this.props.store.record ? 'block' : 'none' }}
                     onLoad={editor => this._handleLoad(editor)}
                     onChange={value => this._handleChange(value)} />

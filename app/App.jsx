@@ -16,6 +16,9 @@ import { observer } from 'mobx-react';
 import Settings from './utils/Settings';
 import PubSub from 'pubsub-js';
 import Config from '../config.json';
+import is from 'electron-is';
+
+if (is.dev()) PubSub.immediateExceptions = true;
 
 @observer
 export default class App extends React.Component {
@@ -48,10 +51,13 @@ export default class App extends React.Component {
 
     componentDidMount() {
         this._subscriptions.push(PubSub.subscribe('Database.reset', () => this.props.presenter.resetDatabase()));
+        this._subscriptions.push(PubSub.subscribe('Settings.reset', () => this.props.presenter.resetSettings()));
         this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', () => this.props.presenter.showAboutDialog()));
         this._subscriptions.push(PubSub.subscribe('Syntax.change', (eventName, syntax) => this.props.presenter.changeSyntax(syntax)));
         this._subscriptions.push(PubSub.subscribe('Theme.change', (eventName, theme) => this.props.presenter.changeTheme(theme)));
         this._subscriptions.push(PubSub.subscribe('TextEditor.settings', (eventName, data) => this.props.presenter.changeSettings(data)));
+
+        this.props.presenter.init();
     }
 
     componentWillUnmount() {
