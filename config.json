@@ -29,6 +29,5 @@
     "defaultShowFoldWidgets"     : true,
     "defaultShowGutter"          : true,
     "defaultDisplayIndentGuides" : true,
-    "defaultScrollPastEnd"       : false,
-    "defaultSpellCheck"          : true
+    "defaultScrollPastEnd"       : false
 }

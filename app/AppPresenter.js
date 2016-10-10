@@ -211,8 +211,6 @@ export default class AppPresenter {
             this._store.editorStore.displayIndentGuides = data.value;
         } else if (data.name === 'scrollPastEnd') {
             this._store.editorStore.scrollPastEnd = data.value;
-        } else if (data.name === 'spellCheck') {
-            this._store.editorStore.spellCheck = data.value;
         } else {
             console.warn('Unrecognized setting ' + data.name + ' = ' + data.value);
         }
@@ -251,8 +249,7 @@ export default class AppPresenter {
                 this._settings.get('showFoldWidgets',     Config.defaultShowFoldWidgets),
                 this._settings.get('showGutter',          Config.defaultShowGutter),
                 this._settings.get('displayIndentGuides', Config.defaultDisplayIndentGuides),
-                this._settings.get('scrollPastEnd',       Config.defaultScrollPastEnd),
-                this._settings.get('spellCheck',          Config.defaultSpellCheck)
+                this._settings.get('scrollPastEnd',       Config.defaultScrollPastEnd)
             ]).then(values => {
                 const data = {};
 
@@ -268,7 +265,6 @@ export default class AppPresenter {
                 data.showGutter          = values[13] !== undefined ? values[13] : Config.defaultShowGutter;
                 data.displayIndentGuides = values[14] !== undefined ? values[14] : Config.defaultDisplayIndentGuides;
                 data.scrollPastEnd       = values[15] !== undefined ? values[15] : Config.defaultScrollPastEnd;
-                data.spellCheck          = values[16] !== undefined ? values[16] : Config.defaultSpellCheck;
 
                 this._store.editorStore.syntax              = values[0] ? values[0] : Config.defaultSyntax;
                 this._store.editorStore.theme               = values[1] ? values[1] : Config.defaultTheme;
@@ -286,7 +282,6 @@ export default class AppPresenter {
                 this._store.editorStore.showGutter          = data.showGutter;
                 this._store.editorStore.displayIndentGuides = data.displayIndentGuides;
                 this._store.editorStore.scrollPastEnd       = data.scrollPastEnd;
-                this._store.editorStore.spellCheck          = data.spellCheck;
 
                 PubSub.publish('TextEditor.init', data);
 
@@ -364,7 +359,6 @@ export default class AppPresenter {
             preferencesMenu.submenu.items[10].checked = this._store.editorStore.showGutter;
             preferencesMenu.submenu.items[11].checked = this._store.editorStore.displayIndentGuides;
             preferencesMenu.submenu.items[12].checked = this._store.editorStore.scrollPastEnd;
-            preferencesMenu.submenu.items[13].checked = this._store.editorStore.spellCheck;
 
             const themeMenu = Menu.getApplicationMenu().items[is.macOS() ? 3 : 2].submenu.items[4];
             const themes    = [ 'ambiance', 'chaos', 'chrome', 'clouds', 'clouds_midnight', 'cobalt', 'crimson_editor', 'dawn', 'dreamweaver', 'eclipse', 'github', 'idle_fingers', 'ipastic', 'katzenmilch', 'kr_theme', 'kuroir', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monkai', 'pastal_on_dark', 'solarized_dark', 'solarized_light', 'sqlserver', 'terminal', 'textmate', 'tomorrow', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink', 'xcode' ];

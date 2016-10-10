@@ -20,7 +20,6 @@ export default class TextEditorStore {
         this.showGutter          = Config.defaultShowGutter;
         this.displayIndentGuides = Config.defaultDisplayIndentGuides;
         this.scrollPastEnd       = Config.defaultScrollPastEnd;
-        this.spellCheck          = Config.defaultSpellCheck;
 
         extendObservable(this, {
             record     : null,

@@ -153,13 +153,6 @@ const createPreferencesMenu = () => {
                 click(item, win) {
                     if (win) PubSub.publish('TextEditor.settings', { name : 'scrollPastEnd', value : item.checked });
                 }
-            },
-            {
-                label : 'Enable spell check',
-                type  : 'checkbox',
-                click(item, win) {
-                    if (win) PubSub.publish('TextEditor.settings', { name : 'spellCheck', value : item.checked });
-                }
             }
         ]
     };

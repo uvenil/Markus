@@ -11,6 +11,8 @@ import Config from '../../../config.json';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
+require('brace/ext/spellcheck');
+
 if (is.dev()) PubSub.immediateExceptions = true;
 
 @observer
@@ -82,8 +84,6 @@ export default class TextEditor extends React.Component {
                 this.refs.editor.editor.renderer.setDisplayIndentGuides(data.value);
             } else if (data.name === 'scrollPastEnd') {
                 this.refs.editor.editor.renderer.$scrollPastEnd = data.value;
-            } else if (data.name === 'spellCheck') {
-                //
             } else {
                 console.warn('Unrecognized setting ' + data.name + ' = ' + data.value);
             }
@@ -121,7 +121,7 @@ export default class TextEditor extends React.Component {
                     highlightActiveLine={this.props.store.highlightActiveLine}
                     showPrintMargin={this.props.store.showPrintMargin}
                     tabSize={this.props.tabSize}
-                    editorProps={{ fontFamily : this.props.store.fontFamily, $blockScrolling : true, $showLineNumbers : this.props.store.showLineNumbers, $printMarginColumn : this.props.store.printMarginColumn, $showInvisibles : this.props.store.showInvisibles, displayIndentGuides : this.props.store.displayIndentGuides, $scrollPastEnd : this.props.store.scrollPastEnd, $useSoftTabs : this.props.store.useSoftTabs, $wrap : this.props.store.wordWrap, $spellcheck : this.props.store.spellCheck }}
+                    editorProps={{ fontFamily : this.props.store.fontFamily, $blockScrolling : true, $showLineNumbers : this.props.store.showLineNumbers, $printMarginColumn : this.props.store.printMarginColumn, $showInvisibles : this.props.store.showInvisibles, displayIndentGuides : this.props.store.displayIndentGuides, $scrollPastEnd : this.props.store.scrollPastEnd, $useSoftTabs : this.props.store.useSoftTabs, $wrap : this.props.store.wordWrap }}
                     style={{ display : this.props.store.record ? 'block' : 'none' }}
                     onLoad={editor => this._handleLoad(editor)}
                     onChange={value => this._handleChange(value)} />
