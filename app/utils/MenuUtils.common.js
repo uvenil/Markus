@@ -386,4 +386,41 @@ const createViewMenu = () => {
     };
 }
 
-module.exports = { setMenuItemEnabled, createPreferencesMenu, createEditMenu, createSyntaxMenu, createThemeMenu, createViewMenu };
+const createDeveloperMenu = () => {
+    return {
+        label   : 'Developer',
+        submenu : [
+            {
+                label       : 'Reload',
+                accelerator : 'CmdOrCtrl+R',
+                click(item, win) {
+                    if (win) win.reload();
+                }
+            },
+            {
+                label       : 'Toggle Developer Tools',
+                accelerator : is.macOS() ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+                click(item, win) {
+                    if (win) win.webContents.toggleDevTools();
+                }
+            },
+            {
+                type : 'separator'
+            },
+            {
+                label : 'Reset settings',
+                click(item, win) {
+                    if (win) PubSub.publish('Settings.reset');
+                }
+            },
+            {
+                label : 'Reset database',
+                click(item, win) {
+                    if (win) PubSub.publish('Database.reset');
+                }
+            }
+        ]
+    }
+};
+
+module.exports = { setMenuItemEnabled, createPreferencesMenu, createEditMenu, createSyntaxMenu, createThemeMenu, createViewMenu, createDeveloperMenu };

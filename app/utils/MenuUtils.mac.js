@@ -1,6 +1,6 @@
 'use strict';
 
-import { createPreferencesMenu, createEditMenu, createSyntaxMenu, createThemeMenu, createViewMenu } from './MenuUtils.common';
+import { createPreferencesMenu, createEditMenu, createSyntaxMenu, createThemeMenu, createViewMenu, createDeveloperMenu } from './MenuUtils.common';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
@@ -70,34 +70,7 @@ export default function createWindowMenu() {
 
     template.push(createViewMenu());
 
-    template.push({
-        label   : 'Developer',
-        submenu : [
-            {
-                label       : 'Reload',
-                accelerator : 'CmdOrCtrl+R',
-                click(item, win) {
-                    if (win) win.reload();
-                }
-            },
-            {
-                label       : 'Toggle Developer Tools',
-                accelerator : is.macOS() ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-                click(item, win) {
-                    if (win) win.webContents.toggleDevTools();
-                }
-            },
-            {
-                type : 'separator'
-            },
-            {
-                label : 'Reset database',
-                click(item, win) {
-                    if (win) PubSub.publish('Database.reset');
-                }
-            }
-        ]
-    });
+    template.push(createDeveloperMenu());
 
     template.push({
         label   : 'Window',
