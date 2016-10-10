@@ -8,15 +8,28 @@ import { setMenuItemEnabled } from './utils/MenuUtils.common';
 import Path from 'path';
 import Package from '../package.json';
 import Config from '../config.json';
+import is from 'electron-is';
 
 const { Menu }      = require('electron').remote;
 const WindowManager = require('electron').remote.require('electron-window-manager');
 
 const AboutDialog = ({ productName, productVersion, copyright, imagePath }) => {
-    setMenuItemEnabled(Menu.getApplicationMenu().items, false);
+    WindowManager.getCurrent().object.setClosable(false);
+    WindowManager.getCurrent().object.setAlwaysOnTop(true, 'modal-panel');
+    WindowManager.getCurrent().object.setSkipTaskbar(true);
+
+    if (is.macOS()) {
+        setMenuItemEnabled(Menu.getApplicationMenu().items, false);
+    } else {
+        WindowManager.getCurrent().object.setMenu(null);
+    }
 
     const handleClick = () => {
-        setMenuItemEnabled(Menu.getApplicationMenu().items, true);
+        WindowManager.getCurrent().object.setClosable(true);
+
+        if (is.macOS()) {
+            setMenuItemEnabled(Menu.getApplicationMenu().items, true);
+        }
 
         WindowManager.getCurrent().close();
     };
