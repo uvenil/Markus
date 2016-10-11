@@ -4,6 +4,7 @@
     "primaryTextColorInverted" : "#fff",
     "primaryBackgroundColor"   : "#fff",
     "secondaryBackgroundColor" : "#f1f2f4",
+    "dialogBackgroundColor"    : "#ececec",
     "selectedBackgroundColor"  : "#d8dadc",
     "disabledBackgroundColor"  : "#f3f4f5",
     "borderColor"              : "#bfbfbf",

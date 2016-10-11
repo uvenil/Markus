@@ -6,6 +6,8 @@ import Button from './components/buttons/Button.jsx';
 import Text from './components/text/Text.jsx';
 import { setMenuItemEnabled } from './utils/MenuUtils.common';
 import Path from 'path';
+import Settings from './utils/Settings';
+import Unique from './utils/Unique';
 import Package from '../package.json';
 import Config from '../config.json';
 import is from 'electron-is';
@@ -14,6 +16,21 @@ const { Menu }      = require('electron').remote;
 const WindowManager = require('electron').remote.require('electron-window-manager');
 
 const AboutDialog = ({ productName, productVersion, copyright, imagePath }) => {
+    const componentId = Unique.elementId('');
+
+    let theme;
+
+    new Settings().get('theme', Config.defaultTheme)
+        .then(value => {
+            theme = value === 'dark' ? require('./theme.dark.json') : require('./theme.light.json');
+
+            const component = document.getElementById(componentId);
+
+            if (component) {
+                component.style.backgroundColor = theme.dialogBackgroundColor;
+            }
+        }).catch(error => console.error(error));
+
     WindowManager.getCurrent().object.setClosable(false);
     WindowManager.getCurrent().object.setAlwaysOnTop(true, 'modal-panel');
     WindowManager.getCurrent().object.setSkipTaskbar(true);
@@ -35,7 +52,9 @@ const AboutDialog = ({ productName, productVersion, copyright, imagePath }) => {
     };
 
     return (
-        <div style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX2, paddingBottom : Config.paddingX2 }}>
+        <div
+            id={componentId}
+            style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX2, paddingBottom : Config.paddingX2, backgroundColor : (theme ? theme.dialogBackgroundColor : undefined) }}>
             <img src={imagePath} /><br />
             <Text textSize="large">{productName}</Text>
             <Text>{productVersion}</Text>
