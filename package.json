@@ -62,6 +62,7 @@
         "react"                                    : "^15.3.2",
         "react-ace"                                : "^3.6.1",
         "react-dom"                                : "^15.3.2",
+        "react-modal"                              : "^1.5.2",
         "react-split-pane"                         : "^0.1.50",
         "rx-lite"                                  : "^4.0.8"
     },

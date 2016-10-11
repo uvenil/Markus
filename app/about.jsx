@@ -16,7 +16,7 @@ const { Menu }      = require('electron').remote;
 const WindowManager = require('electron').remote.require('electron-window-manager');
 
 const AboutDialog = ({ productName, productVersion, copyright, imagePath }) => {
-    const componentId = Unique.elementId('');
+    const componentId = Unique.elementId('about');
 
     let theme;
 
@@ -61,6 +61,7 @@ const AboutDialog = ({ productName, productVersion, copyright, imagePath }) => {
             <Text textSize="small">{copyright}</Text>
             <div style={{ padding : Config.paddingX2 }}>
                 <Button
+                    width={Config.buttonWidth}
                     backgroundColor="primary"
                     onClick={() => handleClick()}>
                     Close

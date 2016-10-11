@@ -1,17 +1,42 @@
 'use strict';
 
 import React from 'react';
+import Unique from '../../utils/Unique';
 import Config from '../../../config.json';
 
 export default class TextBox extends React.Component {
     constructor(props) {
         super(props);
 
+        this._id = Unique.elementId('a');
+
+        this.state = {
+            value : ''
+        };
+
         this._handleChange = value => {
+            this.setState({
+                value : value
+            });
+
             if (this.props.onChange) {
                 this.props.onChange(value);
             }
         };
+    }
+
+    get value() {
+        return this.state.value;
+    }
+
+    set value(value) {
+        this.setState({
+            value : value
+        });
+    }
+
+    focus() {
+        document.getElementById(this._id).focus();
     }
 
     render() {
@@ -20,7 +45,10 @@ export default class TextBox extends React.Component {
 
         return (
             <input
+                id={this._id}
                 type="text"
+                value={this.state.value}
+                className={this.props.className}
                 style={{ WebkitUserSelect : 'none', fontFamily : this.props.fontFamily, fontSize : this.props.textSize, color : textColor, outline : 'none', borderWidth : '1px', borderStyle : 'solid', borderRadius : Config.paddingX0 + 'px', borderColor : theme.borderColor, padding : Config.paddingX0 + 'px', pointerEvents : this.props.disabled ? 'none' : 'auto' }}
                 onChange={event => this._handleChange(event.target.value)} />
         );

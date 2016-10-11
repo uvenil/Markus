@@ -1,6 +1,7 @@
 'use strict';
 
 import AppStore from './AppStore';
+import DialogStore from './components/overlays/DIalogStore';
 import FilterListViewPresenter from './components/lists/FilterListViewPresenter';
 import CategoryListViewPresenter from './components/lists/CategoryListViewPresenter';
 import NoteListViewPresenter from './components/lists/NoteListViewPresenter';
@@ -30,10 +31,11 @@ export default class AppPresenter {
         this._notesPresenter      = new NoteListViewPresenter(this._filtersPresenter, this._categoriesPresenter, this._database);
         this._editorPresenter     = new TextEditorPresenter(this._database);
 
-        this._store.filtersStore    = this._filtersPresenter.store;
-        this._store.categoriesStore = this._categoriesPresenter.store;
-        this._store.notesStore      = this._notesPresenter.store;
-        this._store.editorStore     = this._editorPresenter.store;
+        this._store.filtersStore           = this._filtersPresenter.store;
+        this._store.categoriesStore        = this._categoriesPresenter.store;
+        this._store.notesStore             = this._notesPresenter.store;
+        this._store.editorStore            = this._editorPresenter.store;
+        this._store.addCategoryDialogStore = new DialogStore();
 
         this._filterSelection   = new Rx.Subject();
         this._categorySelection = new Rx.Subject();
@@ -98,11 +100,7 @@ export default class AppPresenter {
     }
 
     handleAddCategoryClick() {
-        // TODO: Prompts for new category
-
-        // TODO: Checks for duplicate categories
-
-        this._categoriesPresenter.addCategory();
+        this._store.addCategoryDialogStore.visible = true;
     }
 
     handleAddNoteClick() {
@@ -155,6 +153,16 @@ export default class AppPresenter {
     }
 
     //endregion
+
+    /**
+     * Adds a new category.
+     * @param {String} category
+     */
+    addCategory(category) {
+        // TODO
+
+        this._store.addCategoryDialogStore.visible = false;
+    }
 
     showAboutDialog() {
         if (WindowManager.get('AboutDialog')) return;

@@ -2,6 +2,10 @@ html, body {
     margin : 0;
 }
 
+.full-width {
+    width : calc(100% - 12px);
+}
+
 .Label {
     font-family : -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
     font-size   : 13px;
@@ -92,3 +96,22 @@ html, body {
     box-shadow    : 4px 8px 16px 4px rgba(0, 0, 0, 0.25);
 }
 
+.DialogOverlay {
+    position : absolute;
+    left     : 0;
+    right    : 0;
+    top      : 0;
+    bottom   : 0;
+}
+
+.DialogContent {
+    position   : absolute;
+    left       : 0;
+    right      : 0;
+    top        : 0;
+    bottom     : 0;
+    margin     : auto;
+    overflow   : none;
+    z-index    : 1;
+    box-shadow : 0 10px 24px 4px rgba(0, 0, 0, 0.25);
+}
