@@ -22,11 +22,11 @@ export default class FilterListViewPresenter extends ListViewPresenter {
             .then(count => this.store.items[FILTER_EVERYTHING_INDEX].secondaryText = count)
             .catch(error => console.error(error));
 
-        this.database.countStarred()
+        this.database.countByStarred()
             .then(count => this.store.items[FILTER_STARRED_INDEX].secondaryText = count)
             .catch(error => console.error(error));
 
-        this.database.countArchived()
+        this.database.countByArchived()
             .then(count => this.store.items[FILTER_ARCHIVED_INDEX].secondaryText = count)
             .catch(error => console.error(error));
     }

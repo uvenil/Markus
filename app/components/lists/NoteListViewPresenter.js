@@ -39,11 +39,11 @@ export default class NoteListViewPresenter {
         if (selectedFilterItemId === FilterListViewPresenter.FILTER_EVERYTHING_ID) {
             promise = this._database.findAll(this._sorting);
         } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_STARRED_ID) {
-            promise = this._database.findStarred(this._sorting);
+            promise = this._database.findByStarred(this._sorting);
         } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_ARCHIVED_ID) {
-            promise = this._database.findArchived(this._sorting);
+            promise = this._database.findByArchived(this._sorting);
         } else if (selectedCategoryItemId) {
-            promise = this._database.findCategory(selectedCategoryItemId, this._sorting);
+            promise = this._database.findByCategory(selectedCategoryItemId, this._sorting);
         }
 
         if (promise) {

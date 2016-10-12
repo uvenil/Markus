@@ -25,7 +25,7 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                         categoryStore.itemId      = record.category;
                         categoryStore.primaryText = record.category;
 
-                        this.database.countCategory(record.category)
+                        this.database.countByCategory(record.category)
                             .then(count => categoryStore.secondaryText = count)
                             .catch(error => console.error(error));
 
