@@ -20,6 +20,8 @@ if (is.dev()) PubSub.immediateExceptions = true;
 const { Menu }      = require('electron').remote;
 const WindowManager = require('electron').remote.require('electron-window-manager');
 
+const EVENT_ERROR = 'Event.error';
+
 export default class AppPresenter {
     constructor() {
         this._store    = new AppStore();
@@ -154,14 +156,23 @@ export default class AppPresenter {
 
     //endregion
 
+    //region Application operations
+
     /**
      * Adds a new category.
      * @param {String} category
      */
     addCategory(category) {
-        // TODO
+        this._database.addCategory(category)
+            .then(() => {
+                this._store.addCategoryDialogStore.visible = false;
 
-        this._store.addCategoryDialogStore.visible = false;
+                this._categoriesPresenter.notifyDataSetChanged();
+            }).catch(error => {
+                console.error(error);
+
+                PubSub.publish(EVENT_ERROR, error.toString());
+            });
     }
 
     showAboutDialog() {
@@ -174,6 +185,10 @@ export default class AppPresenter {
             onLoadFailure : window => window.close()
         }).open();
     }
+
+    //endregion
+
+    //region UI operations
 
     /**
      * Shows or hides filter list view.
@@ -254,6 +269,8 @@ export default class AppPresenter {
             .then(() => console.trace('Saved setting ' + data.name + ' = ' + data.value))
             .catch(error => console.error(error));
     }
+
+    //endregion
 
     //region Debug operations
 

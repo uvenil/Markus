@@ -30,6 +30,9 @@ export default class ListViewPresenter {
     refresh() {
     }
 
+    notifyDataSetChanged() {
+    }
+
     initStore() {
         this.store = new ListViewStore();
     }

@@ -35,6 +35,10 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
             }).catch(error => console.error(error));
     }
 
+    notifyDataSetChanged() {
+        // TODO
+    }
+
     initStore() {
         super.initStore();
 

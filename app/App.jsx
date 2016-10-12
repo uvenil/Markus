@@ -22,6 +22,8 @@ import is from 'electron-is';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
+const { dialog } = require('electron').remote;
+
 @observer
 export default class App extends React.Component {
     constructor(props) {
@@ -29,6 +31,10 @@ export default class App extends React.Component {
 
         this._subscriptions = [];
         this._settings      = new Settings();
+
+        this._handleError = message => {
+            dialog.showErrorBox('Error', message);
+        };
 
         this._handleFilterListWidthChange = size => {
             this.props.store.filterListWidth = size;
@@ -48,6 +54,7 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
+        this._subscriptions.push(PubSub.subscribe('Event.error', (eventName, message) => this._handleError(message)));
         this._subscriptions.push(PubSub.subscribe('Database.reset', () => this.props.presenter.resetDatabase()));
         this._subscriptions.push(PubSub.subscribe('Settings.reset', () => this.props.presenter.resetSettings()));
         this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', () => this.props.presenter.showAboutDialog()));
