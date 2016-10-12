@@ -3,6 +3,7 @@
 import ListViewPresenter from './ListViewPresenter';
 import ListItemStore from './ListItemStore';
 import Database from '../../data/Database';
+import _ from 'lodash';
 
 export default class CategoryListViewPresenter extends ListViewPresenter {
     /**
@@ -36,21 +37,45 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
     }
 
     notifyDataSetChanged() {
-        // TODO
+        this.database.findCategories()
+            .then(categories => {
+                let newCategories = [];
+
+                categories.forEach(category => {
+                    let found = false;
+
+                    for (let i = 0; i < this.store.items.length; i++) {
+                        if (category === this.store.items[i].primaryText) {
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        newCategories.push(category);
+                    }
+                });
+
+                newCategories.forEach(category => {
+                    const categoryStore = new ListItemStore();
+
+                    categoryStore.itemId        = category;
+                    categoryStore.primaryText   = category;
+                    categoryStore.secondaryText = '0';
+
+                    this.store.item.push(categoryStore);
+                });
+
+                _.sortBy(this.store.items, item => item.primaryText);
+
+                // Force update
+                this.store.items = this.store.items;
+            });
     }
 
     initStore() {
         super.initStore();
 
         this.store.headerText = 'Categories';
-    }
-
-    /**
-     * Add a new category to the list.
-     * @param {String} category The category to be added to the list.
-     */
-    addCategory(category) {
-        // TODO
     }
 }
 
