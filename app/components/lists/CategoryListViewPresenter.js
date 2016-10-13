@@ -16,17 +16,17 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
 
     refresh() {
         this.database.findCategories()
-            .then(records => {
+            .then(categories => {
                 this.store.items = [];
 
-                if (records && records.length > 0) {
-                    records.forEach(record => {
+                if (categories && categories.length > 0) {
+                    categories.forEach(category => {
                         const categoryStore = new ListItemStore();
 
-                        categoryStore.itemId      = record.category;
-                        categoryStore.primaryText = record.category;
+                        categoryStore.itemId      = category;
+                        categoryStore.primaryText = category;
 
-                        this.database.countByCategory(record.category)
+                        this.database.countByCategory(category)
                             .then(count => categoryStore.secondaryText = count)
                             .catch(error => console.error(error));
 
@@ -62,14 +62,14 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                     categoryStore.primaryText   = category;
                     categoryStore.secondaryText = '0';
 
-                    this.store.item.push(categoryStore);
+                    this.store.items.push(categoryStore);
                 });
 
                 _.sortBy(this.store.items, item => item.primaryText);
 
                 // Force update
                 this.store.items = this.store.items;
-            });
+            }).catch(error => console.error(error));
     }
 
     initStore() {
