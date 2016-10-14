@@ -14,6 +14,7 @@ import Config from '../config.json';
 import Package from '../package.json';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
+import _ from 'lodash';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
@@ -163,16 +164,20 @@ export default class AppPresenter {
      * @param {String} category
      */
     addCategory(category) {
-        this._database.addCategory(category)
-            .then(() => {
-                this._store.addCategoryDialogStore.visible = false;
+        if (_.isEmpty(category)) {
+            PubSub.publish(EVENT_ERROR, 'Please enter the name of the new category');
+        } else {
+            this._database.addCategory(category)
+                .then(() => {
+                    this._store.addCategoryDialogStore.visible = false;
 
-                this._categoriesPresenter.notifyDataSetChanged();
-            }).catch(error => {
-                console.error(error);
+                    this._categoriesPresenter.notifyDataSetChanged();
+                }).catch(error => {
+                    console.error(error);
 
-                PubSub.publish(EVENT_ERROR, error.toString());
-            });
+                    PubSub.publish(EVENT_ERROR, error.message);
+                });
+        }
     }
 
     showAboutDialog() {
