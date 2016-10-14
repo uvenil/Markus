@@ -1,6 +1,9 @@
 exports[`test renders correctly 1`] = `
 <input
+  className="TextBox"
+  id="bJBi"
   onChange={[Function]}
+  onKeyPress={[Function]}
   style={
     Object {
       "WebkitUserSelect": "none",
@@ -16,5 +19,6 @@ exports[`test renders correctly 1`] = `
       "pointerEvents": "auto",
     }
   }
-  type="text" />
+  type="text"
+  value="" />
 `;

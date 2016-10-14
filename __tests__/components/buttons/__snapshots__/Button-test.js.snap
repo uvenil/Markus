@@ -17,6 +17,7 @@ exports[`test renders correctly 1`] = `
       "outline": "none",
       "padding": "4px 8px",
       "pointerEvents": "auto",
+      "width": undefined,
     }
   }
   type="button">

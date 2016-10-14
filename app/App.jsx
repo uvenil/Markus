@@ -203,7 +203,9 @@ export default class App extends React.Component {
                         <TextBox
                             ref="addCategoryName"
                             theme={this.props.theme}
-                            className="TextBox full-width" />
+                            className="TextBox full-width"
+                            onEnter={value => this.props.presenter.addCategory(value)}
+                            onEsc={() => this.props.store.addCategoryDialogStore.visible = false} />
                     </div>
                     <div style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX1 + 'px', paddingBottom : Config.paddingX1 + 'px' }}>
                         <span style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px' }}>
