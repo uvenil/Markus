@@ -417,7 +417,7 @@ const createViewMenu = () => {
             createThemeMenu()
         ]
     };
-}
+};
 
 const createDeveloperMenu = () => {
     return {
@@ -453,7 +453,7 @@ const createDeveloperMenu = () => {
                 }
             }
         ]
-    }
+    };
 };
 
 module.exports = { setMenuItemEnabled, createPreferencesMenu, createEditMenu, createSyntaxMenu, createThemeMenu, createViewMenu, createDeveloperMenu };
