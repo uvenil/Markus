@@ -1,7 +1,7 @@
 exports[`test renders correctly 1`] = `
 <input
   className="TextBox"
-  id="LFKA"
+  id="a"
   onChange={[Function]}
   onKeyPress={[Function]}
   style={

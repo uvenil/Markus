@@ -48,7 +48,7 @@ export default class ListView extends React.Component {
                         <div
                             key={Unique.elementId('a' + index)}
                             style={{ backgroundColor : index === this.props.selectedIndex ? selectedBackgroundColor : backgroundColor }}
-                            onClick={event => {
+                            onMouseDown={event => {
                                 if (event.nativeEvent.button === 2) {
                                     this._handleRightClick(index);
                                 } else {

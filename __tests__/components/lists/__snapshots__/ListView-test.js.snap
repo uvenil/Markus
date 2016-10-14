@@ -33,7 +33,7 @@ exports[`test renders correctly 1`] = `
     </span>
   </div>
   <div
-    onClick={[Function]}
+    onMouseDown={[Function]}
     style={
       Object {
         "backgroundColor": "#f1f2f4",
@@ -57,7 +57,7 @@ exports[`test renders correctly 1`] = `
     </span>
   </div>
   <div
-    onClick={[Function]}
+    onMouseDown={[Function]}
     style={
       Object {
         "backgroundColor": "#f1f2f4",
@@ -81,7 +81,7 @@ exports[`test renders correctly 1`] = `
     </span>
   </div>
   <div
-    onClick={[Function]}
+    onMouseDown={[Function]}
     style={
       Object {
         "backgroundColor": "#f1f2f4",
