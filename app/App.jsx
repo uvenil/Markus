@@ -99,7 +99,8 @@ export default class App extends React.Component {
                                 <FilterListView
                                     store={this.props.store.categoriesStore}
                                     backgroundColor={theme.secondaryBackgroundColor}
-                                    onItemClick={index => this.props.presenter.handleCategoryItemClick(index)} />
+                                    onItemClick={index => this.props.presenter.handleCategoryItemClick(index)}
+                                    onItemRightClick={index => this.props.presenter.handleCategoryItemRightClick(index)} />
                             </div>
                         </div>
                         {/* Add category button */}

@@ -12,8 +12,9 @@ import Package from '../package.json';
 import Config from '../config.json';
 import is from 'electron-is';
 
-const { Menu }      = require('electron').remote;
-const WindowManager = require('electron').remote.require('electron-window-manager');
+const { remote } = require('electron').remote;
+const { Menu } = remote;
+const WindowManager = remote.require('electron-window-manager');
 
 const AboutDialog = ({ productName, productVersion, copyright, imagePath }) => {
     const componentId = Unique.elementId('about');

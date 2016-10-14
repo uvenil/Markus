@@ -18,8 +18,9 @@ import _ from 'lodash';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
-const { Menu }      = require('electron').remote;
-const WindowManager = require('electron').remote.require('electron-window-manager');
+const { remote } = require('electron');
+const { dialog, Menu, MenuItem } = remote;
+const WindowManager = remote.require('electron-window-manager');
 
 const EVENT_ERROR = 'Event.error';
 
@@ -88,6 +89,60 @@ export default class AppPresenter {
             this._filterSelection.onNext(-1);
             this._categorySelection.onNext(index);
         }
+    }
+
+    handleCategoryItemRightClick(index) {
+        const category = this._store.categoriesStore.items[index].primaryText;
+        const menu     = new Menu();
+
+        menu.append(new MenuItem({
+            label : 'Rename ' + category,
+            click() {
+                // TODO
+            }
+        }));
+
+        menu.append(new MenuItem({
+            type : 'separator'
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Delete ' + category,
+            click() {
+                dialog.showMessageBox(remote.getCurrentWindow(), {
+                    type      : 'question',
+                    title     : 'Delete category',
+                    message   : 'Are you sure you want to delete category "' + category + '"?',
+                    buttons   : [ 'Yes', 'No'],
+                    defaultId : 0,
+                    cancelId  : 1
+                }, response => {
+                    if (response === 0) {
+                        // TODO
+                    }
+                });
+            }
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Delete ' + category + ' and notes',
+            click() {
+                dialog.showMessageBox(remote.getCurrentWindow(), {
+                    type      : 'question',
+                    title     : 'Delete category and notes',
+                    message   : 'Are you sure you want to delete category "' + category + '" and its notes?',
+                    buttons   : [ 'Yes', 'No'],
+                    defaultId : 0,
+                    cancelId  : 1
+                }, response => {
+                    if (response === 0) {
+                        // TODO
+                    }
+                });
+            }
+        }));
+
+        menu.popup(remote.getCurrentWindow());
     }
 
     handleNoteItemClick(index) {
@@ -201,7 +256,6 @@ export default class AppPresenter {
      */
     showFilterList(show) {
         this._store.showFilterList = show;
-
     }
 
     /**
