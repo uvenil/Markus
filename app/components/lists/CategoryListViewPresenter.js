@@ -32,6 +32,8 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
 
                         this.store.items.push(categoryStore);
                     });
+
+                    this._sort();
                 }
             }).catch(error => console.error(error));
     }
@@ -65,10 +67,7 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                     this.store.items.push(categoryStore);
                 });
 
-                _.sortBy(this.store.items, item => item.primaryText);
-
-                // Force update
-                this.store.items = this.store.items;
+                this._sort();
             }).catch(error => console.error(error));
     }
 
@@ -76,6 +75,10 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
         super.initStore();
 
         this.store.headerText = 'Categories';
+    }
+
+    _sort() {
+        this.store.items = _.sortBy(this.store.items, item => item.primaryText);
     }
 }
 
