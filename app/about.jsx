@@ -12,7 +12,7 @@ import Package from '../package.json';
 import Config from '../config.json';
 import is from 'electron-is';
 
-const { remote } = require('electron').remote;
+const { remote } = require('electron');
 const { Menu } = remote;
 const WindowManager = remote.require('electron-window-manager');
 
