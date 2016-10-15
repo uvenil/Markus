@@ -27,11 +27,11 @@ export default class FilterListView extends React.Component {
                         return (
                             <div
                                 key={Unique.elementId('listViewItem') + '-' + item.itemId}
-                                style={{ width : '100%', display : 'flex', flexFlow : 'row', paddingLeft : Config.paddingX2 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
+                                style={{ display : 'flex', flexFlow : 'row', paddingLeft : Config.paddingX2 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
                                 <div style={{ flex : '1 1 0' }}>
                                     <Text>{item.primaryText}</Text>
                                 </div>
-                                <Text>{item.secondaryText}</Text>
+                                <Text fontWeight={300}>{item.secondaryText}</Text>
                             </div>
                         );
                     })}

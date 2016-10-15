@@ -1,6 +1,7 @@
 'use strict';
 
 import AppStore from './AppStore';
+import DialogStore from './components/overlays/DIalogStore';
 import FilterListViewPresenter from './components/lists/FilterListViewPresenter';
 import CategoryListViewPresenter from './components/lists/CategoryListViewPresenter';
 import NoteListViewPresenter from './components/lists/NoteListViewPresenter';
@@ -10,14 +11,16 @@ import Database from './data/Database';
 import Record from './data/Record';
 import Rx from 'rx-lite';
 import Config from '../config.json';
-import Package from '../package.json';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
+import _ from 'lodash';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
-const { Menu }      = require('electron').remote;
-const WindowManager = require('electron').remote.require('electron-window-manager');
+const { remote } = require('electron');
+const { dialog, Menu, MenuItem } = remote;
+
+const EVENT_ERROR = 'Event.error';
 
 export default class AppPresenter {
     constructor() {
@@ -30,10 +33,13 @@ export default class AppPresenter {
         this._notesPresenter      = new NoteListViewPresenter(this._filtersPresenter, this._categoriesPresenter, this._database);
         this._editorPresenter     = new TextEditorPresenter(this._database);
 
-        this._store.filtersStore    = this._filtersPresenter.store;
-        this._store.categoriesStore = this._categoriesPresenter.store;
-        this._store.notesStore      = this._notesPresenter.store;
-        this._store.editorStore     = this._editorPresenter.store;
+        this._store.aboutDialogStore          = new DialogStore();
+        this._store.filtersStore              = this._filtersPresenter.store;
+        this._store.categoriesStore           = this._categoriesPresenter.store;
+        this._store.notesStore                = this._notesPresenter.store;
+        this._store.editorStore               = this._editorPresenter.store;
+        this._store.addCategoryDialogStore    = new DialogStore();
+        this._store.updateCategoryDialogStore = new DialogStore();
 
         this._filterSelection   = new Rx.Subject();
         this._categorySelection = new Rx.Subject();
@@ -85,6 +91,75 @@ export default class AppPresenter {
         }
     }
 
+    handleCategoryItemRightClick(index) {
+        const category = this._store.categoriesStore.items[index].primaryText;
+        const menu     = new Menu();
+
+        menu.append(new MenuItem({
+            label : 'Rename ' + category,
+            click : () => {
+                this._store.updateCategoryDialogStore.value   = category;
+                this._store.updateCategoryDialogStore.visible = true;
+            }
+        }));
+
+        menu.append(new MenuItem({
+            type : 'separator'
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Delete ' + category,
+            click : () => {
+                dialog.showMessageBox(remote.getCurrentWindow(), {
+                    type      : 'question',
+                    title     : 'Delete category',
+                    message   : 'Are you sure you want to delete category "' + category + '"?',
+                    buttons   : [ 'Yes', 'No'],
+                    defaultId : 0,
+                    cancelId  : 1
+                }, response => {
+                    if (response === 0) {
+                        this._database.removeCategory(category)
+                            .then(() => {
+                                this._categoriesPresenter.notifyDataSetChanged();
+
+                                if (this._store.categoriesStore.selectedIndex < 0) {
+                                    this._notesPresenter.refresh();
+                                }
+                            }).catch(error => console.error(error));
+                    }
+                });
+            }
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Delete ' + category + ' and notes',
+            click : () => {
+                dialog.showMessageBox(remote.getCurrentWindow(), {
+                    type      : 'question',
+                    title     : 'Delete category and notes',
+                    message   : 'Are you sure you want to delete category "' + category + '" and its notes?',
+                    buttons   : [ 'Yes', 'No'],
+                    defaultId : 0,
+                    cancelId  : 1
+                }, response => {
+                    if (response === 0) {
+                        this._database.removeCategory(category, true)
+                            .then(() => {
+                                this._categoriesPresenter.notifyDataSetChanged();
+
+                                if (this._store.categoriesStore.selectedIndex < 0) {
+                                    this._notesPresenter.refresh();
+                                }
+                            }).catch(error => console.error(error));
+                    }
+                });
+            }
+        }));
+
+        menu.popup(remote.getCurrentWindow());
+    }
+
     handleNoteItemClick(index) {
         if (this._store.notesStore.selectedIndex !== index) {
             console.trace('Selected note index = ' + index);
@@ -98,11 +173,7 @@ export default class AppPresenter {
     }
 
     handleAddCategoryClick() {
-        // TODO: Prompts for new category
-
-        // TODO: Checks for duplicate categories
-
-        this._categoriesPresenter.addCategory();
+        this._store.addCategoryDialogStore.visible = true;
     }
 
     handleAddNoteClick() {
@@ -156,16 +227,50 @@ export default class AppPresenter {
 
     //endregion
 
-    showAboutDialog() {
-        if (WindowManager.get('AboutDialog')) return;
+    //region Application operations
 
-        WindowManager.createNew('AboutDialog', Package.productName, 'file://' + __dirname + '/about.html', false, {
-            width         : Config.aboutWindowWidth,
-            height        : Config.aboutWindowHeight,
-            resizable     : false,
-            onLoadFailure : window => window.close()
-        }).open();
+    /**
+     * Adds a new category.
+     * @param {String} category
+     */
+    addCategory(category) {
+        if (_.isEmpty(category)) {
+            PubSub.publish(EVENT_ERROR, 'Please enter the name of the new category');
+        } else {
+            this._database.addCategory(category)
+                .then(() => {
+                    this._store.addCategoryDialogStore.visible = false;
+
+                    this._categoriesPresenter.notifyDataSetChanged();
+                }).catch(error => {
+                    console.error(error);
+
+                    PubSub.publish(EVENT_ERROR, error.message);
+                });
+        }
     }
+
+    /**
+     * Updates an existing category with the specified category.
+     * @param {String} oldCategory
+     * @param {String} newCategory
+     */
+    updateCategory(oldCategory, newCategory) {
+        this._database.updateCategory(oldCategory, newCategory)
+            .then(() => {
+                this._store.updateCategoryDialogStore.visible = false;
+
+                this._categoriesPresenter.notifyDataSetChanged();
+            }).catch(error => {
+                console.error(error);
+
+                PubSub.publish(EVENT_ERROR, error.message);
+            });
+    }
+
+    //endregion
+
+    //region UI operations
 
     /**
      * Shows or hides filter list view.
@@ -173,7 +278,6 @@ export default class AppPresenter {
      */
     showFilterList(show) {
         this._store.showFilterList = show;
-
     }
 
     /**
@@ -246,6 +350,8 @@ export default class AppPresenter {
             .then(() => console.trace('Saved setting ' + data.name + ' = ' + data.value))
             .catch(error => console.error(error));
     }
+
+    //endregion
 
     //region Debug operations
 

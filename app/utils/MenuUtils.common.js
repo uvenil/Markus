@@ -21,14 +21,14 @@ const createPreferencesMenu = () => {
         submenu : [
             {
                 label : 'Font',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('TextEditor.showFontDialog');
                 }
             },
             {
                 label : 'Highlight current line',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('TextEditor.settings', { name : 'highlightActiveLine', value : item.checked });
                 }
             },
@@ -38,21 +38,21 @@ const createPreferencesMenu = () => {
                     {
                         label : '2 spaces',
                         type  : 'radio',
-                        click(item, win) {
+                        click : (item, win) => {
                             if (win) PubSub.publish('TextEditor.settings', { name : 'tabSize', value : 2 });
                         }
                     },
                     {
                         label : '4 spaces',
                         type  : 'radio',
-                        click(item, win) {
+                        click : (item, win) => {
                             if (win) PubSub.publish('TextEditor.settings', { name : 'tabSize', value : 4 });
                         }
                     },
                     {
                         label : '8 spaces',
                         type  : 'radio',
-                        click(item, win) {
+                        click : (item, win) => {
                             if (win) PubSub.publish('TextEditor.settings', { name : 'tabSize', value : 8 });
                         }
                     }
@@ -61,28 +61,28 @@ const createPreferencesMenu = () => {
             {
                 label : 'Use soft tabs',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('TextEditor.settings', { name : 'useSoftTabs', value : item.checked });
                 }
             },
             {
                 label : 'Word wrap',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('TextEditor.settings', { name : 'wordWrap', value : item.checked });
                 }
             },
             {
                 label : 'Show line numbers',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('TextEditor.settings', { name : 'showLineNumbers', value : item.checked });
                 }
             },
             {
                 label : 'Show print margin',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('TextEditor.settings', { name : 'showPrintMargin', value : item.checked });
                 }
             },
@@ -92,28 +92,28 @@ const createPreferencesMenu = () => {
                     {
                         label : '76',
                         type  : 'radio',
-                        click(item, win) {
+                        click : (item, win) => {
                             if (win) PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 76 });
                         }
                     },
                     {
                         label : '80',
                         type  : 'radio',
-                        click(item, win) {
+                        click : (item, win) => {
                             if (win) PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 80 });
                         }
                     },
                     {
                         label : '100',
                         type  : 'radio',
-                        click(item, win) {
+                        click : (item, win) => {
                             if (win) PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 100 });
                         }
                     },
                     {
                         label : '120',
                         type  : 'radio',
-                        click(item, win) {
+                        click : (item, win) => {
                             if (win) PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 120 });
                         }
                     }
@@ -122,35 +122,35 @@ const createPreferencesMenu = () => {
             {
                 label : 'Show invisibles',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('TextEditor.settings', { name : 'showInvisibles', value : item.checked });
                 }
             },
             {
                 label : 'Show fold widgets',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('TextEditor.settings', { name : 'showFoldWidgets', value : item.checked });
                 }
             },
             {
                 label : 'Show gutter',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('TextEditor.settings', { name : 'showGutter', value : item.checked });
                 }
             },
             {
                 label : 'Show indent guides',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('TextEditor.settings', { name : 'displayIndentGuides', value : item.checked });
                 }
             },
             {
                 label : 'Scroll past last line',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('TextEditor.settings', { name : 'scrollPastEnd', value : item.checked });
                 }
             }
@@ -198,7 +198,7 @@ const createSyntaxMenu = () => {
         return {
             label : name,
             type  : 'radio',
-            click(item, win) {
+            click : (item, win) => {
                 if (win) PubSub.publish('Syntax.change', code);
             }
         };
@@ -345,7 +345,7 @@ const createThemeMenu = () => {
         return {
             label : name,
             type  : 'radio',
-            click(item, win) {
+            click : (item, win) => {
                 if (win) PubSub.publish('Theme.change', code);
             }
         };
@@ -399,14 +399,14 @@ const createViewMenu = () => {
             {
                 label : 'Show filter list',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('View.showFilterList', item.checked);
                 }
             },
             {
                 label : 'Show note list',
                 type  : 'checkbox',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('View.showNoteList', item.checked);
                 }
             },
@@ -417,7 +417,7 @@ const createViewMenu = () => {
             createThemeMenu()
         ]
     };
-}
+};
 
 const createDeveloperMenu = () => {
     return {
@@ -426,14 +426,14 @@ const createDeveloperMenu = () => {
             {
                 label       : 'Reload',
                 accelerator : 'CmdOrCtrl+R',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) win.reload();
                 }
             },
             {
                 label       : 'Toggle Developer Tools',
                 accelerator : is.macOS() ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) win.webContents.toggleDevTools();
                 }
             },
@@ -442,18 +442,18 @@ const createDeveloperMenu = () => {
             },
             {
                 label : 'Reset settings',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('Settings.reset');
                 }
             },
             {
                 label : 'Reset database',
-                click(item, win) {
+                click : (item, win) => {
                     if (win) PubSub.publish('Database.reset');
                 }
             }
         ]
-    }
+    };
 };
 
 module.exports = { setMenuItemEnabled, createPreferencesMenu, createEditMenu, createSyntaxMenu, createThemeMenu, createViewMenu, createDeveloperMenu };

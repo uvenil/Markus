@@ -2,6 +2,8 @@
 
 import Nedb from 'nedb';
 import Path from 'path';
+import Settings from '../utils/Settings';
+import _ from 'lodash';
 
 const { app } = require('electron').remote;
 
@@ -14,9 +16,12 @@ const SORTINGS = [
     { createdAt     : -1 }
 ];
 
+const _KEY_CATEGORIES = '_categories';
+
 export default class Database {
     constructor() {
-        this._db = undefined;
+        this._db       = undefined;
+        this._settings = new Settings();
     }
 
     /**
@@ -138,7 +143,7 @@ export default class Database {
      * @param {String} [keyword] Filter the results by the matching keyword.
      * @returns {Promise}
      */
-    findStarred(sorting, keyword) {
+    findByStarred(sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
                 fullText : new RegExp(keyword),
@@ -161,7 +166,7 @@ export default class Database {
      * Returns the number of records starred.
      * @returns {Promise}
      */
-    countStarred() {
+    countByStarred() {
         return new Promise((resolve, reject) => {
             this._db.count({
                 starred  : true,
@@ -182,7 +187,7 @@ export default class Database {
      * @param {String} [keyword] Filter the results by the matching keyword.
      * @returns {Promise}
      */
-    findArchived(sorting, keyword) {
+    findByArchived(sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
                 fullText : new RegExp(keyword),
@@ -203,7 +208,7 @@ export default class Database {
      * Returns the number of records archived.
      * @returns {Promise}
      */
-    countArchived() {
+    countByArchived() {
         return new Promise((resolve, reject) => {
             this._db.count({
                 archived : true
@@ -218,44 +223,13 @@ export default class Database {
     }
 
     /**
-     * Returns all categories.
-     * @returns {Promise}
-     */
-    findCategories() {
-        return new Promise((resolve, reject) => {
-            this._db.find({
-                archived : false
-            }).projection({
-                category : 1,
-                _id      : 0
-            }).sort({
-                category : 1
-            }).exec((error, docs) => {
-                if (error) {
-                    reject(error);
-                } else {
-                    if (docs) {
-                        if (docs[0] && Object.keys(docs[0]).length === 0) {
-                            resolve(undefined);
-                        } else {
-                            resolve(docs);
-                        }
-                    } else {
-                        resolve(undefined);
-                    }
-                }
-            });
-        });
-    }
-
-    /**
      * Returns the records of the specified category.
      * @param {String} category The specific category of records to get.
      * @param {number} [sorting]
      * @param {String} [keyword] Filter the results by the matching keyword.
      * @returns {Promise}
      */
-    findCategory(category, sorting, keyword) {
+    findByCategory(category, sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find({
                 fullText : new RegExp(keyword),
@@ -284,7 +258,7 @@ export default class Database {
      * @param {String} category
      * @returns {Promise}
      */
-    countCategory(category) {
+    countByCategory(category) {
         return new Promise((resolve, reject) => {
             this._db.count({
                 category : category,
@@ -296,6 +270,135 @@ export default class Database {
                     resolve(count);
                 }
             });
+        });
+    }
+
+    /**
+     * Returns all categories.
+     * @returns {Promise}
+     */
+    findCategories() {
+        return new Promise((resolve, reject) => {
+            this._settings.get(_KEY_CATEGORIES, [])
+                .then(categories => resolve(categories && categories.length > 0 ? categories : []))
+                .catch(error => reject(error));
+        });
+    }
+
+    /**
+     * Returns true if the specified category exist.
+     * @param {String} category The category to check for existence.
+     * @return {Promise}
+     */
+    hasCategory(category) {
+        return new Promise((resolve, reject) => {
+            this.findCategories()
+                .then(categories => {
+                    resolve(_.indexOf(categories, category) >= 0);
+                }).catch(error => reject(error));
+        });
+    }
+
+    /**
+     * Adds a new category
+     * @param {String} category The category to add.
+     */
+    addCategory(category) {
+        return new Promise((resolve, reject) => {
+            this.hasCategory(category)
+                .then(hasCategory => {
+                    if (hasCategory) {
+                        reject(new Error('Duplicate category: ' + category));
+                    } else {
+                        this.findCategories()
+                            .then(categories => {
+                                categories.push(category);
+
+                                categories = _.sortBy(categories);
+
+                                this._settings.set(_KEY_CATEGORIES, categories)
+                                    .then(() => resolve())
+                                    .catch(error => reject(error));
+                            }).catch(error => reject(error));
+                    }
+                }).catch(error => reject(error));
+        });
+    }
+
+    /**
+     * Updates an existing category with the specified category.
+     * @param {String} oldCategory An existing category to update.
+     * @param {String} newCategory The category to update.
+     * @returns {Promise}
+     */
+    updateCategory(oldCategory, newCategory) {
+        return new Promise((resolve, reject) => {
+            this.hasCategory(oldCategory)
+                .then(hasCategory => {
+                    if (hasCategory) {
+                        this.findCategories()
+                            .then(categories => {
+                                categories = _.pull(categories, oldCategory);
+                                categories.push(newCategory);
+                                categories = _.sortBy(categories);
+
+                                this._settings.set(_KEY_CATEGORIES, categories)
+                                    .then(() => {
+                                        this._db.update({ category : oldCategory }, { $set : { category : newCategory }}, { multi : true }, error => {
+                                            if (error) {
+                                                reject(error);
+                                            } else {
+                                                resolve();
+                                            }
+                                        });
+                                    }).catch(error => reject(error));
+                            }).catch(error => reject(error));
+                    } else {
+                        reject(new Error('No such category: ' + category));
+                    }
+                }).catch(error => reject(error));
+        });
+    }
+
+    /**
+     * Removes a category.
+     * @param {String} category The category to remove.
+     * @param {boolean} [withNotes] Whether to include notes of the specified category in the deletion.
+     */
+    removeCategory(category, withNotes) {
+        return new Promise((resolve, reject) => {
+            this.hasCategory(category)
+                .then(hasCategory => {
+                    if (hasCategory) {
+                        this.findCategories()
+                            .then(categories => {
+                                categories = _.pull(categories, category);
+
+                                this._settings.set(_KEY_CATEGORIES, categories)
+                                    .then(() => {
+                                        if (withNotes) {
+                                            this._db.remove({ category : category }, { multi : true }, error => {
+                                                if (error) {
+                                                    reject(error);
+                                                } else {
+                                                    resolve();
+                                                }
+                                            });
+                                        } else {
+                                            this._db.update({ category: category }, { $set: { category: null } }, { multi: true }, error => {
+                                                if (error) {
+                                                    reject(error);
+                                                } else {
+                                                    resolve();
+                                                }
+                                            });
+                                        }
+                                    }).catch(error => reject(error));
+                            });
+                    } else {
+                        reject(new Error('No such category: ' + category));
+                    }
+                }).catch(error => reject(error));
         });
     }
 

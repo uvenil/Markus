@@ -9,6 +9,7 @@ exports[`test renders correctly 1`] = `
       "display": "block",
       "fontFamily": undefined,
       "fontSize": undefined,
+      "fontWeight": undefined,
       "pointerEvents": "auto",
     }
   } />

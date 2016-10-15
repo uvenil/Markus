@@ -40,7 +40,7 @@ export default class Button extends React.Component {
             <button
                 type="button"
                 className={this.props.className}
-                style={{ WebkitUserSelect : 'none', cursor : 'default', fontFamily : this.props.fontFamily, fontSize : this.props.textSize, color : textColor, backgroundColor : backgroundColor, outline : 'none', borderWidth : '1px', borderStyle : 'solid', borderRadius : Config.paddingX0 + 'px', borderColor : backgroundColor, padding : Config.paddingX0 + 'px ' + Config.paddingX1 + 'px', pointerEvents : this.props.disabled ? 'none' : 'auto' }}
+                style={{ WebkitUserSelect : 'none', cursor : 'default', width : this.props.width, fontFamily : this.props.fontFamily, fontSize : this.props.textSize, color : textColor, backgroundColor : backgroundColor, outline : 'none', borderWidth : '1px', borderStyle : 'solid', borderRadius : Config.paddingX0 + 'px', borderColor : backgroundColor, padding : Config.paddingX0 + 'px ' + Config.paddingX1 + 'px', pointerEvents : this.props.disabled ? 'none' : 'auto' }}
                 onClick={() => this._handleClick()}>
                 {this.props.children}
             </button>
@@ -50,6 +50,7 @@ export default class Button extends React.Component {
 
 Button.propTypes = {
     className       : React.PropTypes.string,
+    width           : React.PropTypes.string,
     fontFamily      : React.PropTypes.string,
     textSize        : React.PropTypes.string,
     textColor       : React.PropTypes.string,

@@ -14,7 +14,7 @@ export default class Text extends React.Component {
         return (
             <span
                 className={this.props.className}
-                style={{ display : 'block', WebkitUserSelect : 'none', cursor : 'default', fontFamily : this.props.fontFamily, fontSize : this.props.textSize, color : textColor, pointerEvents : this.props.disabled ? 'none' : 'auto' }}>
+                style={{ display : 'block', WebkitUserSelect : 'none', cursor : 'default', fontFamily : this.props.fontFamily, fontWeight : this.props.fontWeight, fontSize : this.props.textSize, color : textColor, pointerEvents : this.props.disabled ? 'none' : 'auto' }}>
                 {this.props.children}
             </span>
         );
@@ -24,6 +24,7 @@ export default class Text extends React.Component {
 Text.propTypes = {
     className  : React.PropTypes.string,
     fontFamily : React.PropTypes.string,
+    fontWeight : React.PropTypes.oneOfType([ React.PropTypes.string, React.PropTypes.number ]),
     textSize   : React.PropTypes.string,
     textColor  : React.PropTypes.string,
     theme      : React.PropTypes.oneOf([ 'light', 'dark' ]),

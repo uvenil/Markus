@@ -4,6 +4,8 @@ import React from 'react';
 import Renderer from 'react-test-renderer';
 import Label from '../../../app/components/text/Label.jsx';
 
+jest.mock('../../../app/utils/Unique');
+
 it('renders correctly', () => {
     const label = Renderer.create(
         <Label />

@@ -3,6 +3,7 @@
 import ListViewPresenter from './ListViewPresenter';
 import ListItemStore from './ListItemStore';
 import Database from '../../data/Database';
+import _ from 'lodash';
 
 export default class CategoryListViewPresenter extends ListViewPresenter {
     /**
@@ -15,23 +16,84 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
 
     refresh() {
         this.database.findCategories()
-            .then(records => {
+            .then(categories => {
                 this.store.items = [];
 
-                if (records && records.length > 0) {
-                    records.forEach(record => {
+                if (categories && categories.length > 0) {
+                    categories.forEach(category => {
                         const categoryStore = new ListItemStore();
 
-                        categoryStore.itemId      = record.category;
-                        categoryStore.primaryText = record.category;
+                        categoryStore.itemId      = category;
+                        categoryStore.primaryText = category;
 
-                        this.database.countCategory(record.category)
+                        this.database.countByCategory(category)
                             .then(count => categoryStore.secondaryText = count)
                             .catch(error => console.error(error));
 
                         this.store.items.push(categoryStore);
                     });
+
+                    this._sort();
                 }
+            }).catch(error => console.error(error));
+    }
+
+    notifyDataSetChanged() {
+        this.database.findCategories()
+            .then(categories => {
+                //region Finds newly added categories
+
+                let newCategories = [];
+
+                categories.forEach(category => {
+                    let found = false;
+
+                    for (let i = 0; i < this.store.items.length; i++) {
+                        if (category === this.store.items[i].primaryText) {
+                            found = true;
+                        }
+                    }
+
+                    if (!found) {
+                        newCategories.push(category);
+                    }
+                });
+
+                //endregion
+
+                //region Removes deleted categories
+
+                let index = 0;
+
+                while (index < this.store.items.length) {
+                    let found = false;
+
+                    categories.forEach(category => {
+                        if (category === this.store.items[index].primaryText) {
+                            found = true;
+                        }
+                    });
+
+                    if (found) {
+                        index++;
+                    } else {
+                        this.store.items.splice(index, 1);
+                    }
+                }
+
+                //endregion
+
+                newCategories.forEach(category => {
+                    const categoryStore = new ListItemStore();
+
+                    categoryStore.itemId        = category;
+                    categoryStore.primaryText   = category;
+                    categoryStore.secondaryText = '0';
+
+                    this.store.items.push(categoryStore);
+                });
+
+                this._sort();
             }).catch(error => console.error(error));
     }
 
@@ -41,12 +103,8 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
         this.store.headerText = 'Categories';
     }
 
-    /**
-     * Add a new category to the list.
-     * @param {String} category The category to be added to the list.
-     */
-    addCategory(category) {
-        // TODO
+    _sort() {
+        this.store.items = _.sortBy(this.store.items, item => item.primaryText);
     }
 }
 
