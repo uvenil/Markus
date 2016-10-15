@@ -15,7 +15,7 @@ exports[`test renders correctly 1`] = `
       "fontFamily": undefined,
       "fontSize": undefined,
       "outline": "none",
-      "padding": "4px 8px",
+      "padding": "4px 4px",
       "pointerEvents": "auto",
       "width": undefined,
     }
