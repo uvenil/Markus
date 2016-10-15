@@ -111,7 +111,9 @@ export default class App extends React.Component {
                         <Button
                             backgroundColor="none"
                             onClick={() => this.props.presenter.handleAddCategoryClick()}>
-                            <i className="fa fa-fw fa-plus" />
+                            <i
+                                className="fa fa-fw fa-plus"
+                                title="Add category…" />
                         </Button>
                     </SplitPane>
                     <SplitPane
@@ -145,7 +147,9 @@ export default class App extends React.Component {
                                         backgroundColor="none"
                                         disabled={!this.props.store.addNoteEnabled}
                                         onClick={() => this.props.presenter.handleAddNoteClick()}>
-                                        <i className="fa fa-fw fa-plus" />
+                                        <i
+                                            className="fa fa-fw fa-plus"
+                                            title="Add note" />
                                     </Button>
                                     <div style={{ flex : '1 1 0', textAlign : 'right' }}>
                                         <Overlay
@@ -191,17 +195,23 @@ export default class App extends React.Component {
                                 {/* Note editor tools */}
                                 <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
                                     <div>
+                                        {/* Star note */}
                                         <Button
                                             backgroundColor="none"
                                             disabled={_.isNil(this.props.store.editorStore.record)}
                                             onClick={() => this.props.presenter.handleStarClick()}>
-                                            <i className={'fa fa-fw fa-star' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.starred) ? '' : '-o')} />
+                                            <i
+                                                className={'fa fa-fw fa-star' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.starred) ? '' : '-o')}
+                                                title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.starred) ? 'Un-star this note' : 'Star this note'} />
                                         </Button>
+                                        {/* Archive note */}
                                         <Button
                                             backgroundColor="none"
                                             disabled={_.isNil(this.props.store.editorStore.record)}
                                             onClick={() => this.props.presenter.handleArchiveClick()}>
-                                            <i className={'fa fa-fw fa-trash' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? '' : '-o')} />
+                                            <i
+                                                className={'fa fa-fw fa-trash' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? '' : '-o')}
+                                                title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? 'Un-archive this note' : 'Archive this note'} />
                                         </Button>
                                     </div>
                                     <div style={{ flex : '1 1 0', textAlign : 'right' }}>
