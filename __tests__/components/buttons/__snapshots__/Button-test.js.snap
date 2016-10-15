@@ -5,8 +5,8 @@ exports[`test renders correctly 1`] = `
   style={
     Object {
       "WebkitUserSelect": "none",
-      "backgroundColor": "#e5e7ed",
-      "borderColor": "#e5e7ed",
+      "backgroundColor": "#f5f7fd",
+      "borderColor": "#f5f7fd",
       "borderRadius": "4px",
       "borderStyle": "solid",
       "borderWidth": "1px",

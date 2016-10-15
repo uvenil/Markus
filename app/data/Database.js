@@ -314,7 +314,7 @@ export default class Database {
                             .then(categories => {
                                 categories.push(category);
 
-                                _.sortBy(categories);
+                                categories = _.sortBy(categories);
 
                                 this._settings.set(_KEY_CATEGORIES, categories)
                                     .then(() => resolve())
@@ -326,21 +326,74 @@ export default class Database {
     }
 
     /**
+     * Updates an existing category with the specified category.
+     * @param {String} oldCategory An existing category to update.
+     * @param {String} newCategory The category to update.
+     * @returns {Promise}
+     */
+    updateCategory(oldCategory, newCategory) {
+        return new Promise((resolve, reject) => {
+            this.hasCategory(oldCategory)
+                .then(hasCategory => {
+                    if (hasCategory) {
+                        this.findCategories()
+                            .then(categories => {
+                                categories = _.pull(categories, oldCategory);
+                                categories.push(newCategory);
+                                categories = _.sortBy(categories);
+
+                                this._settings.set(_KEY_CATEGORIES, categories)
+                                    .then(() => {
+                                        this._db.update({ category : oldCategory }, { $set : { category : newCategory }}, { multi : true }, error => {
+                                            if (error) {
+                                                reject(error);
+                                            } else {
+                                                resolve();
+                                            }
+                                        });
+                                    }).catch(error => reject(error));
+                            }).catch(error => reject(error));
+                    } else {
+                        reject(new Error('No such category: ' + category));
+                    }
+                }).catch(error => reject(error));
+        });
+    }
+
+    /**
      * Removes a category.
      * @param {String} category The category to remove.
+     * @param {boolean} [withNotes] Whether to include notes of the specified category in the deletion.
      */
-    removeCategory(category) {
+    removeCategory(category, withNotes) {
         return new Promise((resolve, reject) => {
             this.hasCategory(category)
                 .then(hasCategory => {
                     if (hasCategory) {
                         this.findCategories()
                             .then(categories => {
-                                _.pull(categories, category);
+                                categories = _.pull(categories, category);
 
                                 this._settings.set(_KEY_CATEGORIES, categories)
-                                    .then(() => resolve())
-                                    .catch(error => reject(error));
+                                    .then(() => {
+                                        if (withNotes) {
+                                            this._db.remove({ category : category }, { multi : true }, error => {
+                                                if (error) {
+                                                    reject(error);
+                                                } else {
+                                                    resolve();
+                                                }
+                                            });
+                                        } else {
+                                            this._db.update({ category: category }, { $set: { category: null } }, { multi: true }, error => {
+                                                if (error) {
+                                                    reject(error);
+                                                } else {
+                                                    resolve();
+                                                }
+                                            });
+                                        }
+                                    }).catch(error => reject(error));
                             });
                     } else {
                         reject(new Error('No such category: ' + category));

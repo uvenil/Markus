@@ -12,6 +12,7 @@ import PopUpMenu from './components/overlays/PopUpMenu.jsx';
 import Dialog from './components/overlays/Dialog.jsx';
 import FilterListView from './components/lists/FilterListView.jsx';
 import NoteListView from './components/lists/NoteListView.jsx';
+import PromptDialog from './components/overlays/PromptDialog.jsx';
 import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
 import { observer } from 'mobx-react';
@@ -213,40 +214,19 @@ export default class App extends React.Component {
                     </div>
                 </Dialog>
                 {/* Add category dialog */}
-                <Dialog
+                <PromptDialog
                     store={this.props.store.addCategoryDialogStore}
                     width={200}
                     height={108}
-                    onAfterOpen={() => this.refs.addCategoryName.focus()}
-                    onBeforeClose={() => this.refs.addCategoryName.value = ''}>
-                    <div style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX1 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
-                        <Text>New category name:</Text>
-                    </div>
-                    <div style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX1 + 'px' }}>
-                        <TextBox
-                            ref="addCategoryName"
-                            theme={this.props.theme}
-                            className="TextBox full-width"
-                            onEnter={value => this.props.presenter.addCategory(value)}
-                            onEsc={() => this.props.store.addCategoryDialogStore.visible = false} />
-                    </div>
-                    <div style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX1 + 'px', paddingBottom : Config.paddingX1 + 'px' }}>
-                        <span style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px' }}>
-                            <Button
-                                width={Config.buttonWidth}
-                                theme={this.props.theme}
-                                backgroundColor="primary"
-                                onClick={() => this.props.presenter.addCategory(this.refs.addCategoryName.value)}>OK</Button>
-                        </span>
-                        <span style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px' }}>
-                            <Button
-                                width={Config.buttonWidth}
-                                theme={this.props.theme}
-                                backgroundColor="default"
-                                onClick={() => this.props.store.addCategoryDialogStore.visible = false}>Cancel</Button>
-                        </span>
-                    </div>
-                </Dialog>
+                    label="New category name:"
+                    onEnter={value => this.props.presenter.addCategory(value)} />
+                {/* Rename category dialog */}
+                <PromptDialog
+                    store={this.props.store.updateCategoryDialogStore}
+                    width={200}
+                    height={108}
+                    label="Rename category:"
+                    onEnter={value => this.props.presenter.updateCategory(this.props.store.updateCategoryDialogStore.value, value)} />
             </div>
         );
     }

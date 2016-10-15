@@ -41,6 +41,8 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
     notifyDataSetChanged() {
         this.database.findCategories()
             .then(categories => {
+                //region Finds newly added categories
+
                 let newCategories = [];
 
                 categories.forEach(category => {
@@ -56,6 +58,30 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                         newCategories.push(category);
                     }
                 });
+
+                //endregion
+
+                //region Removes deleted categories
+
+                let index = 0;
+
+                while (index < this.store.items.length) {
+                    let found = false;
+
+                    categories.forEach(category => {
+                        if (category === this.store.items[index].primaryText) {
+                            found = true;
+                        }
+                    });
+
+                    if (found) {
+                        index++;
+                    } else {
+                        this.store.items.splice(index, 1);
+                    }
+                }
+
+                //endregion
 
                 newCategories.forEach(category => {
                     const categoryStore = new ListItemStore();

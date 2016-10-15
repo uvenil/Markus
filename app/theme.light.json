@@ -9,7 +9,7 @@
     "disabledBackgroundColor"  : "#f3f4f5",
     "borderColor"              : "#bfbfbf",
     "overlayColor"             : "rgba(0, 0, 0, 0.25)",
-    "buttonDefaultColor"       : "#e5e7ed",
+    "buttonDefaultColor"       : "#f5f7fd",
     "buttonPrimaryColor"       : "#00acee",
     "buttonSuccessColor"       : "#4ebd4a",
     "buttonErrorColor"         : "#ee4f3d",

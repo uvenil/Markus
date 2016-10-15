@@ -46,10 +46,10 @@ export default class NoteListViewPresenter {
             promise = this._database.findByCategory(selectedCategoryItemId, this._sorting);
         }
 
+        this._store.items = [];
+
         if (promise) {
             promise.then(docs => {
-                this._store.items = [];
-
                 docs.forEach(doc => {
                     this._store.items.push(Record.fromDoc(doc).toListItemStore());
                 });

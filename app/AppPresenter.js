@@ -33,12 +33,13 @@ export default class AppPresenter {
         this._notesPresenter      = new NoteListViewPresenter(this._filtersPresenter, this._categoriesPresenter, this._database);
         this._editorPresenter     = new TextEditorPresenter(this._database);
 
-        this._store.aboutDialogStore       = new DialogStore();
-        this._store.filtersStore           = this._filtersPresenter.store;
-        this._store.categoriesStore        = this._categoriesPresenter.store;
-        this._store.notesStore             = this._notesPresenter.store;
-        this._store.editorStore            = this._editorPresenter.store;
-        this._store.addCategoryDialogStore = new DialogStore();
+        this._store.aboutDialogStore          = new DialogStore();
+        this._store.filtersStore              = this._filtersPresenter.store;
+        this._store.categoriesStore           = this._categoriesPresenter.store;
+        this._store.notesStore                = this._notesPresenter.store;
+        this._store.editorStore               = this._editorPresenter.store;
+        this._store.addCategoryDialogStore    = new DialogStore();
+        this._store.updateCategoryDialogStore = new DialogStore();
 
         this._filterSelection   = new Rx.Subject();
         this._categorySelection = new Rx.Subject();
@@ -96,8 +97,9 @@ export default class AppPresenter {
 
         menu.append(new MenuItem({
             label : 'Rename ' + category,
-            click() {
-                // TODO
+            click : () => {
+                this._store.updateCategoryDialogStore.value   = category;
+                this._store.updateCategoryDialogStore.visible = true;
             }
         }));
 
@@ -107,7 +109,7 @@ export default class AppPresenter {
 
         menu.append(new MenuItem({
             label : 'Delete ' + category,
-            click() {
+            click : () => {
                 dialog.showMessageBox(remote.getCurrentWindow(), {
                     type      : 'question',
                     title     : 'Delete category',
@@ -117,7 +119,14 @@ export default class AppPresenter {
                     cancelId  : 1
                 }, response => {
                     if (response === 0) {
-                        // TODO
+                        this._database.removeCategory(category)
+                            .then(() => {
+                                this._categoriesPresenter.notifyDataSetChanged();
+
+                                if (this._store.categoriesStore.selectedIndex < 0) {
+                                    this._notesPresenter.refresh();
+                                }
+                            }).catch(error => console.error(error));
                     }
                 });
             }
@@ -125,7 +134,7 @@ export default class AppPresenter {
 
         menu.append(new MenuItem({
             label : 'Delete ' + category + ' and notes',
-            click() {
+            click : () => {
                 dialog.showMessageBox(remote.getCurrentWindow(), {
                     type      : 'question',
                     title     : 'Delete category and notes',
@@ -135,7 +144,14 @@ export default class AppPresenter {
                     cancelId  : 1
                 }, response => {
                     if (response === 0) {
-                        // TODO
+                        this._database.removeCategory(category, true)
+                            .then(() => {
+                                this._categoriesPresenter.notifyDataSetChanged();
+
+                                if (this._store.categoriesStore.selectedIndex < 0) {
+                                    this._notesPresenter.refresh();
+                                }
+                            }).catch(error => console.error(error));
                     }
                 });
             }
@@ -232,6 +248,24 @@ export default class AppPresenter {
                     PubSub.publish(EVENT_ERROR, error.message);
                 });
         }
+    }
+
+    /**
+     * Updates an existing category with the specified category.
+     * @param {String} oldCategory
+     * @param {String} newCategory
+     */
+    updateCategory(oldCategory, newCategory) {
+        this._database.updateCategory(oldCategory, newCategory)
+            .then(() => {
+                this._store.updateCategoryDialogStore.visible = false;
+
+                this._categoriesPresenter.notifyDataSetChanged();
+            }).catch(error => {
+                console.error(error);
+
+                PubSub.publish(EVENT_ERROR, error.message);
+            });
     }
 
     //endregion
