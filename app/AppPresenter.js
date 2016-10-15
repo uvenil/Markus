@@ -187,6 +187,14 @@ export default class AppPresenter {
             }).catch(error => console.error(error));
     }
 
+    handleStarClick() {
+        this._store.editorStore.record.starred = !this._store.editorStore.record.starred;
+
+        this._database.addOrUpdate(this._store.editorStore.record.toDoc())
+            .then(() => this._filtersPresenter.refresh())
+            .catch(error => console.error(error));
+    }
+
     //endregion
 
     //region Refresh operations

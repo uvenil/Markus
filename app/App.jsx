@@ -22,6 +22,7 @@ import PubSub from 'pubsub-js';
 import Package from '../package.json';
 import Config from '../config.json';
 import is from 'electron-is';
+import _ from 'lodash';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
@@ -188,7 +189,18 @@ export default class App extends React.Component {
                                 <TextEditor
                                     store={this.props.store.editorStore} />
                                 {/* Note editor tools */}
-                                <div>Note editor tools</div>
+                                <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
+                                    <div>
+                                        <Button
+                                            backgroundColor="none"
+                                            disabled={_.isNil(this.props.store.editorStore.record)}
+                                            onClick={() => this.props.presenter.handleStarClick()}>
+                                            <i className={'fa fa-fw fa-star' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.starred) ? '' : '-o')} />
+                                        </Button>
+                                    </div>
+                                    <div style={{ flex : '1 1 0', textAlign : 'right' }}>
+                                    </div>
+                                </div>
                             </SplitPane>
                         </SplitPane>
                     </SplitPane>
