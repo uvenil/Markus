@@ -16,7 +16,9 @@ import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
 import { observer } from 'mobx-react';
 import Settings from './utils/Settings';
+import Path from 'path';
 import PubSub from 'pubsub-js';
+import Package from '../package.json';
 import Config from '../config.json';
 import is from 'electron-is';
 
@@ -57,7 +59,7 @@ export default class App extends React.Component {
         this._subscriptions.push(PubSub.subscribe('Event.error', (eventName, message) => this._handleError(message)));
         this._subscriptions.push(PubSub.subscribe('Database.reset', () => this.props.presenter.resetDatabase()));
         this._subscriptions.push(PubSub.subscribe('Settings.reset', () => this.props.presenter.resetSettings()));
-        this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', () => this.props.presenter.showAboutDialog()));
+        this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', () => this.props.store.aboutDialogStore.visible = true));
         this._subscriptions.push(PubSub.subscribe('View.showFilterList', (eventName, show) => this.props.presenter.showFilterList(show)));
         this._subscriptions.push(PubSub.subscribe('View.showNoteList', (eventName, show) => this.props.presenter.showNoteList(show)));
         this._subscriptions.push(PubSub.subscribe('Syntax.change', (eventName, syntax) => this.props.presenter.changeSyntax(syntax)));
@@ -190,6 +192,26 @@ export default class App extends React.Component {
                         </SplitPane>
                     </SplitPane>
                 </SplitPane>
+                {/* About dialog */}
+                <Dialog
+                    store={this.props.store.aboutDialogStore}
+                    width={300}
+                    height={260}>
+                    <div style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX1, paddingBottom : Config.paddingX2, backgroundColor : (theme ? theme.dialogBackgroundColor : undefined) }}>
+                        <img src={Path.join(__dirname, './images/artisan.png')} /><br />
+                        <Text textSize="large">{Package.productName}</Text>
+                        <Text>{'Version ' + Package.version}</Text>
+                        <Text textSize="small">{'Copyright © ' + new Date().getFullYear()}</Text>
+                        <div style={{ paddingLeft : Config.paddingX2, paddingRight : Config.paddingX2, paddingTop : Config.paddingX2, paddingBottom : Config.paddingX1 }}>
+                            <Button
+                                width={Config.buttonWidth}
+                                backgroundColor="primary"
+                                onClick={() => this.props.store.aboutDialogStore.visible = false}>
+                                Close
+                            </Button>
+                        </div>
+                    </div>
+                </Dialog>
                 {/* Add category dialog */}
                 <Dialog
                     store={this.props.store.addCategoryDialogStore}

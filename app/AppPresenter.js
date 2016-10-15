@@ -11,7 +11,6 @@ import Database from './data/Database';
 import Record from './data/Record';
 import Rx from 'rx-lite';
 import Config from '../config.json';
-import Package from '../package.json';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 import _ from 'lodash';
@@ -20,7 +19,6 @@ if (is.dev()) PubSub.immediateExceptions = true;
 
 const { remote } = require('electron');
 const { dialog, Menu, MenuItem } = remote;
-const WindowManager = remote.require('electron-window-manager');
 
 const EVENT_ERROR = 'Event.error';
 
@@ -35,6 +33,7 @@ export default class AppPresenter {
         this._notesPresenter      = new NoteListViewPresenter(this._filtersPresenter, this._categoriesPresenter, this._database);
         this._editorPresenter     = new TextEditorPresenter(this._database);
 
+        this._store.aboutDialogStore       = new DialogStore();
         this._store.filtersStore           = this._filtersPresenter.store;
         this._store.categoriesStore        = this._categoriesPresenter.store;
         this._store.notesStore             = this._notesPresenter.store;
@@ -233,17 +232,6 @@ export default class AppPresenter {
                     PubSub.publish(EVENT_ERROR, error.message);
                 });
         }
-    }
-
-    showAboutDialog() {
-        if (WindowManager.get('AboutDialog')) return;
-
-        WindowManager.createNew('AboutDialog', Package.productName, 'file://' + __dirname + '/about.html', false, {
-            width         : Config.aboutWindowWidth,
-            height        : Config.aboutWindowHeight,
-            resizable     : false,
-            onLoadFailure : window => window.close()
-        }).open();
     }
 
     //endregion

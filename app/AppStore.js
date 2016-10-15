@@ -6,6 +6,7 @@ import Config from '../config.json';
 export default class AppStore {
     constructor() {
         extendObservable(this, {
+            aboutDialogStore       : null,
             showFilterList         : Config.defaultShowFilterList,
             showNoteList           : Config.defaultShowNoteList,
             filterListWidth        : Config.filterListWidth,
@@ -15,7 +16,7 @@ export default class AppStore {
             notesStore             : null,
             editorStore            : null,
             addNoteEnabled         : false,
-            addCategoryDialogStore : false
+            addCategoryDialogStore : null
         });
     }
 }
