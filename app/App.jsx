@@ -197,6 +197,12 @@ export default class App extends React.Component {
                                             onClick={() => this.props.presenter.handleStarClick()}>
                                             <i className={'fa fa-fw fa-star' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.starred) ? '' : '-o')} />
                                         </Button>
+                                        <Button
+                                            backgroundColor="none"
+                                            disabled={_.isNil(this.props.store.editorStore.record)}
+                                            onClick={() => this.props.presenter.handleArchiveClick()}>
+                                            <i className={'fa fa-fw fa-trash' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? '' : '-o')} />
+                                        </Button>
                                     </div>
                                     <div style={{ flex : '1 1 0', textAlign : 'right' }}>
                                     </div>
