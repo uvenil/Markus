@@ -76,33 +76,36 @@ export default class App extends React.Component {
     }
 
     render() {
-        const theme = this.props.theme === 'dark' ? require('./theme.dark.json') : require('./theme.light.json');
+        const theme = this.props.store.theme === 'dark' ? require('./theme.dark.json') : require('./theme.light.json');
 
         return (
-            <div>
+            <div style={{ backgroundColor : theme.primaryBackgroundColor }}>
                 <SplitPane
                     split="vertical"
                     minSize={this.props.store.showFilterList ? Config.filterListMinWidth : 0}
                     defaultSize={this.props.store.showFilterList ? this.props.store.filterListWidth : 0}
                     allowResize={this.props.store.showFilterList}
                     pane1Style={{ display : this.props.store.showFilterList ? 'block' : 'none' }}
+                    style={{ backgroundColor : theme.primaryBackgroundColor }}
                     onChange={size => this._handleFilterListWidthChange(size)}>
                     <SplitPane
                         split="horizontal"
                         defaultSize={Config.bottomBarHeight}
                         allowResize={false}
                         primary="second"
-                        style={{ backgroundColor : theme.secondaryBackgroundColor }}>
+                        style={{ backgroundColor : theme.primaryBackgroundColor }}>
                         {/* Filter list */}
                         <div style={{ height : 'calc(100vh - ' + Config.bottomBarHeight + 'px)', display : 'flex', flexFlow : 'column' }}>
                             <FilterListView
                                 store={this.props.store.filtersStore}
-                                backgroundColor={theme.secondaryBackgroundColor}
+                                backgroundColor={theme.primaryBackgroundColor}
+                                theme={this.props.store.theme}
                                 onItemClick={index => this.props.presenter.handleFilterItemClick(index)} />
                             <div style={{ flex : '1 1 0' }}>
                                 <FilterListView
                                     store={this.props.store.categoriesStore}
-                                    backgroundColor={theme.secondaryBackgroundColor}
+                                    backgroundColor={theme.primaryBackgroundColor}
+                                    theme={this.props.store.theme}
                                     onItemClick={index => this.props.presenter.handleCategoryItemClick(index)}
                                     onItemRightClick={index => this.props.presenter.handleCategoryItemRightClick(index)} />
                             </div>
@@ -110,6 +113,7 @@ export default class App extends React.Component {
                         {/* Add category button */}
                         <Button
                             backgroundColor="none"
+                            theme={this.props.store.theme}
                             onClick={() => this.props.presenter.handleAddCategoryClick()}>
                             <i
                                 className="fa fa-fw fa-plus"
@@ -122,29 +126,35 @@ export default class App extends React.Component {
                         defaultSize={this.props.store.showNoteList ? this.props.store.noteListWidth : 0}
                         allowResize={this.props.store.showNoteList}
                         pane1Style={{ display : this.props.store.showNoteList ? 'block' : 'none' }}
+                        style={{ backgroundColor : theme.primaryBackgroundColor }}
                         onChange={size => this._handleNoteListWidthChange(size)}>
                         <SplitPane
                             split="horizontal"
                             defaultSize={Config.topBarHeight}
-                            allowResize={false}>
+                            allowResize={false}
+                            style={{ backgroundColor : theme.primaryBackgroundColor }}>
                             {/* Search notes */}
                             <div style={{ width : '100%', display : 'flex', flexFlow : 'row', padding : Config.paddingX0, paddingRight : Config.paddingX1 }}>
                                 <SearchBox
-                                    hintText="Search notes" />
+                                    hintText="Search notes"
+                                    theme={this.props.store.theme} />
                             </div>
                             <SplitPane
                                 split="horizontal"
                                 defaultSize={Config.bottomBarHeight}
                                 allowResize={false}
-                                primary="second">
+                                primary="second"
+                                style={{ backgroundColor : theme.primaryBackgroundColor }}>
                                 {/* Note list */}
                                 <NoteListView
                                     store={this.props.store.notesStore}
+                                    theme={this.props.store.theme}
                                     onItemClick={index => this.props.presenter.handleNoteItemClick(index)} />
                                 {/* Note list tools */}
                                 <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
                                     <Button
                                         backgroundColor="none"
+                                        theme={this.props.store.theme}
                                         disabled={!this.props.store.addNoteEnabled}
                                         onClick={() => this.props.presenter.handleAddNoteClick()}>
                                         <i
@@ -157,17 +167,18 @@ export default class App extends React.Component {
                                             hAnchor="right"
                                             vAnchor="bottom"
                                             popUp={
-                                                <PopUpMenu>
-                                                    <Text><div style={{ padding : Config.paddingX0 }}>Name <i className="fa fa-fw fa-caret-down" /></div></Text>
-                                                    <Text><div style={{ padding : Config.paddingX0 }}>Name <i className="fa fa-fw fa-caret-up" /></div></Text>
-                                                    <Text><div style={{ padding : Config.paddingX0 }}>Last updated <i className="fa fa-fw fa-caret-down" /></div></Text>
-                                                    <Text><div style={{ padding : Config.paddingX0 }}>Last updated <i className="fa fa-fw fa-caret-up" /></div></Text>
-                                                    <Text><div style={{ padding : Config.paddingX0 }}>Created <i className="fa fa-fw fa-caret-down" /></div></Text>
-                                                    <Text><div style={{ padding : Config.paddingX0 }}>Created <i className="fa fa-fw fa-caret-up" /></div></Text>
+                                                <PopUpMenu theme={this.props.store.theme}>
+                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Name <i className="fa fa-fw fa-caret-down" /></div></Text>
+                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Name <i className="fa fa-fw fa-caret-up" /></div></Text>
+                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Last updated <i className="fa fa-fw fa-caret-down" /></div></Text>
+                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Last updated <i className="fa fa-fw fa-caret-up" /></div></Text>
+                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Created <i className="fa fa-fw fa-caret-down" /></div></Text>
+                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Created <i className="fa fa-fw fa-caret-up" /></div></Text>
                                                 </PopUpMenu>
                                             }>
                                             <Button
-                                                backgroundColor="none">
+                                                backgroundColor="none"
+                                                theme={this.props.store.theme}>
                                                 Last updated <i className="fa fa-fw fa-caret-down" />
                                             </Button>
                                         </Overlay>
@@ -178,26 +189,31 @@ export default class App extends React.Component {
                         <SplitPane
                             split="horizontal"
                             defaultSize={Config.topBarHeight}
-                            allowResize={false}>
+                            allowResize={false}
+                            style={{ backgroundColor : theme.primaryBackgroundColor }}>
                             {/* Search note contents */}
                             <div style={{ width : '100%', display : 'flex', flexFlow : 'row', padding : Config.paddingX0, paddingRight : Config.paddingX1 }}>
                                 <SearchBox
-                                    hintText="Search contents" />
+                                    hintText="Search contents"
+                                    theme={this.props.store.theme} />
                             </div>
                             <SplitPane
                                 split="horizontal"
                                 defaultSize={Config.bottomBarHeight}
                                 allowResize={false}
-                                primary="second">
+                                primary="second"
+                                style={{ backgroundColor : theme.primaryBackgroundColor }}>
                                 {/* Note editor */}
                                 <TextEditor
-                                    store={this.props.store.editorStore} />
+                                    store={this.props.store.editorStore}
+                                    theme={this.props.store.theme} />
                                 {/* Note editor tools */}
                                 <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
                                     <div>
                                         {/* Star note */}
                                         <Button
                                             backgroundColor="none"
+                                            theme={this.props.store.theme}
                                             disabled={_.isNil(this.props.store.editorStore.record)}
                                             onClick={() => this.props.presenter.handleStarClick()}>
                                             <i
@@ -207,6 +223,7 @@ export default class App extends React.Component {
                                         {/* Archive note */}
                                         <Button
                                             backgroundColor="none"
+                                            theme={this.props.store.theme}
                                             disabled={_.isNil(this.props.store.editorStore.record)}
                                             onClick={() => this.props.presenter.handleArchiveClick()}>
                                             <i
@@ -215,9 +232,9 @@ export default class App extends React.Component {
                                         </Button>
                                     </div>
                                     <div style={{ margin : 'auto', paddingLeft : Config.paddingX0 + 'px', paddingRight : Config.paddingX0 + 'px', flex : '1 1 0', textAlign : 'right' }}>
-                                        <Label>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
+                                        <Label theme={this.props.store.theme}>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
                                         <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
-                                        <Label>{this.props.store.editorStore.cursorPosition ? this.props.store.editorStore.cursorPosition.row + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
+                                        <Label theme={this.props.store.theme}>{this.props.store.editorStore.cursorPosition ? this.props.store.editorStore.cursorPosition.row + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
                                     </div>
                                 </div>
                             </SplitPane>
@@ -228,20 +245,24 @@ export default class App extends React.Component {
                 <Dialog
                     store={this.props.store.aboutDialogStore}
                     width={300}
-                    height={260}>
-                    <div style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX1, paddingBottom : Config.paddingX2, backgroundColor : (theme ? theme.dialogBackgroundColor : undefined) }}>
+                    height={260}
+                    theme={this.props.store.theme}>
+                    <div style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX1, paddingBottom : Config.paddingX2, backgroundColor : theme.dialogBackgroundColor }}>
                         <img src={Path.join(__dirname, './images/artisan.png')} /><br />
                         <Text
                             fontWeight={500}
-                            textSize="large">{Package.productName}</Text>
-                        <Text>{'Version ' + Package.version}</Text>
+                            textSize="large"
+                            theme={this.props.store.theme}>{Package.productName}</Text>
+                        <Text theme={this.props.store.theme}>{'Version ' + Package.version}</Text>
                         <Text
                             fontWeight={300}
-                            textSize="small">{'Copyright © ' + new Date().getFullYear()}</Text>
+                            textSize="small"
+                            theme={this.props.store.theme}>{'Copyright © ' + new Date().getFullYear()}</Text>
                         <div style={{ paddingLeft : Config.paddingX2, paddingRight : Config.paddingX2, paddingTop : Config.paddingX2, paddingBottom : Config.paddingX1 }}>
                             <Button
                                 width={Config.buttonWidth}
                                 backgroundColor="primary"
+                                theme={this.props.store.theme}
                                 onClick={() => this.props.store.aboutDialogStore.visible = false}>
                                 Close
                             </Button>
@@ -252,15 +273,17 @@ export default class App extends React.Component {
                 <PromptDialog
                     store={this.props.store.addCategoryDialogStore}
                     width={200}
-                    height={108}
+                    height={116}
                     label="New category name:"
+                    theme={this.props.store.theme}
                     onEnter={value => this.props.presenter.addCategory(value)} />
                 {/* Rename category dialog */}
                 <PromptDialog
                     store={this.props.store.updateCategoryDialogStore}
                     width={200}
-                    height={108}
+                    height={116}
                     label="Rename category:"
+                    theme={this.props.store.theme}
                     onEnter={value => this.props.presenter.updateCategory(this.props.store.updateCategoryDialogStore.value, value)} />
             </div>
         );

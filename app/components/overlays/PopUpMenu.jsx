@@ -21,6 +21,7 @@ export default class PopUpMenu extends React.Component {
         return (
             <div style={{ padding : Config.paddingX1 + 'px', backgroundColor : theme.primaryBackgroundColor }}>
                 <ListView
+                    theme={this.props.theme}
                     onItemClick={index => this._handleItemClick(index)}>
                     {this.props.children}
                 </ListView>
@@ -30,7 +31,12 @@ export default class PopUpMenu extends React.Component {
 }
 
 PopUpMenu.propTypes = {
+    theme       : React.PropTypes.oneOf([ 'light', 'dark' ]),
     onItemClick : React.PropTypes.func
+};
+
+PopUpMenu.defaultProps = {
+    theme : 'light'
 };
 
 module.exports = PopUpMenu;

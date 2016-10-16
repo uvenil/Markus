@@ -142,7 +142,7 @@ TextEditor.propTypes = {
 };
 
 TextEditor.defaultProps = {
-    theme : 'light',
+    theme : 'light'
 };
 
 module.exports = TextEditor;

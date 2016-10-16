@@ -61,7 +61,7 @@ export default class TextBox extends React.Component {
                 type="text"
                 value={this.state.value}
                 className={this.props.className}
-                style={{ WebkitUserSelect : 'none', fontFamily : this.props.fontFamily, fontSize : this.props.textSize, color : textColor, outline : 'none', borderWidth : '1px', borderStyle : 'solid', borderRadius : Config.paddingX0 + 'px', borderColor : theme.borderColor, padding : Config.paddingX0 + 'px', pointerEvents : this.props.disabled ? 'none' : 'auto' }}
+                style={{ WebkitUserSelect : 'none', fontFamily : this.props.fontFamily, fontSize : this.props.textSize, color : textColor, outline : 'none', borderWidth : '1px', borderStyle : 'solid', borderRadius : Config.paddingX0 + 'px', backgroundColor : theme.secondaryBackgroundColor, borderColor : theme.borderColor, padding : Config.paddingX0 + 'px', pointerEvents : this.props.disabled ? 'none' : 'auto' }}
                 onChange={event => this._handleChange(event.target.value)}
                 onKeyPress={event => {
                     if (event.key === 'Enter') {

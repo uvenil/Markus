@@ -6,6 +6,7 @@ import Config from '../config.json';
 export default class AppStore {
     constructor() {
         extendObservable(this, {
+            theme                  : 'light',
             aboutDialogStore       : null,
             showFilterList         : Config.defaultShowFilterList,
             showNoteList           : Config.defaultShowNoteList,

@@ -33,7 +33,9 @@ export default class ListView extends React.Component {
         if (this.props.header) {
             header = (
                 <div style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
-                    <Text className="ListViewHeader">{this.props.header}</Text>
+                    <Text
+                        className="ListViewHeader"
+                        theme={this.props.theme}>{this.props.header}</Text>
                 </div>
             );
         }

@@ -1,4 +1,17 @@
 {
-    "primaryColor"     : "",
-    "primaryTextColor" : "#fff"
+    "primaryColor"             : "#90a4ae",
+    "primaryTextColor"         : "#e2e4e6",
+    "primaryTextColorInverted" : "#212121",
+    "primaryBackgroundColor"   : "#212121",
+    "secondaryBackgroundColor" : "#000000",
+    "dialogBackgroundColor"    : "#323436",
+    "selectedBackgroundColor"  : "#000000",
+    "disabledBackgroundColor"  : "#424242",
+    "borderColor"              : "#323436",
+    "overlayColor"             : "rgba(0, 0, 0, 0.25)",
+    "buttonDefaultColor"       : "#616161",
+    "buttonPrimaryColor"       : "#9e9e9e",
+    "buttonSuccessColor"       : "#4ebd4a",
+    "buttonErrorColor"         : "#ee4f3d",
+    "buttonWarningColor"       : "#faa226"
 }

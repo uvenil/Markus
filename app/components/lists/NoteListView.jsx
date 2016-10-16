@@ -23,6 +23,7 @@ export default class NoteListView extends React.Component {
                     header={this.props.store.headerText}
                     selectedIndex={this.props.store.selectedIndex}
                     backgroundColor={this.props.backgroundColor}
+                    theme={this.props.theme}
                     onItemClick={this.props.onItemClick}
                     onItemRightClick={this.props.onItemRightClick}>
                     {this.props.store.items.map(item => {
@@ -30,17 +31,17 @@ export default class NoteListView extends React.Component {
                             <div
                                 key={Unique.elementId('listViewItem') + '-' + item.itemId}
                                 style={{ width : 'calc(100% - ' + Config.paddingX2 + 'px)', padding : Config.paddingX1, borderBottom : '1px solid ' + theme.borderColor, cursor : 'default' }}>
-                                <Text>
+                                <Text theme={this.props.theme}>
                                     <div style={{ lineHeight : '1.5em', whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'bolder', fontSize : '105%' }}>
                                         {item.primaryText}
                                     </div>
                                 </Text>
-                                <Text>
+                                <Text theme={this.props.theme}>
                                     <div style={{ lineHeight : '1.2em', height : '2.4em', display : '-webkit-box', WebkitLineClamp : 2, WebkitBoxOrient : 'vertical', overflow : 'hidden', textOverflow : 'ellipsis' }}>
                                         {item.secondaryText}
                                     </div>
                                 </Text>
-                                <Text>
+                                <Text theme={this.props.theme}>
                                     <div style={{ whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'lighter', fontSize : '95%' }}>
                                         {item.tertiaryText}
                                     </div>
@@ -57,8 +58,13 @@ export default class NoteListView extends React.Component {
 NoteListView.propTypes = {
     store            : React.PropTypes.instanceOf(ListViewStore).isRequired,
     backgroundColor  : React.PropTypes.string,
+    theme            : React.PropTypes.oneOf([ 'light', 'dark' ]),
     onItemClick      : React.PropTypes.func,
     onItemRightClick : React.PropTypes.func
+};
+
+NoteListView.defaultProps = {
+    theme : 'light'
 };
 
 module.exports = NoteListView;

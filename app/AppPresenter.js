@@ -21,6 +21,7 @@ const { remote } = require('electron');
 const { dialog, Menu, MenuItem } = remote;
 
 const EVENT_ERROR = 'Event.error';
+const DARK_THEMES = [ 'ambiance', 'chaos', 'clouds_midnight', 'cobalt', 'idle_fingers', 'ipastic', 'kr_theme', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monokai', 'pastel_on_dark', 'solarized_dark', 'terminal', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink' ];
 
 export default class AppPresenter {
     constructor() {
@@ -326,6 +327,7 @@ export default class AppPresenter {
         this._store.editorStore.theme = theme;
 
         this._updateMenu();
+        this._updateTheme();
 
         this._settings.set('theme', theme)
             .catch(error => console.error(error));
@@ -449,6 +451,7 @@ export default class AppPresenter {
 
                 this._updateMenu();
                 this._updateSyntaxMenu();
+                this._updateTheme();
 
                 resolve();
             }).catch(error => reject(error));
@@ -553,6 +556,10 @@ export default class AppPresenter {
 
             resolve();
         });
+    }
+
+    _updateTheme() {
+        this._store.theme = _.indexOf(DARK_THEMES, this._store.editorStore.theme) > -1 ? 'dark' : 'light';
     }
 
     //endregion
