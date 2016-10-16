@@ -231,9 +231,13 @@ export default class App extends React.Component {
                     height={260}>
                     <div style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX1, paddingBottom : Config.paddingX2, backgroundColor : (theme ? theme.dialogBackgroundColor : undefined) }}>
                         <img src={Path.join(__dirname, './images/artisan.png')} /><br />
-                        <Text textSize="large">{Package.productName}</Text>
+                        <Text
+                            fontWeight={500}
+                            textSize="large">{Package.productName}</Text>
                         <Text>{'Version ' + Package.version}</Text>
-                        <Text textSize="small">{'Copyright © ' + new Date().getFullYear()}</Text>
+                        <Text
+                            fontWeight={300}
+                            textSize="small">{'Copyright © ' + new Date().getFullYear()}</Text>
                         <div style={{ paddingLeft : Config.paddingX2, paddingRight : Config.paddingX2, paddingTop : Config.paddingX2, paddingBottom : Config.paddingX1 }}>
                             <Button
                                 width={Config.buttonWidth}
