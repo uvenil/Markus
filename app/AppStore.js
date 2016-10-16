@@ -17,7 +17,8 @@ export default class AppStore {
             notesStore             : null,
             editorStore            : null,
             addNoteEnabled         : false,
-            addCategoryDialogStore : null
+            addCategoryDialogStore : null,
+            notesSorting           : 2
         });
     }
 }

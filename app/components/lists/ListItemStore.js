@@ -12,7 +12,8 @@ export default class ListItemStore {
             primaryText   : '',
             secondaryText : '',
             tertiaryText  : '',
-            selected      : false
+            selected      : false,
+            record        : undefined
         });
     }
 
@@ -25,5 +26,6 @@ export default class ListItemStore {
         this.primaryText   = _.isEmpty(record.title) ? Config.defaultNoteTitle : record.title;
         this.secondaryText = record.description;
         this.tertiaryText  = moment(record.lastUpdatedAt).fromNow();
+        this.record        = record;
     }
 }

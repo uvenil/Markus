@@ -102,6 +102,7 @@ export default class Record {
         store.primaryText   = this.title;
         store.secondaryText = this.description ? this.description.split('\n').map(line => <span key={Unique.elementId()}>{line}<br /></span>) : this.description;
         store.tertiaryText  = moment(this.lastUpdatedAt).fromNow();
+        store.record        = this;
 
         return store;
     }

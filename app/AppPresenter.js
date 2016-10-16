@@ -58,10 +58,6 @@ export default class AppPresenter {
         return this._store;
     }
 
-    get notesSorting() {
-        return this._notesPresenter.sorting;
-    }
-
     init() {
         this._initSettings()
             .then(() => this._initDatabase()
@@ -182,32 +178,32 @@ export default class AppPresenter {
 
         menu.append(new MenuItem({
             label : 'Name ▼',
-            click : () => {}
+            click : () => this._updateNotesSorting(0)
         }));
 
         menu.append(new MenuItem({
             label : 'Name ▲',
-            click : () => {}
+            click : () => this._updateNotesSorting(1)
         }));
 
         menu.append(new MenuItem({
             label : 'Last updated ▼',
-            click : () => {}
+            click : () => this._updateNotesSorting(2)
         }));
 
         menu.append(new MenuItem({
             label : 'Last updated ▲',
-            click : () => {}
+            click : () => this._updateNotesSorting(3)
         }));
 
         menu.append(new MenuItem({
             label : 'Created ▼',
-            click : () => {}
+            click : () => this._updateNotesSorting(4)
         }));
 
         menu.append(new MenuItem({
             label : 'Created ▲',
-            click : () => {}
+            click : () => this._updateNotesSorting(5)
         }));
 
         menu.popup(remote.getCurrentWindow());
@@ -432,7 +428,7 @@ export default class AppPresenter {
                 this._settings.get('showFilterList',      Config.defaultShowFilterList),
                 this._settings.get('showNoteList',        Config.defaultShowNoteList),
                 this._settings.get('filterListWidth',     Config.filterListWidth),
-                this._settings.get('noteListWidtdh',      Config.noteListWidth),
+                this._settings.get('noteListWidth',       Config.noteListWidth),
                 this._settings.get('defaultSyntax',       Config.defaultSyntax),
                 this._settings.get('theme',               Config.defaultTheme),
                 this._settings.get('fontFamily',          undefined),
@@ -448,12 +444,14 @@ export default class AppPresenter {
                 this._settings.get('showFoldWidgets',     Config.defaultShowFoldWidgets),
                 this._settings.get('showGutter',          Config.defaultShowGutter),
                 this._settings.get('displayIndentGuides', Config.defaultDisplayIndentGuides),
-                this._settings.get('scrollPastEnd',       Config.defaultScrollPastEnd)
+                this._settings.get('scrollPastEnd',       Config.defaultScrollPastEnd),
+                this._settings.get('notesSorting',        Config.defaultNotesSorting)
             ]).then(values => {
                 this._store.showFilterList  = values[0] !== undefined ? values[0] : Config.defaultShowFilterList;
                 this._store.showNoteList    = values[1] !== undefined ? values[1] : Config.defaultShowNoteList;
                 this._store.filterListWidth = values[2] !== undefined ? values[2] : Config.filterListWidth;
                 this._store.noteListWidth   = values[3] !== undefined ? values[3] : Config.noteListWidth;
+                this._store.notesSorting    = values[20] !== undefined ? values[20] : Config.defaultNotesSorting;
 
                 const data = {};
 
@@ -600,6 +598,17 @@ export default class AppPresenter {
 
     _updateTheme() {
         this._store.theme = _.indexOf(DARK_THEMES, this._store.editorStore.theme) > -1 ? 'dark' : 'light';
+    }
+
+    /**
+     * @param {number} sorting
+     * @private
+     */
+    _updateNotesSorting(sorting) {
+        this._store.notesSorting     = sorting;
+        this._notesPresenter.sorting = sorting;
+
+        this._settings.set('notesSorting', sorting).catch(error => console.error(error));
     }
 
     //endregion

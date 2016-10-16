@@ -75,7 +75,7 @@ export default class App extends React.Component {
 
     render() {
         const theme   = this.props.store.theme === 'dark' ? require('./theme.dark.json') : require('./theme.light.json');
-        const sorting = this.props.presenter.notesSorting;
+        const sorting = this.props.store.notesSorting;
 
         return (
             <div style={{ backgroundColor : theme.primaryBackgroundColor }}>
