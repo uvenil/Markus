@@ -80,6 +80,46 @@ export default class AppPresenter {
         }
     }
 
+    handleFilterItemRightClick(index) {
+        const menu = new Menu();
+
+        menu.append(new MenuItem({
+            label : 'Delete notes',
+            click : () => {
+                dialog.showMessageBox(remote.getCurrentWindow(), {
+                    type      : 'question',
+                    title     : 'Delete notes',
+                    message   : 'Are you sure you want to delete the notes?',
+                    buttons   : [ 'Yes', 'No'],
+                    defaultId : 0,
+                    cancelId  : 1
+                }, response => {
+                    if (response === 0) {
+                        let promise;
+
+                        if (index === 0) {
+                            promise = this._database.removeByEverything();
+                        } else if (index === 1) {
+                            promise = this._database.removeByStarred();
+                        } else if (index === 2) {
+                            promise = this._database.removeByArchived();
+                        }
+
+                        if (promise) {
+                            promise.then(() => {
+                                this._categoriesPresenter.notifyDataSetChanged();
+
+                                this._notesPresenter.refresh();
+                            }).catch(error => console.error(error));
+                        }
+                    }
+                });
+            }
+        }));
+
+        menu.popup(remote.getCurrentWindow());
+    }
+
     handleCategoryItemClick(index) {
         if (this._store.categoriesStore.selectedIndex !== index) {
             console.trace('Selected category index = ' + index);
@@ -152,6 +192,29 @@ export default class AppPresenter {
                                 if (this._store.categoriesStore.selectedIndex < 0) {
                                     this._notesPresenter.refresh();
                                 }
+                            }).catch(error => console.error(error));
+                    }
+                });
+            }
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Delete notes',
+            click : () => {
+                dialog.showMessageBox(remote.getCurrentWindow(), {
+                    type      : 'question',
+                    title     : 'Delete notes',
+                    message   : 'Are you sure you want to delete notes of category "' + category + '"?',
+                    buttons   : [ 'Yes', 'No'],
+                    defaultId : 0,
+                    cancelId  : 1
+                }, response => {
+                    if (response === 0) {
+                        this._database.removeByCategory(category)
+                            .then(() => {
+                                this._categoriesPresenter.notifyDataSetChanged();
+
+                                this._notesPresenter.refresh();
                             }).catch(error => console.error(error));
                     }
                 });

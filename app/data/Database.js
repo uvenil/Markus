@@ -471,6 +471,89 @@ export default class Database {
             }).catch(error => reject(error));
         });
     }
+
+    /**
+     * Removes all notes (except those starred and archived).
+     * @returns {Promise}
+     */
+    removeByEverything() {
+        return new Promise((resolve, reject) => {
+            this._db.remove({
+                starred  : false,
+                archived : false
+            }, {
+                multi : true
+            }, error => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(doc);
+                }
+            });
+        });
+    }
+
+    /**
+     * Removes all starred notes.
+     * @returns {Promise}
+     */
+    removeByStarred() {
+        return new Promise((resolve, reject) => {
+            this._db.remove({
+                starred  : true,
+                archived : false
+            }, {
+                multi : true
+            }, error => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(doc);
+                }
+            });
+        });
+    }
+
+    /**
+     * Removes all archived notes.
+     * @returns {Promise}
+     */
+    removeByArchived() {
+        return new Promise((resolve, reject) => {
+            this._db.remove({
+                archived : true
+            }, {
+                multi : true
+            }, error => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(doc);
+                }
+            });
+        });
+    }
+
+    /**
+     * Removes records of specified category.
+     * @param {String} category
+     * @returns {Promise}
+     */
+    removeByCategory(category) {
+        return new Promise((resolve, reject) => {
+            this._db.remove({
+                category : category
+            }, {
+                multi : true
+            }, error => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(doc);
+                }
+            });
+        });
+    }
 }
 
 module.exports = Database;

@@ -99,7 +99,8 @@ export default class App extends React.Component {
                                 store={this.props.store.filtersStore}
                                 backgroundColor={theme.primaryBackgroundColor}
                                 theme={this.props.store.theme}
-                                onItemClick={index => this.props.presenter.handleFilterItemClick(index)} />
+                                onItemClick={index => this.props.presenter.handleFilterItemClick(index)}
+                                onItemRightClick={index => this.props.presenter.handleFilterItemRightClick(index)} />
                             <div style={{ flex : '1 1 0' }}>
                                 <FilterListView
                                     store={this.props.store.categoriesStore}
