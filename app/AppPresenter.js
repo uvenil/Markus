@@ -1,7 +1,7 @@
 'use strict';
 
 import AppStore from './AppStore';
-import DialogStore from './components/overlays/DIalogStore';
+import DialogStore from './components/dialogs/DIalogStore';
 import FilterListViewPresenter from './components/lists/FilterListViewPresenter';
 import CategoryListViewPresenter from './components/lists/CategoryListViewPresenter';
 import NoteListViewPresenter from './components/lists/NoteListViewPresenter';
@@ -56,6 +56,10 @@ export default class AppPresenter {
 
     get store() {
         return this._store;
+    }
+
+    get notesSorting() {
+        return this._notesPresenter.sorting;
     }
 
     init() {
@@ -171,6 +175,42 @@ export default class AppPresenter {
 
             this.refreshEditor();
         }
+    }
+
+    handleNotesSortingClick() {
+        const menu = new Menu();
+
+        menu.append(new MenuItem({
+            label : 'Name ▼',
+            click : () => {}
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Name ▲',
+            click : () => {}
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Last updated ▼',
+            click : () => {}
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Last updated ▲',
+            click : () => {}
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Created ▼',
+            click : () => {}
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Created ▲',
+            click : () => {}
+        }));
+
+        menu.popup(remote.getCurrentWindow());
     }
 
     handleAddCategoryClick() {

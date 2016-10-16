@@ -7,12 +7,10 @@ import Label from './components/text/Label.jsx';
 import Text from './components/text/Text.jsx';
 import SearchBox from './components/text/SearchBox.jsx';
 import TextEditor from './components/text/TextEditor.jsx';
-import Overlay from './components/overlays/Overlay.jsx';
-import PopUpMenu from './components/overlays/PopUpMenu.jsx';
-import Dialog from './components/overlays/Dialog.jsx';
+import Dialog from './components/dialogs/Dialog.jsx';
 import FilterListView from './components/lists/FilterListView.jsx';
 import NoteListView from './components/lists/NoteListView.jsx';
-import PromptDialog from './components/overlays/PromptDialog.jsx';
+import PromptDialog from './components/dialogs/PromptDialog.jsx';
 import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
 import { observer } from 'mobx-react';
@@ -76,7 +74,8 @@ export default class App extends React.Component {
     }
 
     render() {
-        const theme = this.props.store.theme === 'dark' ? require('./theme.dark.json') : require('./theme.light.json');
+        const theme   = this.props.store.theme === 'dark' ? require('./theme.dark.json') : require('./theme.light.json');
+        const sorting = this.props.presenter.notesSorting;
 
         return (
             <div style={{ backgroundColor : theme.primaryBackgroundColor }}>
@@ -162,26 +161,12 @@ export default class App extends React.Component {
                                             title="Add note" />
                                     </Button>
                                     <div style={{ flex : '1 1 0', textAlign : 'right' }}>
-                                        <Overlay
-                                            trigger="click"
-                                            hAnchor="right"
-                                            vAnchor="bottom"
-                                            popUp={
-                                                <PopUpMenu theme={this.props.store.theme}>
-                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Name <i className="fa fa-fw fa-caret-down" /></div></Text>
-                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Name <i className="fa fa-fw fa-caret-up" /></div></Text>
-                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Last updated <i className="fa fa-fw fa-caret-down" /></div></Text>
-                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Last updated <i className="fa fa-fw fa-caret-up" /></div></Text>
-                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Created <i className="fa fa-fw fa-caret-down" /></div></Text>
-                                                    <Text theme={this.props.store.theme}><div style={{ padding : Config.paddingX0 }}>Created <i className="fa fa-fw fa-caret-up" /></div></Text>
-                                                </PopUpMenu>
-                                            }>
-                                            <Button
-                                                backgroundColor="none"
-                                                theme={this.props.store.theme}>
-                                                Last updated <i className="fa fa-fw fa-caret-down" />
-                                            </Button>
-                                        </Overlay>
+                                        <Button
+                                            backgroundColor="none"
+                                            theme={this.props.store.theme}
+                                            onClick={() => this.props.presenter.handleNotesSortingClick()}>
+                                            {sorting === 0 || sorting === 1 ? 'Name' : sorting === 2 || sorting === 3 ? 'Last updated' : 'Created'} <i className={'fa fa-fw fa-caret-' + (sorting === 0 || sorting === 2 || sorting === 4 ? 'down' : 'up')} />
+                                        </Button>
                                     </div>
                                 </div>
                             </SplitPane>

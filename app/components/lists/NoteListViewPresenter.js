@@ -26,6 +26,10 @@ export default class NoteListViewPresenter {
         return this._store;
     }
 
+    get sorting() {
+        return this._sorting;
+    }
+
     refresh() {
         this._store.selectedItemId = undefined;
 
