@@ -31,7 +31,9 @@ export default class FilterListView extends React.Component {
                                 <div style={{ flex : '1 1 0' }}>
                                     <Text>{item.primaryText}</Text>
                                 </div>
-                                <Text fontWeight={300}>{item.secondaryText}</Text>
+                                <Text
+                                    fontFamily="monospace"
+                                    fontWeight={300}>{item.secondaryText}</Text>
                             </div>
                         );
                     })}

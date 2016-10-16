@@ -22,11 +22,13 @@ export default class TextEditorStore {
         this.scrollPastEnd       = Config.defaultScrollPastEnd;
 
         extendObservable(this, {
-            record     : null,
-            syntax     : Config.defaultSyntax,
-            theme      : Config.defaultTheme,
-            fontFamily : undefined,
-            textSize   : undefined
+            record             : undefined,
+            syntax             : Config.defaultSyntax,
+            theme              : Config.defaultTheme,
+            fontFamily         : undefined,
+            textSize           : undefined,
+            cursorPosition     : undefined,
+            isOverwriteEnabled : false
         });
     }
 

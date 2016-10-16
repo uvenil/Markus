@@ -24,7 +24,10 @@ export default class Record {
     static fromDoc(doc) {
         const record = new Record(doc.title, doc.description, doc.fullText, doc.syntax, doc.lastUpdatedAt, doc.createdAt);
 
-        record._id = doc._id;
+        record._id      = doc._id;
+        record.category = doc.category;
+        record.starred  = doc.starred;
+        record.archived = doc.archived;
 
         return record;
     }

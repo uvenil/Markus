@@ -3,8 +3,8 @@
 import React from 'react';
 import SplitPane from 'react-split-pane';
 import Button from './components/buttons/Button.jsx';
+import Label from './components/text/Label.jsx';
 import Text from './components/text/Text.jsx';
-import TextBox from './components/text/TextBox.jsx';
 import SearchBox from './components/text/SearchBox.jsx';
 import TextEditor from './components/text/TextEditor.jsx';
 import Overlay from './components/overlays/Overlay.jsx';
@@ -22,6 +22,7 @@ import PubSub from 'pubsub-js';
 import Package from '../package.json';
 import Config from '../config.json';
 import is from 'electron-is';
+import _ from 'lodash';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
@@ -110,7 +111,9 @@ export default class App extends React.Component {
                         <Button
                             backgroundColor="none"
                             onClick={() => this.props.presenter.handleAddCategoryClick()}>
-                            <i className="fa fa-fw fa-plus" />
+                            <i
+                                className="fa fa-fw fa-plus"
+                                title="Add category…" />
                         </Button>
                     </SplitPane>
                     <SplitPane
@@ -144,7 +147,9 @@ export default class App extends React.Component {
                                         backgroundColor="none"
                                         disabled={!this.props.store.addNoteEnabled}
                                         onClick={() => this.props.presenter.handleAddNoteClick()}>
-                                        <i className="fa fa-fw fa-plus" />
+                                        <i
+                                            className="fa fa-fw fa-plus"
+                                            title="Add note" />
                                     </Button>
                                     <div style={{ flex : '1 1 0', textAlign : 'right' }}>
                                         <Overlay
@@ -188,7 +193,33 @@ export default class App extends React.Component {
                                 <TextEditor
                                     store={this.props.store.editorStore} />
                                 {/* Note editor tools */}
-                                <div>Note editor tools</div>
+                                <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
+                                    <div>
+                                        {/* Star note */}
+                                        <Button
+                                            backgroundColor="none"
+                                            disabled={_.isNil(this.props.store.editorStore.record)}
+                                            onClick={() => this.props.presenter.handleStarClick()}>
+                                            <i
+                                                className={'fa fa-fw fa-star' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.starred) ? '' : '-o')}
+                                                title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.starred) ? 'Un-star this note' : 'Star this note'} />
+                                        </Button>
+                                        {/* Archive note */}
+                                        <Button
+                                            backgroundColor="none"
+                                            disabled={_.isNil(this.props.store.editorStore.record)}
+                                            onClick={() => this.props.presenter.handleArchiveClick()}>
+                                            <i
+                                                className={'fa fa-fw fa-trash' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? '' : '-o')}
+                                                title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? 'Un-archive this note' : 'Archive this note'} />
+                                        </Button>
+                                    </div>
+                                    <div style={{ margin : 'auto', paddingLeft : Config.paddingX0 + 'px', paddingRight : Config.paddingX0 + 'px', flex : '1 1 0', textAlign : 'right' }}>
+                                        <Label>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
+                                        <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
+                                        <Label>{this.props.store.editorStore.cursorPosition ? this.props.store.editorStore.cursorPosition.row + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
+                                    </div>
+                                </div>
                             </SplitPane>
                         </SplitPane>
                     </SplitPane>
@@ -200,9 +231,13 @@ export default class App extends React.Component {
                     height={260}>
                     <div style={{ width : '100%', textAlign : 'center', paddingTop : Config.paddingX1, paddingBottom : Config.paddingX2, backgroundColor : (theme ? theme.dialogBackgroundColor : undefined) }}>
                         <img src={Path.join(__dirname, './images/artisan.png')} /><br />
-                        <Text textSize="large">{Package.productName}</Text>
+                        <Text
+                            fontWeight={500}
+                            textSize="large">{Package.productName}</Text>
                         <Text>{'Version ' + Package.version}</Text>
-                        <Text textSize="small">{'Copyright © ' + new Date().getFullYear()}</Text>
+                        <Text
+                            fontWeight={300}
+                            textSize="small">{'Copyright © ' + new Date().getFullYear()}</Text>
                         <div style={{ paddingLeft : Config.paddingX2, paddingRight : Config.paddingX2, paddingTop : Config.paddingX2, paddingBottom : Config.paddingX1 }}>
                             <Button
                                 width={Config.buttonWidth}
