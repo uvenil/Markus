@@ -214,7 +214,8 @@ export default class App extends React.Component {
                                                 title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? 'Un-archive this note' : 'Archive this note'} />
                                         </Button>
                                     </div>
-                                    <div style={{ flex : '1 1 0', textAlign : 'right' }}>
+                                    <div style={{ margin : 'auto', paddingLeft : Config.paddingX0, paddingRight : Config.paddingX0, flex : '1 1 0', textAlign : 'right' }}>
+                                        <Text>{this.props.store.editorStore.cursorPosition ? this.props.store.editorStore.cursorPosition.row + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Text>
                                     </div>
                                 </div>
                             </SplitPane>

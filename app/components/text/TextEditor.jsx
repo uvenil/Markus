@@ -24,10 +24,6 @@ export default class TextEditor extends React.Component {
         this._placeHolderId = Unique.elementId('b');
         this._subscriptions = [];
 
-        this._handleLoad = editor => {
-            // TODO
-        };
-
         this._handleChange = value => {
             if (this.props.store.record) {
                 this.props.store.record.update(value);
@@ -54,6 +50,10 @@ export default class TextEditor extends React.Component {
             this.refs.editor.editor.renderer.setShowGutter(data.showGutter);
             this.refs.editor.editor.renderer.setDisplayIndentGuides(data.displayIndentGuides);
             this.refs.editor.editor.renderer.$scrollPastEnd = data.scrollPastEnd;
+
+            this.refs.editor.editor.session.selection.on('changeCursor', () => {
+                this.props.store.cursorPosition = this.refs.editor.editor.getCursorPosition();
+            });
         };
 
         this._changeSettings = data => {
@@ -123,7 +123,6 @@ export default class TextEditor extends React.Component {
                     tabSize={this.props.tabSize}
                     editorProps={{ fontFamily : this.props.store.fontFamily, $blockScrolling : true, $showLineNumbers : this.props.store.showLineNumbers, $printMarginColumn : this.props.store.printMarginColumn, $showInvisibles : this.props.store.showInvisibles, displayIndentGuides : this.props.store.displayIndentGuides, $scrollPastEnd : this.props.store.scrollPastEnd, $useSoftTabs : this.props.store.useSoftTabs, $wrap : this.props.store.wordWrap }}
                     style={{ display : this.props.store.record ? 'block' : 'none' }}
-                    onLoad={editor => this._handleLoad(editor)}
                     onChange={value => this._handleChange(value)} />
                 <div
                     id={this._placeHolderId}
