@@ -54,6 +54,10 @@ export default class TextEditor extends React.Component {
             this.refs.editor.editor.session.selection.on('changeCursor', () => {
                 this.props.store.cursorPosition = this.refs.editor.editor.getCursorPosition();
             });
+
+            this.refs.editor.editor.session.on('changeOverwrite', () => {
+                this.props.store.isOverwriteEnabled = this.refs.editor.editor.getOverwrite();
+            });
         };
 
         this._changeSettings = data => {
@@ -121,7 +125,7 @@ export default class TextEditor extends React.Component {
                     highlightActiveLine={this.props.store.highlightActiveLine}
                     showPrintMargin={this.props.store.showPrintMargin}
                     tabSize={this.props.tabSize}
-                    editorProps={{ fontFamily : this.props.store.fontFamily, $blockScrolling : true, $showLineNumbers : this.props.store.showLineNumbers, $printMarginColumn : this.props.store.printMarginColumn, $showInvisibles : this.props.store.showInvisibles, displayIndentGuides : this.props.store.displayIndentGuides, $scrollPastEnd : this.props.store.scrollPastEnd, $useSoftTabs : this.props.store.useSoftTabs, $wrap : this.props.store.wordWrap }}
+                    editorProps={{ fontFamily : this.props.store.fontFamily, $blockScrolling : 'Infinity', $showLineNumbers : this.props.store.showLineNumbers, $printMarginColumn : this.props.store.printMarginColumn, $showInvisibles : this.props.store.showInvisibles, displayIndentGuides : this.props.store.displayIndentGuides, $scrollPastEnd : this.props.store.scrollPastEnd, $useSoftTabs : this.props.store.useSoftTabs, $wrap : this.props.store.wordWrap }}
                     style={{ display : this.props.store.record ? 'block' : 'none' }}
                     onChange={value => this._handleChange(value)} />
                 <div

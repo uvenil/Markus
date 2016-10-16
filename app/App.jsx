@@ -3,8 +3,8 @@
 import React from 'react';
 import SplitPane from 'react-split-pane';
 import Button from './components/buttons/Button.jsx';
+import Label from './components/text/Label.jsx';
 import Text from './components/text/Text.jsx';
-import TextBox from './components/text/TextBox.jsx';
 import SearchBox from './components/text/SearchBox.jsx';
 import TextEditor from './components/text/TextEditor.jsx';
 import Overlay from './components/overlays/Overlay.jsx';
@@ -214,8 +214,10 @@ export default class App extends React.Component {
                                                 title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? 'Un-archive this note' : 'Archive this note'} />
                                         </Button>
                                     </div>
-                                    <div style={{ margin : 'auto', paddingLeft : Config.paddingX0, paddingRight : Config.paddingX0, flex : '1 1 0', textAlign : 'right' }}>
-                                        <Text>{this.props.store.editorStore.cursorPosition ? this.props.store.editorStore.cursorPosition.row + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Text>
+                                    <div style={{ margin : 'auto', paddingLeft : Config.paddingX0 + 'px', paddingRight : Config.paddingX0 + 'px', flex : '1 1 0', textAlign : 'right' }}>
+                                        <Label>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
+                                        <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
+                                        <Label>{this.props.store.editorStore.cursorPosition ? this.props.store.editorStore.cursorPosition.row + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
                                     </div>
                                 </div>
                             </SplitPane>
