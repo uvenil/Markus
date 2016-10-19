@@ -57,7 +57,7 @@ export default function createWindowMenu() {
             {
                 label : 'New note',
                 click : (item, win) => {
-                    // TODO
+                    PubSub.publish('Application.newNote');
                 }
             }
         ]

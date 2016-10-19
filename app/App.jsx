@@ -53,6 +53,12 @@ export default class App extends React.Component {
                 .then(() => console.trace('Saved noteListWidth = ' + size))
                 .catch(error => console.error(error));
         };
+
+        this._handleNewNote = () => {
+            if (this.props.store.addNoteEnabled) {
+                this.props.presenter.handleAddNoteClick();
+            }
+        };
     }
 
     componentDidMount() {
@@ -65,6 +71,7 @@ export default class App extends React.Component {
         this._subscriptions.push(PubSub.subscribe('Syntax.change', (eventName, syntax) => this.props.presenter.changeSyntax(syntax)));
         this._subscriptions.push(PubSub.subscribe('Theme.change', (eventName, theme) => this.props.presenter.changeTheme(theme)));
         this._subscriptions.push(PubSub.subscribe('TextEditor.settings', (eventName, data) => this.props.presenter.changeSettings(data)));
+        this._subscriptions.push(PubSub.subscribe('Application.newNote', () => this._handleNewNote()));
 
         this.props.presenter.init();
     }
