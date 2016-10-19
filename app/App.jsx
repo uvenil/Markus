@@ -92,19 +92,19 @@ export default class App extends React.Component {
                         defaultSize={Config.bottomBarHeight}
                         allowResize={false}
                         primary="second"
-                        style={{ backgroundColor : theme.primaryBackgroundColor }}>
+                        style={{ backgroundColor : theme.secondaryBackgroundColor }}>
                         {/* Filter list */}
                         <div style={{ height : 'calc(100vh - ' + Config.bottomBarHeight + 'px)', display : 'flex', flexFlow : 'column' }}>
                             <FilterListView
                                 store={this.props.store.filtersStore}
-                                backgroundColor={theme.primaryBackgroundColor}
+                                backgroundColor={theme.secondaryBackgroundColor}
                                 theme={this.props.store.theme}
                                 onItemClick={index => this.props.presenter.handleFilterItemClick(index)}
                                 onItemRightClick={index => this.props.presenter.handleFilterItemRightClick(index)} />
                             <div style={{ flex : '1 1 0' }}>
                                 <FilterListView
                                     store={this.props.store.categoriesStore}
-                                    backgroundColor={theme.primaryBackgroundColor}
+                                    backgroundColor={theme.secondaryBackgroundColor}
                                     theme={this.props.store.theme}
                                     onItemClick={index => this.props.presenter.handleCategoryItemClick(index)}
                                     onItemRightClick={index => this.props.presenter.handleCategoryItemRightClick(index)} />
