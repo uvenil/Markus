@@ -3,7 +3,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 import { observer } from 'mobx-react';
-import DialogStore from './DIalogStore';
+import DialogStore from './DialogStore';
 import Config from '../../../config.json';
 
 @observer

@@ -8,6 +8,7 @@ import Text from './components/text/Text.jsx';
 import SearchBox from './components/text/SearchBox.jsx';
 import TextEditor from './components/text/TextEditor.jsx';
 import Dialog from './components/dialogs/Dialog.jsx';
+import ListView from './components/lists/ListView.jsx';
 import FilterListView from './components/lists/FilterListView.jsx';
 import NoteListView from './components/lists/NoteListView.jsx';
 import PromptDialog from './components/dialogs/PromptDialog.jsx';
@@ -223,10 +224,21 @@ export default class App extends React.Component {
                                                 className={'fa fa-fw fa-trash' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? '' : '-o')}
                                                 title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? 'Un-archive this note' : 'Archive this note'} />
                                         </Button>
+                                        <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
+                                        {/* Select category */}
+                                        <Button
+                                            backgroundColor="none"
+                                            theme={this.props.store.theme}
+                                            disabled={_.isNil(this.props.store.editorStore.record)}
+                                            onClick={() => this.props.presenter.handleSelectCategoryClick()}>
+                                            {(this.props.store.editorStore.record && this.props.store.editorStore.record.category) ? this.props.store.editorStore.record.category : 'Uncategorized'}
+                                        </Button>
                                     </div>
                                     <div style={{ margin : 'auto', paddingLeft : Config.paddingX0 + 'px', paddingRight : Config.paddingX0 + 'px', flex : '1 1 0', textAlign : 'right' }}>
+                                        {/* Overwrite status */}
                                         <Label theme={this.props.store.theme}>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
                                         <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
+                                        {/* Row/column position */}
                                         <Label theme={this.props.store.theme}>{this.props.store.editorStore.cursorPosition ? this.props.store.editorStore.cursorPosition.row + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
                                     </div>
                                 </div>
@@ -278,6 +290,64 @@ export default class App extends React.Component {
                     label="Rename category:"
                     theme={this.props.store.theme}
                     onEnter={value => this.props.presenter.updateCategory(this.props.store.updateCategoryDialogStore.value, value)} />
+                {/* Select category dialog */}
+                <Dialog
+                    store={this.props.store.selectCategoryDialogStore}
+                    width={400}
+                    height={320}
+                    theme={this.props.store.theme}>
+                    <div style={{ width : 'calc(100% - ' + 2 * Config.paddingX2 + 'px)', textAlign : 'left', padding : Config.paddingX2 + 'px', backgroundColor : theme.dialogBackgroundColor }}>
+                        <div style={{ height : '248px', display : 'flex', flexFlow : 'column', backgroundColor : theme.primaryBackgroundColor }}>
+                            <div style={{ flex : '1 1 0' }}>
+                                <ListView
+                                    backgroundColor={theme.primaryBackgroundColor}
+                                    theme={this.props.store.theme}
+                                    selectedIndex={this.props.store.selectCategoryDialogStore.list.selectedIndex}
+                                    onItemClick={index => this.props.presenter.handleSelectCategoryItemClick(index)}>
+                                    {this.props.store.selectCategoryDialogStore.list.items.map(item => {
+                                        return (
+                                            <div
+                                                key={item.itemId}
+                                                style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
+                                                <Text
+                                                    theme={this.props.store.theme}>{item.primaryText}</Text>
+                                            </div>
+                                        );
+                                    })}
+                                </ListView>
+                            </div>
+                        </div>
+                        <div style={{ width : '100%', textAlign : 'center', paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX2 + 'px', paddingBottom : Config.paddingX1 + 'px' }}>
+                            <span style={{ padding : Config.paddingX1 + 'px' }}>
+                                <Button
+                                    width={Config.buttonWidth}
+                                    backgroundColor="primary"
+                                    theme={this.props.store.theme}
+                                    onClick={() => this.props.presenter.handleSelectCategoryOkClick()}>
+                                    OK
+                                </Button>
+                            </span>
+                            <span style={{ padding : Config.paddingX1 + 'px' }}>
+                                <Button
+                                    width={Config.buttonWidth}
+                                    backgroundColor="default"
+                                    theme={this.props.store.theme}
+                                    onClick={() => this.props.presenter.handleSelectCategoryNoneClick()}>
+                                    None
+                                </Button>
+                            </span>
+                            <span style={{ padding : Config.paddingX1 + 'px' }}>
+                                <Button
+                                    width={Config.buttonWidth}
+                                    backgroundColor="default"
+                                    theme={this.props.store.theme}
+                                    onClick={() => this.props.store.selectCategoryDialogStore.visible = false}>
+                                    Cancel
+                                </Button>
+                            </span>
+                        </div>
+                    </div>
+                </Dialog>
             </div>
         );
     }

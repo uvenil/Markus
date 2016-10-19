@@ -94,6 +94,12 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                 });
 
                 this._sort();
+
+                this.store.items.forEach(item => {
+                    this.database.countByCategory(item.primaryText)
+                        .then(count => item.secondaryText = count)
+                        .catch(error => console.error(error));
+                });
             }).catch(error => console.error(error));
     }
 

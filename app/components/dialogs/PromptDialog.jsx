@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Dialog from './Dialog.jsx';
-import DialogStore from './DIalogStore';
+import DialogStore from './DialogStore';
 import Button from '../buttons/Button.jsx';
 import Text from '../text/Text.jsx';
 import TextBox from '../text/TextBox.jsx';

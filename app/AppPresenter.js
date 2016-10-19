@@ -1,11 +1,14 @@
 'use strict';
 
-import AppStore from './AppStore';
-import DialogStore from './components/dialogs/DIalogStore';
 import FilterListViewPresenter from './components/lists/FilterListViewPresenter';
 import CategoryListViewPresenter from './components/lists/CategoryListViewPresenter';
 import NoteListViewPresenter from './components/lists/NoteListViewPresenter';
 import TextEditorPresenter from './components/text/TextEditorPresenter';
+import AppStore from './AppStore';
+import DialogStore from './components/dialogs/DialogStore';
+import PromptDialogStore from './components/dialogs/PromptDialogStore';
+import ListViewDialogStore from './components/dialogs/ListViewDialogStore';
+import ListItemStore from './components/lists/ListItemStore';
 import Settings from './utils/Settings';
 import Database from './data/Database';
 import Record from './data/Record';
@@ -39,8 +42,9 @@ export default class AppPresenter {
         this._store.categoriesStore           = this._categoriesPresenter.store;
         this._store.notesStore                = this._notesPresenter.store;
         this._store.editorStore               = this._editorPresenter.store;
-        this._store.addCategoryDialogStore    = new DialogStore();
-        this._store.updateCategoryDialogStore = new DialogStore();
+        this._store.addCategoryDialogStore    = new PromptDialogStore();
+        this._store.updateCategoryDialogStore = new PromptDialogStore();
+        this._store.selectCategoryDialogStore = new ListViewDialogStore();
 
         this._filterSelection   = new Rx.Subject();
         this._categorySelection = new Rx.Subject();
@@ -301,6 +305,60 @@ export default class AppPresenter {
         this._database.addOrUpdate(this._store.editorStore.record.toDoc())
             .then(() => this._filtersPresenter.refresh())
             .catch(error => console.error(error));
+    }
+
+    handleSelectCategoryClick() {
+        this._database.findCategories()
+            .then(categories => {
+                this._store.selectCategoryDialogStore.list.items = [];
+
+                const selectedCategory = this._store.categoriesStore.selectedItem;
+
+                categories.forEach(category => {
+                    const item = new ListItemStore();
+
+                    item.itemId      = category;
+                    item.primaryText = category;
+                    item.selected    = selectedCategory ? selectedCategory.primaryText === category : false;
+
+                    this._store.selectCategoryDialogStore.list.items.push(item);
+                });
+
+                this._store.selectCategoryDialogStore.visible = true;
+            }).catch(error => console.error(error));
+    }
+
+    /**
+     * @param {number} index The category item index the user selects.
+     */
+    handleSelectCategoryItemClick(index) {
+        console.trace('Selected category index in dialog = ' + index);
+
+        if (this._store.selectCategoryDialogStore.list.selectedIndex !== index) {
+            this._store.selectCategoryDialogStore.list.selectedIndex = index;
+        }
+    }
+
+    handleSelectCategoryOkClick() {
+        this._store.editorStore.record.category = this._store.selectCategoryDialogStore.list.selectedItem.primaryText;
+        this._store.editorStore.changes.onNext(this._store.editorStore.record);
+
+        console.trace('Changed category to ' + this._store.editorStore.record.category);
+
+        this._categoriesPresenter.notifyDataSetChanged();
+
+        this._store.selectCategoryDialogStore.visible = false;
+    }
+
+    handleSelectCategoryNoneClick() {
+        this._store.editorStore.record.category = null;
+        this._store.editorStore.changes.onNext(this._store.editorStore.record);
+
+        console.trace('Uncategorized');
+
+        this._categoriesPresenter.notifyDataSetChanged();
+
+        this._store.selectCategoryDialogStore.visible = false;
     }
 
     //endregion
