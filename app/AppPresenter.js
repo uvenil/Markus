@@ -1,11 +1,14 @@
 'use strict';
 
-import AppStore from './AppStore';
-import DialogStore from './components/overlays/DIalogStore';
 import FilterListViewPresenter from './components/lists/FilterListViewPresenter';
 import CategoryListViewPresenter from './components/lists/CategoryListViewPresenter';
 import NoteListViewPresenter from './components/lists/NoteListViewPresenter';
 import TextEditorPresenter from './components/text/TextEditorPresenter';
+import AppStore from './AppStore';
+import DialogStore from './components/dialogs/DialogStore';
+import PromptDialogStore from './components/dialogs/PromptDialogStore';
+import ListViewDialogStore from './components/dialogs/ListViewDialogStore';
+import ListItemStore from './components/lists/ListItemStore';
 import Settings from './utils/Settings';
 import Database from './data/Database';
 import Record from './data/Record';
@@ -21,6 +24,7 @@ const { remote } = require('electron');
 const { dialog, Menu, MenuItem } = remote;
 
 const EVENT_ERROR = 'Event.error';
+const DARK_THEMES = [ 'ambiance', 'chaos', 'clouds_midnight', 'cobalt', 'idle_fingers', 'ipastic', 'kr_theme', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monokai', 'pastel_on_dark', 'solarized_dark', 'terminal', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink' ];
 
 export default class AppPresenter {
     constructor() {
@@ -38,8 +42,9 @@ export default class AppPresenter {
         this._store.categoriesStore           = this._categoriesPresenter.store;
         this._store.notesStore                = this._notesPresenter.store;
         this._store.editorStore               = this._editorPresenter.store;
-        this._store.addCategoryDialogStore    = new DialogStore();
-        this._store.updateCategoryDialogStore = new DialogStore();
+        this._store.addCategoryDialogStore    = new PromptDialogStore();
+        this._store.updateCategoryDialogStore = new PromptDialogStore();
+        this._store.selectCategoryDialogStore = new ListViewDialogStore();
 
         this._filterSelection   = new Rx.Subject();
         this._categorySelection = new Rx.Subject();
@@ -77,6 +82,46 @@ export default class AppPresenter {
             this._filterSelection.onNext(index);
             this._categorySelection.onNext(-1);
         }
+    }
+
+    handleFilterItemRightClick(index) {
+        const menu = new Menu();
+
+        menu.append(new MenuItem({
+            label : 'Delete notes',
+            click : () => {
+                dialog.showMessageBox(remote.getCurrentWindow(), {
+                    type      : 'question',
+                    title     : 'Delete notes',
+                    message   : 'Are you sure you want to delete the notes?',
+                    buttons   : [ 'Yes', 'No'],
+                    defaultId : 0,
+                    cancelId  : 1
+                }, response => {
+                    if (response === 0) {
+                        let promise;
+
+                        if (index === 0) {
+                            promise = this._database.removeByEverything();
+                        } else if (index === 1) {
+                            promise = this._database.removeByStarred();
+                        } else if (index === 2) {
+                            promise = this._database.removeByArchived();
+                        }
+
+                        if (promise) {
+                            promise.then(() => {
+                                this._categoriesPresenter.notifyDataSetChanged();
+
+                                this._notesPresenter.refresh();
+                            }).catch(error => console.error(error));
+                        }
+                    }
+                });
+            }
+        }));
+
+        menu.popup(remote.getCurrentWindow());
     }
 
     handleCategoryItemClick(index) {
@@ -157,6 +202,29 @@ export default class AppPresenter {
             }
         }));
 
+        menu.append(new MenuItem({
+            label : 'Delete notes',
+            click : () => {
+                dialog.showMessageBox(remote.getCurrentWindow(), {
+                    type      : 'question',
+                    title     : 'Delete notes',
+                    message   : 'Are you sure you want to delete notes of category "' + category + '"?',
+                    buttons   : [ 'Yes', 'No'],
+                    defaultId : 0,
+                    cancelId  : 1
+                }, response => {
+                    if (response === 0) {
+                        this._database.removeByCategory(category)
+                            .then(() => {
+                                this._categoriesPresenter.notifyDataSetChanged();
+
+                                this._notesPresenter.refresh();
+                            }).catch(error => console.error(error));
+                    }
+                });
+            }
+        }));
+
         menu.popup(remote.getCurrentWindow());
     }
 
@@ -170,6 +238,42 @@ export default class AppPresenter {
 
             this.refreshEditor();
         }
+    }
+
+    handleNotesSortingClick() {
+        const menu = new Menu();
+
+        menu.append(new MenuItem({
+            label : 'Name ▼',
+            click : () => this._updateNotesSorting(0)
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Name ▲',
+            click : () => this._updateNotesSorting(1)
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Last updated ▼',
+            click : () => this._updateNotesSorting(2)
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Last updated ▲',
+            click : () => this._updateNotesSorting(3)
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Created ▼',
+            click : () => this._updateNotesSorting(4)
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Created ▲',
+            click : () => this._updateNotesSorting(5)
+        }));
+
+        menu.popup(remote.getCurrentWindow());
     }
 
     handleAddCategoryClick() {
@@ -201,6 +305,60 @@ export default class AppPresenter {
         this._database.addOrUpdate(this._store.editorStore.record.toDoc())
             .then(() => this._filtersPresenter.refresh())
             .catch(error => console.error(error));
+    }
+
+    handleSelectCategoryClick() {
+        this._database.findCategories()
+            .then(categories => {
+                this._store.selectCategoryDialogStore.list.items = [];
+
+                const selectedCategory = this._store.categoriesStore.selectedItem;
+
+                categories.forEach(category => {
+                    const item = new ListItemStore();
+
+                    item.itemId      = category;
+                    item.primaryText = category;
+                    item.selected    = selectedCategory ? selectedCategory.primaryText === category : false;
+
+                    this._store.selectCategoryDialogStore.list.items.push(item);
+                });
+
+                this._store.selectCategoryDialogStore.visible = true;
+            }).catch(error => console.error(error));
+    }
+
+    /**
+     * @param {number} index The category item index the user selects.
+     */
+    handleSelectCategoryItemClick(index) {
+        console.trace('Selected category index in dialog = ' + index);
+
+        if (this._store.selectCategoryDialogStore.list.selectedIndex !== index) {
+            this._store.selectCategoryDialogStore.list.selectedIndex = index;
+        }
+    }
+
+    handleSelectCategoryOkClick() {
+        this._store.editorStore.record.category = this._store.selectCategoryDialogStore.list.selectedItem.primaryText;
+        this._store.editorStore.changes.onNext(this._store.editorStore.record);
+
+        console.trace('Changed category to ' + this._store.editorStore.record.category);
+
+        this._categoriesPresenter.notifyDataSetChanged();
+
+        this._store.selectCategoryDialogStore.visible = false;
+    }
+
+    handleSelectCategoryNoneClick() {
+        this._store.editorStore.record.category = null;
+        this._store.editorStore.changes.onNext(this._store.editorStore.record);
+
+        console.trace('Uncategorized');
+
+        this._categoriesPresenter.notifyDataSetChanged();
+
+        this._store.selectCategoryDialogStore.visible = false;
     }
 
     //endregion
@@ -326,6 +484,7 @@ export default class AppPresenter {
         this._store.editorStore.theme = theme;
 
         this._updateMenu();
+        this._updateTheme();
 
         this._settings.set('theme', theme)
             .catch(error => console.error(error));
@@ -390,7 +549,7 @@ export default class AppPresenter {
                 this._settings.get('showFilterList',      Config.defaultShowFilterList),
                 this._settings.get('showNoteList',        Config.defaultShowNoteList),
                 this._settings.get('filterListWidth',     Config.filterListWidth),
-                this._settings.get('noteListWidtdh',      Config.noteListWidth),
+                this._settings.get('noteListWidth',       Config.noteListWidth),
                 this._settings.get('defaultSyntax',       Config.defaultSyntax),
                 this._settings.get('theme',               Config.defaultTheme),
                 this._settings.get('fontFamily',          undefined),
@@ -406,12 +565,14 @@ export default class AppPresenter {
                 this._settings.get('showFoldWidgets',     Config.defaultShowFoldWidgets),
                 this._settings.get('showGutter',          Config.defaultShowGutter),
                 this._settings.get('displayIndentGuides', Config.defaultDisplayIndentGuides),
-                this._settings.get('scrollPastEnd',       Config.defaultScrollPastEnd)
+                this._settings.get('scrollPastEnd',       Config.defaultScrollPastEnd),
+                this._settings.get('notesSorting',        Config.defaultNotesSorting)
             ]).then(values => {
                 this._store.showFilterList  = values[0] !== undefined ? values[0] : Config.defaultShowFilterList;
                 this._store.showNoteList    = values[1] !== undefined ? values[1] : Config.defaultShowNoteList;
                 this._store.filterListWidth = values[2] !== undefined ? values[2] : Config.filterListWidth;
                 this._store.noteListWidth   = values[3] !== undefined ? values[3] : Config.noteListWidth;
+                this._store.notesSorting    = values[20] !== undefined ? values[20] : Config.defaultNotesSorting;
 
                 const data = {};
 
@@ -449,6 +610,7 @@ export default class AppPresenter {
 
                 this._updateMenu();
                 this._updateSyntaxMenu();
+                this._updateTheme();
 
                 resolve();
             }).catch(error => reject(error));
@@ -553,6 +715,21 @@ export default class AppPresenter {
 
             resolve();
         });
+    }
+
+    _updateTheme() {
+        this._store.theme = _.indexOf(DARK_THEMES, this._store.editorStore.theme) > -1 ? 'dark' : 'light';
+    }
+
+    /**
+     * @param {number} sorting
+     * @private
+     */
+    _updateNotesSorting(sorting) {
+        this._store.notesSorting     = sorting;
+        this._notesPresenter.sorting = sorting;
+
+        this._settings.set('notesSorting', sorting).catch(error => console.error(error));
     }
 
     //endregion

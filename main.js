@@ -9,15 +9,17 @@ let win;
 
 const createWindow = () => {
     win = new BrowserWindow({
-        title          : app.getName(),
-        width          : Config.windowWidth,
-        height         : Config.windowHeight,
-        minWidth       : Config.windowMinWidth,
-        minHeight      : Config.windowMinHeight,
-        show           : false,
-        webPreferences : {
+        title           : app.getName(),
+        width           : Config.windowWidth,
+        height          : Config.windowHeight,
+        minWidth        : Config.windowMinWidth,
+        minHeight       : Config.windowMinHeight,
+        backgroundColor : '#f0f2f4',
+        show            : false,
+        webPreferences  : {
             defaultEncoding : 'UTF-8',
-            scrollBounce    : true
+            webaudio        : false,
+            webgl           : false
         }
     });
 

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Dialog from './Dialog.jsx';
-import DialogStore from './DIalogStore';
+import DialogStore from './DialogStore';
 import Button from '../buttons/Button.jsx';
 import Text from '../text/Text.jsx';
 import TextBox from '../text/TextBox.jsx';
@@ -25,15 +25,16 @@ export default class PromptDialog extends React.Component {
                 store={this.props.store}
                 width={this.props.width}
                 height={this.props.height}
+                theme={this.props.theme}
                 onAfterOpen={() => {
                     this.refs.textBox.focus();
                     this.refs.textBox.value = this.props.store.value;
                 }}
                 onBeforeClose={() => this.refs.textBox.value = ''}>
-                <div style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX1 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
-                    <Text>{this.props.label}</Text>
+                <div style={{ paddingLeft : Config.paddingX2 + 'px', paddingRight : Config.paddingX2 + 'px', paddingTop : Config.paddingX1 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
+                    <Text theme={this.props.theme}>{this.props.label}</Text>
                 </div>
-                <div style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX1 + 'px' }}>
+                <div style={{ paddingLeft : Config.paddingX2 + 'px', paddingRight : Config.paddingX2 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX1 + 'px' }}>
                     <TextBox
                         ref="textBox"
                         theme={this.props.theme}
@@ -67,7 +68,12 @@ PromptDialog.propTypes = {
     width   : React.PropTypes.number.isRequired,
     height  : React.PropTypes.number.isRequired,
     label   : React.PropTypes.string,
+    theme   : React.PropTypes.oneOf([ 'light', 'dark' ]),
     onEnter : React.PropTypes.func
+};
+
+PromptDialog.defaultProps = {
+    theme : 'light'
 };
 
 module.exports = PromptDialog;

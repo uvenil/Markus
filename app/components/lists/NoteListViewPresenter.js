@@ -6,6 +6,7 @@ import ListViewStore from './ListViewStore';
 import Database from '../../data/Database';
 import Record from '../../data/Record';
 import Config from '../../../config.json';
+import _ from 'lodash';
 
 export default class NoteListViewPresenter {
     /**
@@ -24,6 +25,40 @@ export default class NoteListViewPresenter {
 
     get store() {
         return this._store;
+    }
+
+    set sorting(sorting) {
+        this._sorting = sorting;
+
+        switch (sorting) {
+            case 0:
+                this._store.items = _.reverse(_.sortBy(this._store.items, item => item.primaryText));
+                break;
+
+            case 1:
+                this._store.items = _.sortBy(this._store.items, item => item.primaryText);
+                break;
+
+            case 2:
+                this._store.items = _.reverse(_.sortBy(this._store.items, item => item.record ? item.record.lastUpdatedAt : item.primaryText));
+                break;
+
+            case 3:
+                this._store.items = _.sortBy(this._store.items, item => item.record ? item.record.lastUpdatedAt : item.primaryText);
+                break;
+
+            case 4:
+                this._store.items = _.reverse(_.sortBy(this._store.items, item => item.record ? item.record.createdAt : item.primaryText));
+                break;
+
+            case 5:
+                this._store.items = _.sortBy(this._store.items, item => item.record ? item.record.createdAt : item.primaryText);
+                break;
+
+            default:
+                console.warn('Unrecognized sorting ' + sorting);
+                break;
+        }
     }
 
     refresh() {

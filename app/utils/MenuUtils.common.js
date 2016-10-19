@@ -374,7 +374,7 @@ const createThemeMenu = () => {
             createTheme('Merbivore Soft', 'merbivore_soft'),
             createTheme('Mono Industrial', 'mono_industrial'),
             createTheme('Monokai', 'monokai'),
-            createTheme('Pastal on Dark', 'pastal_on_dark'),
+            createTheme('Pastel on Dark', 'pastel_on_dark'),
             createTheme('Solarized Dark', 'solarized_dark'),
             createTheme('Solarized Light', 'solarized_light'),
             createTheme('SQL Server', 'sqlserver'),

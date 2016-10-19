@@ -30,5 +30,6 @@
     "defaultShowFoldWidgets"     : true,
     "defaultShowGutter"          : true,
     "defaultDisplayIndentGuides" : true,
-    "defaultScrollPastEnd"       : false
+    "defaultScrollPastEnd"       : false,
+    "defaultNotesSorting"        : 2
 }

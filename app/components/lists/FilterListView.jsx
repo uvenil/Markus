@@ -21,6 +21,7 @@ export default class FilterListView extends React.Component {
                     header={this.props.store.headerText}
                     selectedIndex={this.props.store.selectedIndex}
                     backgroundColor={this.props.backgroundColor}
+                    theme={this.props.theme}
                     onItemClick={this.props.onItemClick}
                     onItemRightClick={this.props.onItemRightClick}>
                     {this.props.store.items.map(item => {
@@ -29,11 +30,12 @@ export default class FilterListView extends React.Component {
                                 key={Unique.elementId('listViewItem') + '-' + item.itemId}
                                 style={{ display : 'flex', flexFlow : 'row', paddingLeft : Config.paddingX2 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
                                 <div style={{ flex : '1 1 0' }}>
-                                    <Text>{item.primaryText}</Text>
+                                    <Text theme={this.props.theme}>{item.primaryText}</Text>
                                 </div>
                                 <Text
                                     fontFamily="monospace"
-                                    fontWeight={300}>{item.secondaryText}</Text>
+                                    fontWeight={300}
+                                    theme={this.props.theme}>{item.secondaryText}</Text>
                             </div>
                         );
                     })}
@@ -46,8 +48,13 @@ export default class FilterListView extends React.Component {
 FilterListView.propTypes = {
     store            : React.PropTypes.instanceOf(ListViewStore).isRequired,
     backgroundColor  : React.PropTypes.string,
+    theme            : React.PropTypes.oneOf([ 'light', 'dark' ]),
     onItemClick      : React.PropTypes.func,
     onItemRightClick : React.PropTypes.func
+};
+
+FilterListView.defaultProps = {
+    theme : 'light'
 };
 
 module.exports = FilterListView;

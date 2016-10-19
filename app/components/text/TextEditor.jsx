@@ -6,6 +6,7 @@ import Brace from 'brace';
 import AceEditor from 'react-ace';
 import TextEditorStore from './TextEditorStore';
 import Record from '../../data/Record';
+import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
 import Unique from '../../utils/Unique';
 import Config from '../../../config.json';
 import PubSub from 'pubsub-js';
@@ -57,6 +58,14 @@ export default class TextEditor extends React.Component {
 
             this.refs.editor.editor.session.on('changeOverwrite', () => {
                 this.props.store.isOverwriteEnabled = this.refs.editor.editor.getOverwrite();
+            });
+
+            this.refs.editor.editor.container.addEventListener('contextmenu', event => {
+                event.preventDefault();
+
+                showTextBoxContextMenu();
+
+                return false;
             });
         };
 
@@ -142,7 +151,7 @@ TextEditor.propTypes = {
 };
 
 TextEditor.defaultProps = {
-    theme : 'light',
+    theme : 'light'
 };
 
 module.exports = TextEditor;

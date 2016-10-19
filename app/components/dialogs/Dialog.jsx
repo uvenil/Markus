@@ -3,7 +3,7 @@
 import React from 'react';
 import Modal from 'react-modal';
 import { observer } from 'mobx-react';
-import DialogStore from './DIalogStore';
+import DialogStore from './DialogStore';
 import Config from '../../../config.json';
 
 @observer
@@ -21,7 +21,7 @@ export default class Dialog extends React.Component {
                 shouldCloseOnOverlayClick={false}
                 overlayClassName="DialogOverlay"
                 className="DialogContent"
-                style={{ overlay : { backgroundColor : theme.overlayColor }, content : { width : this.props.width + 'px', height : this.props.height + 'px', padding : Config.paddingX1 + 'px', backgroundColor : theme.dialogBackgroundColor, border : '1px solid ' + theme.borderColor, borderRadius : Config.paddingX0 } }}
+                style={{ overlay : { backgroundColor : theme.overlayColor }, content : { width : this.props.width + 'px', height : this.props.height + 'px', backgroundColor : theme.dialogBackgroundColor, border : '1px solid ' + theme.borderColor, borderRadius : Config.paddingX0 + 'px', outline : 'none' } }}
                 onAfterOpen={this.props.onAfterOpen}
                 onRequestClose={this.props.onBeforeClose}>
                 {this.props.children}

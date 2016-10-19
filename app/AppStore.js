@@ -6,17 +6,21 @@ import Config from '../config.json';
 export default class AppStore {
     constructor() {
         extendObservable(this, {
-            aboutDialogStore       : null,
-            showFilterList         : Config.defaultShowFilterList,
-            showNoteList           : Config.defaultShowNoteList,
-            filterListWidth        : Config.filterListWidth,
-            noteListWidth          : Config.noteListWidth,
-            filtersStore           : null,
-            categoriesStore        : null,
-            notesStore             : null,
-            editorStore            : null,
-            addNoteEnabled         : false,
-            addCategoryDialogStore : null
+            theme                     : 'light',
+            aboutDialogStore          : undefined,
+            showFilterList            : Config.defaultShowFilterList,
+            showNoteList              : Config.defaultShowNoteList,
+            filterListWidth           : Config.filterListWidth,
+            noteListWidth             : Config.noteListWidth,
+            filtersStore              : undefined,
+            categoriesStore           : undefined,
+            notesStore                : undefined,
+            editorStore               : undefined,
+            addNoteEnabled            : false,
+            addCategoryDialogStore    : undefined,
+            updateCategoryDialogStore : undefined,
+            selectCategoryDialogStore : undefined,
+            notesSorting              : 2
         });
     }
 }
