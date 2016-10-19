@@ -1,7 +1,9 @@
 'use strict';
 
+import _ from 'lodash';
+
 const { remote } = require('electron');
-const { Menu, MenuItem } = remote;
+const { Menu, MenuItem, clipboard } = remote;
 
 const showTextBoxContextMenu = () => {
     const menu = new Menu();
@@ -30,7 +32,8 @@ const showTextBoxContextMenu = () => {
 
     menu.append(new MenuItem({
         role        : 'paste',
-        accelerator : 'CmdOrCtrl+V'
+        accelerator : 'CmdOrCtrl+V',
+        enabled     : !_.isNil(clipboard.readText())
     }));
 
     menu.append(new MenuItem({
