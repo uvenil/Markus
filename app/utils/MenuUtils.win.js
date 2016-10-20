@@ -16,7 +16,7 @@ export default function createWindowMenu() {
         submenu : [
             {
                 label : 'New note',
-                click(item, win) {
+                click : (item, win) => {
                     PubSub.publish('Application.newNote');
                 }
             },
@@ -50,7 +50,7 @@ export default function createWindowMenu() {
             {
                 label : 'About ' + app.getName(),
                 click : (item, win) => {
-                    if (win) PubSub.publish('AboutDialog.visible', { visible : true });
+                    if (win) PubSub.publish('AboutDialog.visible');
                 }
             }
         ]

@@ -17,7 +17,7 @@ export default function createWindowMenu() {
             {
                 label : 'About ' + app.getName(),
                 click : (item, win) => {
-                    if (win) PubSub.publish('AboutDialog.visible', { visible : true });
+                    if (win) PubSub.publish('AboutDialog.visible');
                 }
             },
             {
