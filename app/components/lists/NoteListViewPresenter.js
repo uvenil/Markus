@@ -166,6 +166,6 @@ export default class NoteListViewPresenter {
     }
 }
 
-NoteListViewPresenter.DEFAULT_SORTING = 2;
+NoteListViewPresenter.DEFAULT_SORTING = 3;
 
 module.exports = NoteListViewPresenter;

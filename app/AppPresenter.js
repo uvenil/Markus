@@ -244,32 +244,32 @@ export default class AppPresenter {
         const menu = new Menu();
 
         menu.append(new MenuItem({
-            label : 'Name ▼',
+            label : 'Name ▲',
             click : () => this._updateNotesSorting(0)
         }));
 
         menu.append(new MenuItem({
-            label : 'Name ▲',
+            label : 'Name ▼',
             click : () => this._updateNotesSorting(1)
         }));
 
         menu.append(new MenuItem({
-            label : 'Last updated ▼',
+            label : 'Last updated ▲',
             click : () => this._updateNotesSorting(2)
         }));
 
         menu.append(new MenuItem({
-            label : 'Last updated ▲',
+            label : 'Last updated ▼',
             click : () => this._updateNotesSorting(3)
         }));
 
         menu.append(new MenuItem({
-            label : 'Created ▼',
+            label : 'Created ▲',
             click : () => this._updateNotesSorting(4)
         }));
 
         menu.append(new MenuItem({
-            label : 'Created ▲',
+            label : 'Created ▼',
             click : () => this._updateNotesSorting(5)
         }));
 
