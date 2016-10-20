@@ -145,7 +145,8 @@ export default class App extends React.Component {
                             <div style={{ width : '100%', display : 'flex', flexFlow : 'row', padding : Config.paddingX0, paddingRight : Config.paddingX1 }}>
                                 <SearchBox
                                     hintText="Search notes"
-                                    theme={this.props.store.theme} />
+                                    theme={this.props.store.theme}
+                                    onChange={value => this.props.presenter.filterNoteList(value)} />
                             </div>
                             <SplitPane
                                 split="horizontal"

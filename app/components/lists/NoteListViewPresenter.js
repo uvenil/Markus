@@ -21,12 +21,17 @@ export default class NoteListViewPresenter {
         this._store               = new ListViewStore();
         this._database            = database;
         this._sorting             = NoteListViewPresenter.DEFAULT_SORTING;
+        this._keyword             = undefined;
     }
 
     get store() {
         return this._store;
     }
 
+    /**
+     * Updates the list sorting.
+     * @param {number} sorting
+     */
     set sorting(sorting) {
         this._sorting = sorting;
 
@@ -61,6 +66,16 @@ export default class NoteListViewPresenter {
         }
     }
 
+    /**
+     * Filters the list with the specified keyword.
+     * @param {String} keyword
+     */
+    set keyword(keyword) {
+        this._keyword = keyword;
+
+        this.refresh();
+    }
+
     refresh() {
         this._store.selectedItemId = undefined;
 
@@ -72,13 +87,13 @@ export default class NoteListViewPresenter {
         let promise;
 
         if (selectedFilterItemId === FilterListViewPresenter.FILTER_EVERYTHING_ID) {
-            promise = this._database.findAll(this._sorting);
+            promise = this._database.findAll(this._sorting, this._keyword);
         } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_STARRED_ID) {
-            promise = this._database.findByStarred(this._sorting);
+            promise = this._database.findByStarred(this._sorting, this._keyword);
         } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_ARCHIVED_ID) {
-            promise = this._database.findByArchived(this._sorting);
+            promise = this._database.findByArchived(this._sorting, this._keyword);
         } else if (selectedCategoryItemId) {
-            promise = this._database.findByCategory(selectedCategoryItemId, this._sorting);
+            promise = this._database.findByCategory(selectedCategoryItemId, this._sorting, this._keyword);
         }
 
         this._store.items = [];

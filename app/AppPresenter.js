@@ -442,6 +442,17 @@ export default class AppPresenter {
             });
     }
 
+    /**
+     * Filters the note list by the specified keyword.
+     * @param {String} keyword
+     */
+    filterNoteList(keyword) {
+        this._store.notesStore.selectedIndex = -1;
+        this._notesPresenter.keyword         = keyword;
+
+        this.refreshEditor();
+    }
+
     //endregion
 
     //region UI operations
