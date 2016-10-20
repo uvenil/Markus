@@ -231,7 +231,7 @@ export default class App extends React.Component {
                                             theme={this.props.store.theme}
                                             disabled={_.isNil(this.props.store.editorStore.record)}
                                             onClick={() => this.props.presenter.handleSelectCategoryClick()}>
-                                            {(this.props.store.editorStore.record && this.props.store.editorStore.record.category) ? this.props.store.editorStore.record.category : 'Uncategorized'}
+                                            {this.props.store.editorStore.record ? this.props.store.editorStore.record.category ? this.props.store.editorStore.record.category : 'Uncategorized' : ''}
                                         </Button>
                                     </div>
                                     <div style={{ margin : 'auto', paddingLeft : Config.paddingX0 + 'px', paddingRight : Config.paddingX0 + 'px', flex : '1 1 0', textAlign : 'right' }}>
