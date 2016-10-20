@@ -145,7 +145,8 @@ export default class App extends React.Component {
                             <div style={{ width : '100%', display : 'flex', flexFlow : 'row', padding : Config.paddingX0, paddingRight : Config.paddingX1 }}>
                                 <SearchBox
                                     hintText="Search notes"
-                                    theme={this.props.store.theme} />
+                                    theme={this.props.store.theme}
+                                    onChange={value => this.props.presenter.filterNoteList(value)} />
                             </div>
                             <SplitPane
                                 split="horizontal"
@@ -231,7 +232,7 @@ export default class App extends React.Component {
                                             theme={this.props.store.theme}
                                             disabled={_.isNil(this.props.store.editorStore.record)}
                                             onClick={() => this.props.presenter.handleSelectCategoryClick()}>
-                                            {(this.props.store.editorStore.record && this.props.store.editorStore.record.category) ? this.props.store.editorStore.record.category : 'Uncategorized'}
+                                            {this.props.store.editorStore.record ? this.props.store.editorStore.record.category ? this.props.store.editorStore.record.category : 'Uncategorized' : ''}
                                         </Button>
                                     </div>
                                     <div style={{ margin : 'auto', paddingLeft : Config.paddingX0 + 'px', paddingRight : Config.paddingX0 + 'px', flex : '1 1 0', textAlign : 'right' }}>
@@ -297,7 +298,7 @@ export default class App extends React.Component {
                     height={320}
                     theme={this.props.store.theme}>
                     <div style={{ width : 'calc(100% - ' + 2 * Config.paddingX2 + 'px)', textAlign : 'left', padding : Config.paddingX2 + 'px', backgroundColor : theme.dialogBackgroundColor }}>
-                        <div style={{ height : '248px', display : 'flex', flexFlow : 'column', backgroundColor : theme.primaryBackgroundColor }}>
+                        <div style={{ height : '248px', display : 'flex', flexFlow : 'column', overflow : 'auto', backgroundColor : theme.primaryBackgroundColor }}>
                             <div style={{ flex : '1 1 0' }}>
                                 <ListView
                                     backgroundColor={theme.primaryBackgroundColor}
@@ -308,7 +309,7 @@ export default class App extends React.Component {
                                         return (
                                             <div
                                                 key={item.itemId}
-                                                style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
+                                                style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px', borderBottom : '1px solid ' + theme.borderColor }}>
                                                 <Text
                                                     theme={this.props.store.theme}>{item.primaryText}</Text>
                                             </div>

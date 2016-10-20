@@ -244,32 +244,32 @@ export default class AppPresenter {
         const menu = new Menu();
 
         menu.append(new MenuItem({
-            label : 'Name ▼',
+            label : 'Name ▲',
             click : () => this._updateNotesSorting(0)
         }));
 
         menu.append(new MenuItem({
-            label : 'Name ▲',
+            label : 'Name ▼',
             click : () => this._updateNotesSorting(1)
         }));
 
         menu.append(new MenuItem({
-            label : 'Last updated ▼',
+            label : 'Last updated ▲',
             click : () => this._updateNotesSorting(2)
         }));
 
         menu.append(new MenuItem({
-            label : 'Last updated ▲',
+            label : 'Last updated ▼',
             click : () => this._updateNotesSorting(3)
         }));
 
         menu.append(new MenuItem({
-            label : 'Created ▼',
+            label : 'Created ▲',
             click : () => this._updateNotesSorting(4)
         }));
 
         menu.append(new MenuItem({
-            label : 'Created ▲',
+            label : 'Created ▼',
             click : () => this._updateNotesSorting(5)
         }));
 
@@ -440,6 +440,17 @@ export default class AppPresenter {
 
                 PubSub.publish(EVENT_ERROR, error.message);
             });
+    }
+
+    /**
+     * Filters the note list by the specified keyword.
+     * @param {String} keyword
+     */
+    filterNoteList(keyword) {
+        this._store.notesStore.selectedIndex = -1;
+        this._notesPresenter.keyword         = keyword;
+
+        this.refreshEditor();
     }
 
     //endregion
