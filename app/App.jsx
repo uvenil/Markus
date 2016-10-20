@@ -297,7 +297,7 @@ export default class App extends React.Component {
                     height={320}
                     theme={this.props.store.theme}>
                     <div style={{ width : 'calc(100% - ' + 2 * Config.paddingX2 + 'px)', textAlign : 'left', padding : Config.paddingX2 + 'px', backgroundColor : theme.dialogBackgroundColor }}>
-                        <div style={{ height : '248px', display : 'flex', flexFlow : 'column', backgroundColor : theme.primaryBackgroundColor }}>
+                        <div style={{ height : '248px', display : 'flex', flexFlow : 'column', overflow : 'auto', backgroundColor : theme.primaryBackgroundColor }}>
                             <div style={{ flex : '1 1 0' }}>
                                 <ListView
                                     backgroundColor={theme.primaryBackgroundColor}
@@ -308,7 +308,7 @@ export default class App extends React.Component {
                                         return (
                                             <div
                                                 key={item.itemId}
-                                                style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
+                                                style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px', borderBottom : '1px solid ' + theme.borderColor }}>
                                                 <Text
                                                     theme={this.props.store.theme}>{item.primaryText}</Text>
                                             </div>
