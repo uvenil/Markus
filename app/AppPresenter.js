@@ -522,6 +522,8 @@ export default class AppPresenter {
      */
     showFilterList(show) {
         this._store.showFilterList = show;
+
+        this._updateMenu();
     }
 
     /**
@@ -530,6 +532,8 @@ export default class AppPresenter {
      */
     showNoteList(show) {
         this._store.showNoteList = show;
+
+        this._updateMenu();
     }
 
     /**
@@ -701,6 +705,7 @@ export default class AppPresenter {
 
                 PubSub.publish('TextEditor.init', data);
 
+                this._updateMenu();
                 this._updateTheme();
 
                 resolve();
@@ -735,6 +740,17 @@ export default class AppPresenter {
                             this._store.notesStore.selectedItem.update(Record.fromDoc(doc));
                         }).catch(error => console.error(error));
                 }).catch(error => console.error(error));
+        });
+    }
+
+    _updateMenu() {
+        return new Promise((resolve, reject) => {
+            const viewMenu = Menu.getApplicationMenu().items[is.macOS() ? 3 : 2];
+
+            viewMenu.submenu.items[0].checked = this._store.showFilterList;
+            viewMenu.submenu.items[1].checked = this._store.showNoteList;
+
+            resolve();
         });
     }
 
