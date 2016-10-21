@@ -385,7 +385,7 @@ export default class Database {
                                                 }
                                             });
                                         } else {
-                                            this._db.update({ category: category }, { $set: { category: null } }, { multi: true }, error => {
+                                            this._db.update({ category : category }, { $set : { category : null } }, { multi : true }, error => {
                                                 if (error) {
                                                     reject(error);
                                                 } else {

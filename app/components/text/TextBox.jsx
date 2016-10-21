@@ -9,7 +9,7 @@ export default class TextBox extends React.Component {
     constructor(props) {
         super(props);
 
-        this._id = Unique.elementId('a');
+        this._id = Unique.elementId();
 
         this.state = {
             value : ''

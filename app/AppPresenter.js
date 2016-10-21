@@ -8,11 +8,17 @@ import AppStore from './AppStore';
 import DialogStore from './components/dialogs/DialogStore';
 import PromptDialogStore from './components/dialogs/PromptDialogStore';
 import ListViewDialogStore from './components/dialogs/ListViewDialogStore';
+import ListViewStore from './components/lists/ListViewStore';
 import ListItemStore from './components/lists/ListItemStore';
+import SettingsStore from './SettingsStore';
 import Settings from './utils/Settings';
 import Database from './data/Database';
 import Record from './data/Record';
 import Rx from 'rx-lite';
+import SyntaxNames from './syntax-names.json';
+import SyntaxCodes from './syntax-codes.json';
+import ThemeNames from './theme-names.json';
+import ThemeCodes from './theme-codes.json';
 import Config from '../config.json';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
@@ -37,14 +43,19 @@ export default class AppPresenter {
         this._notesPresenter      = new NoteListViewPresenter(this._filtersPresenter, this._categoriesPresenter, this._database);
         this._editorPresenter     = new TextEditorPresenter(this._database);
 
-        this._store.aboutDialogStore          = new DialogStore();
-        this._store.filtersStore              = this._filtersPresenter.store;
-        this._store.categoriesStore           = this._categoriesPresenter.store;
-        this._store.notesStore                = this._notesPresenter.store;
-        this._store.editorStore               = this._editorPresenter.store;
-        this._store.addCategoryDialogStore    = new PromptDialogStore();
-        this._store.updateCategoryDialogStore = new PromptDialogStore();
-        this._store.selectCategoryDialogStore = new ListViewDialogStore();
+        this._store.aboutDialogStore           = new DialogStore();
+        this._store.settingsDialogStore        = new DialogStore();
+        this._store.currentSyntaxListViewStore = new ListViewStore();
+        this._store.defaultSyntaxListViewStore = new ListViewStore();
+        this._store.themeListViewStore         = new ListViewStore();
+        this._store.settingsStore              = new SettingsStore();
+        this._store.filtersStore               = this._filtersPresenter.store;
+        this._store.categoriesStore            = this._categoriesPresenter.store;
+        this._store.notesStore                 = this._notesPresenter.store;
+        this._store.editorStore                = this._editorPresenter.store;
+        this._store.addCategoryDialogStore     = new PromptDialogStore();
+        this._store.updateCategoryDialogStore  = new PromptDialogStore();
+        this._store.selectCategoryDialogStore  = new ListViewDialogStore();
 
         this._filterSelection   = new Rx.Subject();
         this._categorySelection = new Rx.Subject();
@@ -56,6 +67,54 @@ export default class AppPresenter {
 
                 this.refreshNotes();
             });
+
+        //region Settings master-detail pane
+
+        this._store.settingsPaneStore = new ListViewStore();
+
+        const editorSetting = new ListItemStore();
+        editorSetting.itemId      = 'setting-editor';
+        editorSetting.primaryText = 'Editor';
+        this._store.settingsPaneStore.items.push(editorSetting);
+
+        const currentSyntaxSetting = new ListItemStore();
+        currentSyntaxSetting.itemId      = 'setting-currentSyntax';
+        currentSyntaxSetting.primaryText = 'Current Syntax';
+        this._store.settingsPaneStore.items.push(currentSyntaxSetting);
+
+        const defaultSyntaxSetting = new ListItemStore();
+        defaultSyntaxSetting.itemId      = 'setting-defaultSyntax';
+        defaultSyntaxSetting.primaryText = 'Default Syntax';
+        this._store.settingsPaneStore.items.push(defaultSyntaxSetting);
+
+        const themeSetting = new ListItemStore();
+        themeSetting.itemId      = 'setting-theme';
+        themeSetting.primaryText = 'Theme';
+        this._store.settingsPaneStore.items.push(themeSetting);
+
+        SyntaxNames.items.forEach((syntaxName, i) => {
+            const currentItem = new ListItemStore();
+            const defaultItem = new ListItemStore();
+
+            currentItem.itemId      = 'setting-currentSyntax-' + SyntaxCodes[i];
+            defaultItem.itemId      = 'setting-defaultSyntax-' + SyntaxCodes[i];
+            currentItem.primaryText = syntaxName;
+            defaultItem.primaryText = syntaxName;
+
+            this._store.currentSyntaxListViewStore.items.push(currentItem);
+            this._store.defaultSyntaxListViewStore.items.push(defaultItem);
+        });
+
+        ThemeNames.items.forEach((themeName, i) => {
+            const item = new ListItemStore();
+
+            item.itemId      = 'setting-theme-' + ThemeCodes[i];
+            item.primaryText = themeName;
+
+            this._store.themeListViewStore.items.push(item);
+        });
+
+        //endregion
     }
 
     get store() {
@@ -94,7 +153,7 @@ export default class AppPresenter {
                     type      : 'question',
                     title     : 'Delete notes',
                     message   : 'Are you sure you want to delete the notes?',
-                    buttons   : [ 'Yes', 'No'],
+                    buttons   : [ 'Yes', 'No' ],
                     defaultId : 0,
                     cancelId  : 1
                 }, response => {
@@ -159,7 +218,7 @@ export default class AppPresenter {
                     type      : 'question',
                     title     : 'Delete category',
                     message   : 'Are you sure you want to delete category "' + category + '"?',
-                    buttons   : [ 'Yes', 'No'],
+                    buttons   : [ 'Yes', 'No' ],
                     defaultId : 0,
                     cancelId  : 1
                 }, response => {
@@ -184,7 +243,7 @@ export default class AppPresenter {
                     type      : 'question',
                     title     : 'Delete category and notes',
                     message   : 'Are you sure you want to delete category "' + category + '" and its notes?',
-                    buttons   : [ 'Yes', 'No'],
+                    buttons   : [ 'Yes', 'No' ],
                     defaultId : 0,
                     cancelId  : 1
                 }, response => {
@@ -209,7 +268,7 @@ export default class AppPresenter {
                     type      : 'question',
                     title     : 'Delete notes',
                     message   : 'Are you sure you want to delete notes of category "' + category + '"?',
-                    buttons   : [ 'Yes', 'No'],
+                    buttons   : [ 'Yes', 'No' ],
                     defaultId : 0,
                     cancelId  : 1
                 }, response => {
@@ -463,6 +522,8 @@ export default class AppPresenter {
      */
     showFilterList(show) {
         this._store.showFilterList = show;
+
+        this._updateMenu();
     }
 
     /**
@@ -471,12 +532,14 @@ export default class AppPresenter {
      */
     showNoteList(show) {
         this._store.showNoteList = show;
+
+        this._updateMenu();
     }
 
     /**
      * @param {String} syntax
      */
-    changeSyntax(syntax) {
+    changeCurrentSyntax(syntax) {
         this._store.editorStore.syntax = syntax;
 
         if (this._store.editorStore.record) {
@@ -484,8 +547,13 @@ export default class AppPresenter {
 
             this._store.editorStore.changes.onNext(this._store.editorStore.record);
         }
+    }
 
-        this._updateMenu();
+    /**
+     * @param {String} syntax
+     */
+    changeDefaultSyntax(syntax) {
+        this._settings.set('defaultSyntax', syntax).catch(error => console.error(error));
     }
 
     /**
@@ -494,7 +562,6 @@ export default class AppPresenter {
     changeTheme(theme) {
         this._store.editorStore.theme = theme;
 
-        this._updateMenu();
         this._updateTheme();
 
         this._settings.set('theme', theme)
@@ -529,8 +596,6 @@ export default class AppPresenter {
         } else {
             console.warn('Unrecognized setting ' + data.name + ' = ' + data.value);
         }
-
-        this._updateMenu();
 
         this._settings.set(data.name, data.value)
             .then(() => console.trace('Saved setting ' + data.name + ' = ' + data.value))
@@ -579,11 +644,14 @@ export default class AppPresenter {
                 this._settings.get('scrollPastEnd',       Config.defaultScrollPastEnd),
                 this._settings.get('notesSorting',        Config.defaultNotesSorting)
             ]).then(values => {
-                this._store.showFilterList  = values[0] !== undefined ? values[0] : Config.defaultShowFilterList;
-                this._store.showNoteList    = values[1] !== undefined ? values[1] : Config.defaultShowNoteList;
-                this._store.filterListWidth = values[2] !== undefined ? values[2] : Config.filterListWidth;
-                this._store.noteListWidth   = values[3] !== undefined ? values[3] : Config.noteListWidth;
+                this._store.showFilterList  = values[0]  !== undefined ? values[0]  : Config.defaultShowFilterList;
+                this._store.showNoteList    = values[1]  !== undefined ? values[1]  : Config.defaultShowNoteList;
+                this._store.filterListWidth = values[2]  !== undefined ? values[2]  : Config.filterListWidth;
+                this._store.noteListWidth   = values[3]  !== undefined ? values[3]  : Config.noteListWidth;
                 this._store.notesSorting    = values[20] !== undefined ? values[20] : Config.defaultNotesSorting;
+
+                this._store.defaultSyntaxListViewStore.selectedIndex = _.indexOf(SyntaxCodes.items, values[4] !== undefined ? values[4] : Config.defaultSyntax);
+                this._store.themeListViewStore.selectedIndex         = _.indexOf(ThemeCodes.items,  values[5] !== undefined ? values[5] : Config.defaultTheme);
 
                 const data = {};
 
@@ -599,6 +667,24 @@ export default class AppPresenter {
                 data.showGutter          = values[17] !== undefined ? values[17] : Config.defaultShowGutter;
                 data.displayIndentGuides = values[18] !== undefined ? values[18] : Config.defaultDisplayIndentGuides;
                 data.scrollPastEnd       = values[19] !== undefined ? values[19] : Config.defaultScrollPastEnd;
+
+                this._store.settingsStore.highlightCurrentLine.checked = data.highlightActiveLine;
+                this._store.settingsStore.tabSize2.checked             = data.tabSize === 2;
+                this._store.settingsStore.tabSize4.checked             = data.tabSize === 4;
+                this._store.settingsStore.tabSize8.checked             = data.tabSize === 8;
+                this._store.settingsStore.useSoftTabs.checked          = data.useSoftTabs;
+                this._store.settingsStore.wordWrap.checked             = data.wordWrap;
+                this._store.settingsStore.showLineNumbers.checked      = data.showLineNumebrs;
+                this._store.settingsStore.showPrintMargin.checked      = data.showPrintMargin;
+                this._store.settingsStore.printMarginColumn72.checked  = data.printMarginColumn === 72;
+                this._store.settingsStore.printMarginColumn80.checked  = data.printMarginColumn === 80;
+                this._store.settingsStore.printMarginColumn100.checked = data.printMarginColumn === 100;
+                this._store.settingsStore.printMarginColumn120.checked = data.printMarginColumn === 120;
+                this._store.settingsStore.showInvisibles.checked       = data.showInvisibles;
+                this._store.settingsStore.showFoldWidgets.checked      = data.showFoldWidgets;
+                this._store.settingsStore.showGutter.checked           = data.showGutter;
+                this._store.settingsStore.showIndentGuides.checked     = data.displayIndentGuides;
+                this._store.settingsStore.scrollPastLastLine.checked   = data.scrollPastEnd;
 
                 this._store.editorStore.syntax              = values[4] ? values[4] : Config.defaultSyntax;
                 this._store.editorStore.theme               = values[5] ? values[5] : Config.defaultTheme;
@@ -620,7 +706,6 @@ export default class AppPresenter {
                 PubSub.publish('TextEditor.init', data);
 
                 this._updateMenu();
-                this._updateSyntaxMenu();
                 this._updateTheme();
 
                 resolve();
@@ -664,65 +749,6 @@ export default class AppPresenter {
 
             viewMenu.submenu.items[0].checked = this._store.showFilterList;
             viewMenu.submenu.items[1].checked = this._store.showNoteList;
-
-            const preferencesMenu = Menu.getApplicationMenu().items[is.macOS() ? 0 : 1].submenu.items[is.macOS() ? 2 : 9];
-
-            if (this._store.editorStore.tabSize === 2) {
-                preferencesMenu.submenu.items[2].submenu.items[0].checked = true;
-            } else if (this._store.editorStore.tabSize === 4) {
-                preferencesMenu.submenu.items[2].submenu.items[1].checked = true;
-            } else if (this._store.editorStore.tabSize === 8) {
-                preferencesMenu.submenu.items[2].submenu.items[2].checked = true;
-            } else {
-                preferencesMenu.submenu.items[2].submenu.items[1].checked = true;
-            }
-
-            if (this._store.editorStore.printMarginColumn === 76) {
-                preferencesMenu.submenu.items[7].submenu.items[0].checked = true;
-            } else if (this._store.editorStore.printMarginColumn === 80) {
-                preferencesMenu.submenu.items[7].submenu.items[1].checked = true;
-            } else if (this._store.editorStore.printMarginColumn === 100) {
-                preferencesMenu.submenu.items[7].submenu.items[2].checked = true;
-            } else if (this._store.editorStore.printMarginColumn === 120) {
-                preferencesMenu.submenu.items[7].submenu.items[3].checked = true;
-            } else {
-                preferencesMenu.submenu.items[7].submenu.items[1].checked = true;
-            }
-
-            preferencesMenu.submenu.items[1].checked  = this._store.editorStore.highlightActiveLine;
-            preferencesMenu.submenu.items[3].checked  = this._store.editorStore.useSoftTabs;
-            preferencesMenu.submenu.items[4].checked  = this._store.editorStore.wordWrap;
-            preferencesMenu.submenu.items[5].checked  = this._store.editorStore.showLineNumbers;
-            preferencesMenu.submenu.items[6].checked  = this._store.editorStore.showPrintMargin;
-            preferencesMenu.submenu.items[8].checked  = this._store.editorStore.showInvisibles;
-            preferencesMenu.submenu.items[9].checked  = this._store.editorStore.showFoldWidgets;
-            preferencesMenu.submenu.items[10].checked = this._store.editorStore.showGutter;
-            preferencesMenu.submenu.items[11].checked = this._store.editorStore.displayIndentGuides;
-            preferencesMenu.submenu.items[12].checked = this._store.editorStore.scrollPastEnd;
-
-            const themeMenu = Menu.getApplicationMenu().items[is.macOS() ? 3 : 2].submenu.items[4];
-            const themes    = [ 'ambiance', 'chaos', 'chrome', 'clouds', 'clouds_midnight', 'cobalt', 'crimson_editor', 'dawn', 'dreamweaver', 'eclipse', 'github', 'idle_fingers', 'ipastic', 'katzenmilch', 'kr_theme', 'kuroir', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monkai', 'pastal_on_dark', 'solarized_dark', 'solarized_light', 'sqlserver', 'terminal', 'textmate', 'tomorrow', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink', 'xcode' ];
-
-            for (let i = 0; i < themes.length; i++) {
-                if (this._store.editorStore.theme === themes[i]) {
-                    themeMenu.submenu.items[ i ].checked = true;
-                }
-            }
-
-            resolve();
-        });
-    }
-
-    _updateSyntaxMenu() {
-        return new Promise((resolve, reject) => {
-            const syntaxMenu = Menu.getApplicationMenu().items[is.macOS() ? 3 : 2].submenu.items[3];
-            const syntaxes   = [ /*'abap', 'abc', */'actionscript', 'ada', 'apache_conf', 'applescript', /*'asciidoc', 'assemble_x86', 'autohotkey', */'batchfile', 'cpp', /*'cirru', */'clojure', /*'cobol', */'coffee', 'coldfusion', 'csharp', 'css', /*'curly', */'d', /*'dart', 'diff', */'django', 'dockerfile', /*'dot', 'drools', 'eiffel', */'ejs', 'elixir', 'elm', 'erlang', /*'forth', 'fortran', 'ftl', 'gcode', */'gherkin', 'gitignore', /*'glsl', 'gobstones', */'golang', 'groovy', 'haml', 'handlebars', 'haskell', /*'haxe', */'html', 'html_elixir', 'html_ruby', 'ini', /*'io', 'jack', */'jade', 'java', 'javascript', 'json', 'jsp', 'jsx', /*'julia', */'kotlin', 'latex', 'less', /*'liquid', */'lisp', /*'livescript', 'logiql', 'lsl', */'lua', /*'luapage', 'lucene', */'makefile', 'markdown', /*'mask', */'matlab', /*'maze', 'mel', 'mushcode', */'mysql', /*'nix', */'nsis', 'objectivec', 'ocaml', /*'pascal', */'perl', 'pgsql', 'php', 'plain_text', 'powershell', /*'praat', */'prolog', 'properties', /*'protobuf', */'python', 'r', /*'razor', 'rdoc', 'rhtml', */'ruby', /*'rust', */'sass', /*'scad', */'scala', /*'scheme', */'scss', 'sh', /*'sjs', 'smarty', 'soy', 'space', */'sql', 'sqlserver', /*'stylus', 'svg', */'swift', 'tcl', /*'tex', 'textile', 'toml', 'tsx', 'twig', */'typescript', /*'vala', */'vbscript', /*'velocity', 'verilog', */'vhdl', /*'wollok', */'xml', 'xquery', 'yaml' ];
-
-            for (let i = 0; i < syntaxes.length; i++) {
-                if ((this._store.editorStore.record ? this._store.editorStore.record.syntax ? this._store.editorStore.record.syntax : this._store.editorStore.syntax : this._store.editorStore.syntax) === syntaxes[i]) {
-                    syntaxMenu.submenu.items[i].checked = true;
-                }
-            }
 
             resolve();
         });
