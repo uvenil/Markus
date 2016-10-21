@@ -297,7 +297,8 @@ export default class App extends React.Component {
                     <MasterDetailPane
                         masterWidth={120}
                         masterStore={this.props.store.settingsPaneStore}
-                        theme={this.props.store.theme}>
+                        theme={this.props.store.theme}
+                        onClose={() => this.props.store.settingsDialogStore.visible = false}>
                         {/* Editor */}
                         <div style={{ width : 'calc(359px - ' + Config.paddingX2 + 'px)', height : 'calc(360px - ' + Config.paddingX2 + 'px)', padding : Config.paddingX1, display : 'flex', flexFlow : 'column', overflow : 'auto' }}>
                             <div style={{ display : 'table' }}>
