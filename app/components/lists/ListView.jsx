@@ -48,7 +48,7 @@ export default class ListView extends React.Component {
                 {this.props.children.map((child, index) => {
                     return (
                         <div
-                            key={Unique.elementId('a' + index)}
+                            key={Unique.elementId()}
                             style={{ backgroundColor : index === this.props.selectedIndex ? selectedBackgroundColor : backgroundColor }}
                             onMouseDown={event => {
                                 if (event.nativeEvent.button === 2) {

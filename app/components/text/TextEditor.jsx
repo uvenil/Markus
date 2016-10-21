@@ -21,8 +21,8 @@ export default class TextEditor extends React.Component {
     constructor(props) {
         super(props);
 
-        this._editorId      = Unique.elementId('a');
-        this._placeHolderId = Unique.elementId('b');
+        this._editorId      = Unique.elementId();
+        this._placeHolderId = Unique.elementId();
         this._subscriptions = [];
 
         this._handleChange = value => {

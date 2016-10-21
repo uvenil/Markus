@@ -29,7 +29,7 @@ export default class NoteListView extends React.Component {
                     {this.props.store.items.map(item => {
                         return (
                             <div
-                                key={Unique.elementId('listViewItem') + '-' + item.itemId}
+                                key={Unique.elementId() + '-' + item.itemId}
                                 style={{ width : 'calc(100% - ' + Config.paddingX2 + 'px)', padding : Config.paddingX1, borderBottom : '1px solid ' + theme.borderColor, cursor : 'default' }}>
                                 <Text theme={this.props.theme}>
                                     <div style={{ lineHeight : '1.5em', whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'bolder', fontSize : '105%' }}>

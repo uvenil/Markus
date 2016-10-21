@@ -17,7 +17,7 @@ export default class MasterDetailPane extends React.Component {
 
         this._childIds = [];
 
-        this.props.children.forEach((child, i) => this._childIds.push(Unique.elementId('md-' + i)));
+        this.props.children.forEach((child, i) => this._childIds.push(Unique.elementId()));
 
         this._handleItemClick = index => {
             this.props.masterStore.selectedIndex = index;

@@ -153,7 +153,7 @@ export default class AppPresenter {
                     type      : 'question',
                     title     : 'Delete notes',
                     message   : 'Are you sure you want to delete the notes?',
-                    buttons   : [ 'Yes', 'No'],
+                    buttons   : [ 'Yes', 'No' ],
                     defaultId : 0,
                     cancelId  : 1
                 }, response => {
@@ -218,7 +218,7 @@ export default class AppPresenter {
                     type      : 'question',
                     title     : 'Delete category',
                     message   : 'Are you sure you want to delete category "' + category + '"?',
-                    buttons   : [ 'Yes', 'No'],
+                    buttons   : [ 'Yes', 'No' ],
                     defaultId : 0,
                     cancelId  : 1
                 }, response => {
@@ -243,7 +243,7 @@ export default class AppPresenter {
                     type      : 'question',
                     title     : 'Delete category and notes',
                     message   : 'Are you sure you want to delete category "' + category + '" and its notes?',
-                    buttons   : [ 'Yes', 'No'],
+                    buttons   : [ 'Yes', 'No' ],
                     defaultId : 0,
                     cancelId  : 1
                 }, response => {
@@ -268,7 +268,7 @@ export default class AppPresenter {
                     type      : 'question',
                     title     : 'Delete notes',
                     message   : 'Are you sure you want to delete notes of category "' + category + '"?',
-                    buttons   : [ 'Yes', 'No'],
+                    buttons   : [ 'Yes', 'No' ],
                     defaultId : 0,
                     cancelId  : 1
                 }, response => {

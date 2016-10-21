@@ -88,14 +88,14 @@ const createDeveloperMenu = () => {
             {
                 label       : 'Reload',
                 accelerator : 'CmdOrCtrl+R',
-                click : (item, win) => {
+                click       : (item, win) => {
                     if (win) win.reload();
                 }
             },
             {
                 label       : 'Toggle Developer Tools',
                 accelerator : is.macOS() ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-                click : (item, win) => {
+                click       : (item, win) => {
                     if (win) win.webContents.toggleDevTools();
                 }
             },

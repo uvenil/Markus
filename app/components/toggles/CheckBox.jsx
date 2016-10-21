@@ -10,7 +10,7 @@ export default class CheckBox extends React.Component {
     constructor(props) {
         super(props);
 
-        this._checkBoxId = Unique.elementId('a');
+        this._checkBoxId = Unique.elementId();
 
         this._handleChange = checked => {
             if (this.props.onChange) {

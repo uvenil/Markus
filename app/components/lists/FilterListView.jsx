@@ -27,7 +27,7 @@ export default class FilterListView extends React.Component {
                     {this.props.store.items.map(item => {
                         return (
                             <div
-                                key={Unique.elementId('listViewItem') + '-' + item.itemId}
+                                key={Unique.elementId() + '-' + item.itemId}
                                 style={{ display : 'flex', flexFlow : 'row', paddingLeft : Config.paddingX2 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
                                 <div style={{ flex : '1 1 0' }}>
                                     <Text theme={this.props.theme}>{item.primaryText}</Text>

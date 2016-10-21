@@ -10,8 +10,8 @@ export default class SearchBox extends React.Component {
     constructor(props) {
         super(props);
 
-        this._textBoxId     = Unique.elementId('a');
-        this._clearButtonId = Unique.elementId('b');
+        this._textBoxId     = Unique.elementId();
+        this._clearButtonId = Unique.elementId();
 
         this._handleChange = value => {
             document.getElementById(this._clearButtonId).style.display = _.isEmpty(value) ? 'none' : 'block';
