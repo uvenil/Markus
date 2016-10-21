@@ -1,13 +1,22 @@
 'use strict';
 
 import React from 'react';
+import { observer } from 'mobx-react';
+import ToggleStore from './ToggleStore';
 import Unique from '../../utils/Unique';
 
+@observer
 export default class CheckBox extends React.Component {
     constructor(props) {
         super(props);
 
         this._checkBoxId = Unique.elementId('a');
+
+        this._handleChange = checked => {
+            if (this.props.onChange) {
+                this.props.onChange(checked);
+            }
+        };
     }
 
     render() {
@@ -20,7 +29,9 @@ export default class CheckBox extends React.Component {
                 style={{ verticalAlign : 'middle' }}>
                 <input
                     id={this._checkBoxId}
-                    type="checkbox" />
+                    type="checkbox"
+                    checked={this.props.store.checked}
+                    onChange={event => this._handleChange(event.target.checked)} />
                 <label
                     htmlFor={this._checkBoxId}
                     style={{ WebkitUserSelect : 'none', cursor : 'default', fontFamily : this.props.fontFamily, fontSize : this.props.textSize, color : textColor }}>
@@ -32,6 +43,7 @@ export default class CheckBox extends React.Component {
 }
 
 CheckBox.propTypes = {
+    store      : React.PropTypes.instanceOf(ToggleStore),
     className  : React.PropTypes.string,
     fontFamily : React.PropTypes.string,
     textSize   : React.PropTypes.string,

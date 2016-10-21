@@ -7,17 +7,21 @@ import Label from './components/text/Label.jsx';
 import Text from './components/text/Text.jsx';
 import SearchBox from './components/text/SearchBox.jsx';
 import TextEditor from './components/text/TextEditor.jsx';
-import Dialog from './components/dialogs/Dialog.jsx';
+import CheckBox from './components/toggles/CheckBox.jsx';
 import ListView from './components/lists/ListView.jsx';
 import FilterListView from './components/lists/FilterListView.jsx';
 import NoteListView from './components/lists/NoteListView.jsx';
+import Dialog from './components/dialogs/Dialog.jsx';
 import PromptDialog from './components/dialogs/PromptDialog.jsx';
+import MasterDetailPane from './components/panes/MasterDetailPane.jsx';
 import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
 import { observer } from 'mobx-react';
 import Settings from './utils/Settings';
 import Path from 'path';
 import PubSub from 'pubsub-js';
+import SyntaxCodes from './syntax-codes.json';
+import ThemeCodes from './theme-codes.json';
 import Package from '../package.json';
 import Config from '../config.json';
 import is from 'electron-is';
@@ -67,6 +71,7 @@ export default class App extends React.Component {
         this._subscriptions.push(PubSub.subscribe('Database.reset', () => this.props.presenter.resetDatabase()));
         this._subscriptions.push(PubSub.subscribe('Settings.reset', () => this.props.presenter.resetSettings()));
         this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', () => this.props.store.aboutDialogStore.visible = true));
+        this._subscriptions.push(PubSub.subscribe('SettingsDialog.visible', () => this.props.store.settingsDialogStore.visible = true));
         this._subscriptions.push(PubSub.subscribe('View.showFilterList', (eventName, show) => this.props.presenter.showFilterList(show)));
         this._subscriptions.push(PubSub.subscribe('View.showNoteList', (eventName, show) => this.props.presenter.showNoteList(show)));
         this._subscriptions.push(PubSub.subscribe('Syntax.change', (eventName, syntax) => this.props.presenter.changeSyntax(syntax)));
@@ -283,6 +288,327 @@ export default class App extends React.Component {
                     label="New category name:"
                     theme={this.props.store.theme}
                     onEnter={value => this.props.presenter.addCategory(value)} />
+                {/* Settings dialog */}
+                <Dialog
+                    store={this.props.store.settingsDialogStore}
+                    width={480}
+                    height={360}
+                    theme={this.props.store.theme}>
+                    <MasterDetailPane
+                        masterWidth={120}
+                        masterStore={this.props.store.settingsPaneStore}
+                        theme={this.props.store.theme}>
+                        {/* Editor */}
+                        <div style={{ width : 'calc(359px - ' + Config.paddingX2 + 'px)', height : 'calc(360px - ' + Config.paddingX2 + 'px)', padding : Config.paddingX1, display : 'flex', flexFlow : 'column', overflow : 'auto' }}>
+                            <div style={{ display : 'table' }}>
+                                {/* Highlight current line */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Highlight current line</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.highlightCurrentLine}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.highlightCurrentLine.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'highlightActiveLine', value : checked });
+                                            }} />
+                                    </div>
+                                </div>
+                                {/* Show line numbers */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Show line numbers</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.showLineNumbers}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.showLineNumbers.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'showLineNumbers', value : checked });
+                                            }} />
+                                    </div>
+                                </div>
+                                {/* Tab size */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Tab size</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.tabSize2}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.tabSize2.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'tabSize', value : 2 });
+                                            }}>2 spaces</CheckBox>
+                                        <div style={{ paddingTop : Config.paddingX1 + 'px', paddingBottom : Config.paddingX1 + 'px' }}>
+                                            <CheckBox
+                                                store={this.props.store.settingsStore.tabSize4}
+                                                theme={this.props.store.theme}
+                                                onChange={checked => {
+                                                    this.props.store.settingsStore.tabSize4.checked = checked;
+                                                    PubSub.publish('TextEditor.settings', { name : 'tabSize', value : 4 });
+                                                }}>4 spaces</CheckBox>
+                                        </div>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.tabSize8}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.tabSize8.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'tabSize', value : 8 });
+                                            }}>8 spaces</CheckBox>
+                                    </div>
+                                </div>
+                                {/* Use soft tabs */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Use soft tabs</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.useSoftTabs}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.useSoftTabs.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'useSoftTabs', value : checked });
+                                            }} />
+                                    </div>
+                                </div>
+                                {/* Word wrap */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Word wrap</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.wordWrap}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.wordWrap.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'wordWrap', value : checked });
+                                            }} />
+                                    </div>
+                                </div>
+                                {/* Show print margin */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Show print margin</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.showPrintMargin}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.showPrintMargin.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'showPrintMargin', value : checked });
+                                            }} />
+                                    </div>
+                                </div>
+                                {/* Print margin column */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Print margin column</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.printMarginColumn72}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.printMarginColumn72.checked  = true;
+                                                this.props.store.settingsStore.printMarginColumn80.checked  = false;
+                                                this.props.store.settingsStore.printMarginColumn100.checked = false;
+                                                this.props.store.settingsStore.printMarginColumn120.checked = false;
+                                                PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 72 });
+                                            }}>72</CheckBox>
+                                        <div style={{ paddingTop : Config.paddingX1 + 'px' }}>
+                                            <CheckBox
+                                                store={this.props.store.settingsStore.printMarginColumn80}
+                                                theme={this.props.store.theme}
+                                                onChange={checked => {
+                                                    this.props.store.settingsStore.printMarginColumn72.checked  = false;
+                                                    this.props.store.settingsStore.printMarginColumn80.checked  = true;
+                                                    this.props.store.settingsStore.printMarginColumn100.checked = false;
+                                                    this.props.store.settingsStore.printMarginColumn120.checked = false;
+                                                    PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 80 });
+                                                }}>80</CheckBox>
+                                        </div>
+                                        <div style={{ paddingTop : Config.paddingX1 + 'px', paddingBottom : Config.paddingX1 + 'px' }}>
+                                            <CheckBox
+                                                store={this.props.store.settingsStore.printMarginColumn100}
+                                                theme={this.props.store.theme}
+                                                onChange={checked => {
+                                                    this.props.store.settingsStore.printMarginColumn72.checked  = false;
+                                                    this.props.store.settingsStore.printMarginColumn80.checked  = false;
+                                                    this.props.store.settingsStore.printMarginColumn100.checked = true;
+                                                    this.props.store.settingsStore.printMarginColumn120.checked = false;
+                                                    PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 100 });
+                                                }}>100</CheckBox>
+                                        </div>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.printMarginColumn120}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.printMarginColumn72.checked  = false;
+                                                this.props.store.settingsStore.printMarginColumn80.checked  = false;
+                                                this.props.store.settingsStore.printMarginColumn100.checked = false;
+                                                this.props.store.settingsStore.printMarginColumn120.checked = true;
+                                                PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : 120 });
+                                            }}>120</CheckBox>
+                                    </div>
+                                </div>
+                                {/* Show invisibles */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Show invisibles</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.showInvisibles}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.showInvisibles.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'showInvisibles', value : checked });
+                                            }} />
+                                    </div>
+                                </div>
+                                {/* Show fold widgets */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Show fold widgets</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.showFoldWidgets}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.showFoldWidgets.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'showFoldWidgets', value : checked });
+                                            }} />
+                                    </div>
+                                </div>
+                                {/* Show gutter */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Show gutter</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.showGutter}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.showGutter.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'showGutter', value : checked });
+                                            }} />
+                                    </div>
+                                </div>
+                                {/* Show indent guides */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Show indent guides</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.showIndentGuides}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.showIndentGuides.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'displayIndentGuides', value : checked });
+                                            }} />
+                                    </div>
+                                </div>
+                                {/* Scroll past last line */}
+                                <div style={{ display : 'table-row' }}>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'right' }}>
+                                        <Label theme={this.props.store.theme}>Scroll past last line</Label>
+                                    </div>
+                                    <div style={{ padding : Config.paddingX1, display : 'table-cell', textAlign : 'left' }}>
+                                        <CheckBox
+                                            store={this.props.store.settingsStore.scrollPastLastLine}
+                                            theme={this.props.store.theme}
+                                            onChange={checked => {
+                                                this.props.store.settingsStore.scrollPastLastLine.checked = checked;
+                                                PubSub.publish('TextEditor.settings', { name : 'scrollPastEnd', value : checked });
+                                            }} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {/* Current syntax */}
+                        <div style={{ width : '359px', height : '360px', display : 'flex', flexFlow : 'column', overflowX : 'hidden', overflowY : 'auto' }}>
+                            <div style={{ width : '359px', flex : '1 1 0' }}>
+                                <ListView
+                                    selectedIndex={this.props.store.currentSyntaxListViewStore.selectedIndex}
+                                    backgroundColor={theme.primaryBackgroundColor}
+                                    theme={this.props.store.theme}
+                                    onItemClick={index => {
+                                        if (this.props.store.editorStore.record) {
+                                            this.props.store.currentSyntaxListViewStore.selectedIndex = index;
+                                            this.props.presenter.changeCurrentSyntax(SyntaxCodes.items[index]);
+                                        }
+                                    }}>
+                                    {this.props.store.currentSyntaxListViewStore.items.map(item => {
+                                        return (
+                                            <div
+                                                key={item.itemId}
+                                                style={{ width : 'calc(359px - ' + Config.paddingX2 + 'px)', paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px', borderBottom : '1px solid ' + theme.borderColor }}>
+                                                <Text theme={this.props.store.theme}>{item.primaryText}</Text>
+                                            </div>
+                                        );
+                                    })}
+                                </ListView>
+                            </div>
+                        </div>
+                        {/* Default syntax */}
+                        <div style={{ width : '359px', height : '360px', display : 'flex', flexFlow : 'column', overflowX : 'hidden', overflowY : 'auto' }}>
+                            <div style={{ width : '359px', flex : '1 1 0' }}>
+                                <ListView
+                                    selectedIndex={this.props.store.defaultSyntaxListViewStore.selectedIndex}
+                                    backgroundColor={theme.primaryBackgroundColor}
+                                    theme={this.props.store.theme}
+                                    onItemClick={index => {
+                                        this.props.store.defaultSyntaxListViewStore.selectedIndex = index;
+                                        this.props.presenter.changeDefaultSyntax(SyntaxCodes.items[index]);
+                                    }}>
+                                    {this.props.store.defaultSyntaxListViewStore.items.map(item => {
+                                        return (
+                                            <div
+                                                key={item.itemId}
+                                                style={{ width : 'calc(359px - ' + Config.paddingX2 + 'px)', paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px', borderBottom : '1px solid ' + theme.borderColor }}>
+                                                <Text theme={this.props.store.theme}>{item.primaryText}</Text>
+                                            </div>
+                                        );
+                                    })}
+                                </ListView>
+                            </div>
+                        </div>
+                        {/* Theme */}
+                        <div style={{ width : '359px', height : '360px', display : 'flex', flexFlow : 'column', overflowX : 'hidden', overflowY : 'auto' }}>
+                            <div style={{ width : '359px', flex : '1 1 0' }}>
+                                <ListView
+                                    selectedIndex={this.props.store.themeListViewStore.selectedIndex}
+                                    backgroundColor={theme.primaryBackgroundColor}
+                                    theme={this.props.store.theme}
+                                    onItemClick={index => {
+                                        this.props.store.themeListViewStore.selectedIndex = index;
+                                        this.props.presenter.changeTheme(ThemeCodes.items[index]);
+                                    }}>
+                                    {this.props.store.themeListViewStore.items.map(item => {
+                                        return (
+                                            <div
+                                                key={item.itemId}
+                                                style={{ width : 'calc(359px - ' + Config.paddingX2 + 'px)', paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px', borderBottom : '1px solid ' + theme.borderColor }}>
+                                                <Text theme={this.props.store.theme}>{item.primaryText}</Text>
+                                            </div>
+                                        );
+                                    })}
+                                </ListView>
+                            </div>
+                        </div>
+                    </MasterDetailPane>
+                </Dialog>
                 {/* Rename category dialog */}
                 <PromptDialog
                     store={this.props.store.updateCategoryDialogStore}
@@ -310,8 +636,7 @@ export default class App extends React.Component {
                                             <div
                                                 key={item.itemId}
                                                 style={{ paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px', borderBottom : '1px solid ' + theme.borderColor }}>
-                                                <Text
-                                                    theme={this.props.store.theme}>{item.primaryText}</Text>
+                                                <Text theme={this.props.store.theme}>{item.primaryText}</Text>
                                             </div>
                                         );
                                     })}
