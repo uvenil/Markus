@@ -12,7 +12,9 @@ import Config from '../../../config.json';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
+require('brace/ext/searchbox');
 require('brace/ext/spellcheck');
+require('brace/ext/whitespace');
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
