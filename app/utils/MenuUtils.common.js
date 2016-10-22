@@ -17,7 +17,7 @@ const setMenuItemEnabled = (items, enabled) => {
 
 const createPreferencesMenu = () => {
     return {
-        label   : 'Preferences',
+        label   : 'Preferences…',
         click   : (item, win) => {
             if (win) PubSub.publish('SettingsDialog.visible');
         }

@@ -1,6 +1,6 @@
 'use strict';
 
-import { createPreferencesMenu, createEditMenu, createViewMenu, createDeveloperMenu } from './MenuUtils.common';
+import { createPreferencesMenu, createViewMenu, createDeveloperMenu } from './MenuUtils.common';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
@@ -17,7 +17,22 @@ export default function createWindowMenu() {
             {
                 label : 'New note',
                 click : (item, win) => {
-                    PubSub.publish('Application.newNote');
+                    if (win) PubSub.publish('Application.newNote');
+                }
+            },
+            {
+                type : 'separator'
+            },
+            {
+                label : 'Import notes…',
+                click : (item, win) => {
+                    if (win) PubSub.publish('Application.importNotes');
+                }
+            },
+            {
+                label : 'Export notes…',
+                click : (item, win) => {
+                    if (win) PubSub.publish('Application.exportNotes');
                 }
             },
             {

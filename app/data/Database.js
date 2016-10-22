@@ -105,7 +105,7 @@ export default class Database {
     findAll(sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
-                fullText : new RegExp(keyword),
+                fullText : keyword ? new RegExp(keyword) : undefined,
                 archived : false
             } : {
                 archived : false
@@ -146,7 +146,7 @@ export default class Database {
     findByStarred(sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
-                fullText : new RegExp(keyword),
+                fullText : keyword ? new RegExp(keyword) : undefined,
                 starred  : true,
                 archived : false
             } : {
@@ -190,7 +190,7 @@ export default class Database {
     findByArchived(sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
-                fullText : new RegExp(keyword),
+                fullText : keyword ? new RegExp(keyword) : undefined,
                 archived : true
             } : {
                 archived : true
@@ -225,14 +225,14 @@ export default class Database {
     /**
      * Returns the records of the specified category.
      * @param {String} category The specific category of records to get.
-     * @param {number} [sorting]
+     * @param {number} sorting
      * @param {String} [keyword] Filter the results by the matching keyword.
      * @returns {Promise}
      */
     findByCategory(category, sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find({
-                fullText : new RegExp(keyword),
+                fullText : keyword ? new RegExp(keyword) : undefined,
                 category : category,
                 archived : false
             }).sort(SORTINGS[sorting]).exec((error, docs) => {

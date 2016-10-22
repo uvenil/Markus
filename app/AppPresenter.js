@@ -131,6 +131,8 @@ export default class AppPresenter {
 
     //region Event handlers
 
+    //region Filter operations
+
     handleFilterItemClick(index) {
         if (this._store.filtersStore.selectedIndex !== index) {
             console.trace('Selected filter index = ' + index);
@@ -147,7 +149,17 @@ export default class AppPresenter {
         const menu = new Menu();
 
         menu.append(new MenuItem({
-            label : 'Delete notes',
+            label : 'Export notes…',
+            click : () => {
+                this._store.filtersStore.selectedIndex    = index;
+                this._store.categoriesStore.selectedIndex = -1;
+
+                this.handleExportNotes();
+            }
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Delete notes…',
             click : () => {
                 dialog.showMessageBox(remote.getCurrentWindow(), {
                     type      : 'question',
@@ -183,6 +195,10 @@ export default class AppPresenter {
         menu.popup(remote.getCurrentWindow());
     }
 
+    //endregion
+
+    //region Category operations
+
     handleCategoryItemClick(index) {
         if (this._store.categoriesStore.selectedIndex !== index) {
             console.trace('Selected category index = ' + index);
@@ -200,7 +216,17 @@ export default class AppPresenter {
         const menu     = new Menu();
 
         menu.append(new MenuItem({
-            label : 'Rename ' + category,
+            label : 'Export notes…',
+            click : () => {
+                this._store.filtersStore.selectedIndex    = -1;
+                this._store.categoriesStore.selectedIndex = index;
+
+                this.handleExportNotes();
+            }
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Rename ' + category + '…',
             click : () => {
                 this._store.updateCategoryDialogStore.value   = category;
                 this._store.updateCategoryDialogStore.visible = true;
@@ -212,7 +238,7 @@ export default class AppPresenter {
         }));
 
         menu.append(new MenuItem({
-            label : 'Delete ' + category,
+            label : 'Delete ' + category + '…',
             click : () => {
                 dialog.showMessageBox(remote.getCurrentWindow(), {
                     type      : 'question',
@@ -237,7 +263,7 @@ export default class AppPresenter {
         }));
 
         menu.append(new MenuItem({
-            label : 'Delete ' + category + ' and notes',
+            label : 'Delete ' + category + ' and notes…',
             click : () => {
                 dialog.showMessageBox(remote.getCurrentWindow(), {
                     type      : 'question',
@@ -262,7 +288,7 @@ export default class AppPresenter {
         }));
 
         menu.append(new MenuItem({
-            label : 'Delete notes',
+            label : 'Delete notes…',
             click : () => {
                 dialog.showMessageBox(remote.getCurrentWindow(), {
                     type      : 'question',
@@ -287,6 +313,14 @@ export default class AppPresenter {
         menu.popup(remote.getCurrentWindow());
     }
 
+    handleAddCategoryClick() {
+        this._store.addCategoryDialogStore.visible = true;
+    }
+
+    //endregion
+
+    //region Note operations
+
     handleNoteItemClick(index) {
         if (this._store.notesStore.selectedIndex !== index) {
             console.trace('Selected note index = ' + index);
@@ -297,6 +331,46 @@ export default class AppPresenter {
 
             this.refreshEditor();
         }
+    }
+
+    handleNoteItemRightClick(index) {
+        const menu = new Menu();
+
+        menu.append(new MenuItem({
+            label : 'Export note…',
+            click : () => {
+                this._store.notesStore.selectedIndex = index;
+
+                this.handleExportNote();
+            }
+        }));
+
+        menu.append(new MenuItem({
+            type : 'separator'
+        }));
+
+        menu.append(new MenuItem({
+            label : 'Delete note…',
+            click : () => {
+                dialog.showMessageBox(remote.getCurrentWindow(), {
+                    type      : 'question',
+                    title     : 'Delete note',
+                    message   : 'Are you sure you want to delete this note?',
+                    buttons   : [ 'Yes', 'No' ],
+                    defaultId : 0,
+                    cancelId  : 1
+                }, response => {
+                    if (response === 0) {
+                        this._database.removeById(this._store.notesStore.selectedItem.itemId)
+                            .then(() => {
+                                this._notesPresenter.refresh();
+                            }).catch(error => console.error(error));
+                    }
+                });
+            }
+        }));
+
+        menu.popup(remote.getCurrentWindow());
     }
 
     handleNotesSortingClick() {
@@ -335,10 +409,6 @@ export default class AppPresenter {
         menu.popup(remote.getCurrentWindow());
     }
 
-    handleAddCategoryClick() {
-        this._store.addCategoryDialogStore.visible = true;
-    }
-
     handleAddNoteClick() {
         this._notesPresenter.addNote(this._defaultSyntax)
             .then(() => {
@@ -349,6 +419,72 @@ export default class AppPresenter {
                 this._noteSelection.onNext(0);
             }).catch(error => console.error(error));
     }
+
+    handleImportNotes() {
+        if (this._store.filtersStore.selectedIndex > -1) {
+            dialog.showOpenDialog(remote.getCurrentWindow(), {
+                title      : 'Import from a text file',
+                filters    : [
+                    {
+                        name       : 'All files',
+                        extensions : [ '*' ]
+                    }
+                ],
+                properties : [ 'openFile', 'multiSelections' ]
+            }, filenames => {
+                // TODO
+            });
+        }
+    }
+
+    handleExportNote() {
+        if (this._store.notesStore.selectedIndex > -1) {
+            dialog.showSaveDialog(remote.getCurrentWindow(), {
+                title   : 'Export to a text file',
+                filters : [
+                    {
+                        name       : 'All files',
+                        extensions : [ '*' ]
+                    }
+                ]
+            }, filename => {
+                // TODO
+            });
+        }
+    }
+
+    handleExportNotes() {
+        let promise;
+
+        if (this._store.filtersStore.selectedIndex === 0) {
+            promise = this._database.findAll(this._store.notesSorting);
+        } else if (this._store.filtersStore.selectedIndex === 1) {
+            promise = this._database.findByStarred(this._store.notesSorting);
+        } else if (this._store.filtersStore.selectedIndex === 2) {
+            promise = this._database.findByArchived(this._store.notesSorting);
+        } else if (this._store.categoriesStore.selectedIndex > -1) {
+            promise = this._database.findByCategory(this._store.categoriesStore.selectedItem.primaryText);
+        }
+
+        if (promise) {
+            dialog.showOpenDialog(remote.getCurrentWindow(), {
+                title      : 'Export text files to a directory',
+                filters    : [
+                    {
+                        name       : 'All files',
+                        extensions : [ '*' ]
+                    }
+                ],
+                properties : [ 'openDirectory', 'createDirectory' ]
+            }, directory => {
+                // TODO
+            });
+        }
+    }
+
+    //endregion
+
+    //region Editor operation
 
     handleStarClick() {
         this._store.editorStore.record.starred = !this._store.editorStore.record.starred;
@@ -419,6 +555,8 @@ export default class AppPresenter {
 
         this._store.selectCategoryDialogStore.visible = false;
     }
+
+    //endregion
 
     //endregion
 

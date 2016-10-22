@@ -77,6 +77,8 @@ export default class App extends React.Component {
         this._subscriptions.push(PubSub.subscribe('Theme.change', (eventName, theme) => this.props.presenter.changeTheme(theme)));
         this._subscriptions.push(PubSub.subscribe('TextEditor.settings', (eventName, data) => this.props.presenter.changeSettings(data)));
         this._subscriptions.push(PubSub.subscribe('Application.newNote', () => this._handleNewNote()));
+        this._subscriptions.push(PubSub.subscribe('Application.importNotes', () => this.props.presenter.handleImportNotes()));
+        this._subscriptions.push(PubSub.subscribe('Application.exportNotes', () => this.props.presenter.handleExportNotes()));
 
         this.props.presenter.init();
     }
@@ -162,7 +164,8 @@ export default class App extends React.Component {
                                 <NoteListView
                                     store={this.props.store.notesStore}
                                     theme={this.props.store.theme}
-                                    onItemClick={index => this.props.presenter.handleNoteItemClick(index)} />
+                                    onItemClick={index => this.props.presenter.handleNoteItemClick(index)}
+                                    onItemRightClick={index => this.props.presenter.handleNoteItemRightClick(index)} />
                                 {/* Note list tools */}
                                 <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
                                     <Button
