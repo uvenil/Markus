@@ -20,8 +20,10 @@ import SyntaxCodes from './definitions/syntax-codes.json';
 import ThemeNames from './definitions/theme-names.json';
 import ThemeCodes from './definitions/theme-codes.json';
 import Config from '../config.json';
+import Path from 'path';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
+import fs from 'fs';
 import _ from 'lodash';
 
 if (is.dev()) PubSub.immediateExceptions = true;
@@ -421,7 +423,7 @@ export default class AppPresenter {
     }
 
     handleImportNotes() {
-        if (this._store.filtersStore.selectedIndex > -1) {
+        if (this._store.filtersStore.selectedIndex > -1 || this._store.categoriesStore.selectedIndex > -1) {
             dialog.showOpenDialog(remote.getCurrentWindow(), {
                 title      : 'Import from a text file',
                 filters    : [
@@ -432,7 +434,23 @@ export default class AppPresenter {
                 ],
                 properties : [ 'openFile', 'multiSelections' ]
             }, filenames => {
-                // TODO
+                const syntax = this._store.defaultSyntaxListViewStore.selectedIndex > -1 ? SyntaxCodes[this._store.defaultSyntaxListViewStore.selectedIndex] : Config.defaultSyntax;
+
+                filenames.forEach(filename => {
+                    fs.readFile(filename, {
+                        encoding : 'utf-8',
+                        flag     : 'r'
+                    }, (error, fullText) => {
+                        if (error) {
+                            dialog.showErrorBox('Error', error);
+                        } else {
+                            this._database.addOrUpdate(Record.fromText(syntax, fullText))
+                                .then(record => {
+                                    this._store.notesStore.unshift(record.toListItemStore());
+                                }).catch(error => dialog.showErrorBox('Error', error));
+                        }
+                    });
+                });
             });
         }
     }
@@ -448,7 +466,24 @@ export default class AppPresenter {
                     }
                 ]
             }, filename => {
-                // TODO
+                fs.access(filename, fs.constants.F_OK, error => {
+                    if (error) {
+                        this._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
+                    } else {
+                        dialog.showMessageBox(remote.getCurrentWindow(), {
+                            type      : 'question',
+                            title     : 'File already exists',
+                            message   : 'Are you sure you want to overwrite this file?',
+                            buttons   : [ 'Yes', 'No' ],
+                            defaultId : 0,
+                            cancelId  : 1
+                        }, response => {
+                            if (response === 0) {
+                                this._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
+                            }
+                        });
+                    }
+                });
             });
         }
     }
@@ -463,7 +498,7 @@ export default class AppPresenter {
         } else if (this._store.filtersStore.selectedIndex === 2) {
             promise = this._database.findByArchived(this._store.notesSorting);
         } else if (this._store.categoriesStore.selectedIndex > -1) {
-            promise = this._database.findByCategory(this._store.categoriesStore.selectedItem.primaryText);
+            promise = this._database.findByCategory(this._store.categoriesStore.selectedItem.primaryText, this._store.notesSorting);
         }
 
         if (promise) {
@@ -477,7 +512,11 @@ export default class AppPresenter {
                 ],
                 properties : [ 'openDirectory', 'createDirectory' ]
             }, directory => {
-                // TODO
+                promise.then(docs => {
+                    docs.forEach(doc => {
+                        this._exportNote(Path.join(directory, doc._id), doc.fullText);
+                    });
+                });
             });
         }
     }
@@ -907,6 +946,21 @@ export default class AppPresenter {
         this._notesPresenter.sorting = sorting;
 
         this._settings.set('notesSorting', sorting).catch(error => console.error(error));
+    }
+
+    /**
+     * Writes text to the specified file
+     * @param {String} filename
+     * @param {String} fullText
+     * @private
+     */
+    _exportNote(filename, fullText) {
+        fs.writeFile(filename, fullText, {
+            encoding : 'utf-8',
+            flag     : 'w'
+        }, error => {
+            if (error) dialog.showErrorBox('Error', error);
+        });
     }
 
     //endregion
