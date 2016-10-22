@@ -453,7 +453,7 @@ export default class AppPresenter {
         this._editorPresenter.load(this._store.notesStore.selectedItemId)
             .then(() => {
                 if (this._store.notesStore.selectedItemId) {
-                    this._updateSyntaxMenu();
+                    this._store.currentSyntaxListViewStore.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.editorStore.record.syntax);
                 }
             }).catch(error => console.error(error));
     }
@@ -649,6 +649,8 @@ export default class AppPresenter {
                 this._store.filterListWidth = values[2]  !== undefined ? values[2]  : Config.filterListWidth;
                 this._store.noteListWidth   = values[3]  !== undefined ? values[3]  : Config.noteListWidth;
                 this._store.notesSorting    = values[20] !== undefined ? values[20] : Config.defaultNotesSorting;
+
+                this._notesPresenter.sorting = this._store.notesSorting;
 
                 this._store.defaultSyntaxListViewStore.selectedIndex = _.indexOf(SyntaxCodes.items, values[4] !== undefined ? values[4] : Config.defaultSyntax);
                 this._store.themeListViewStore.selectedIndex         = _.indexOf(ThemeCodes.items,  values[5] !== undefined ? values[5] : Config.defaultTheme);

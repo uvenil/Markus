@@ -63,14 +63,11 @@ export default function createWindowMenu() {
         ]
     });
 
-    template.push({
-        label   : 'Edit',
-        submenu : createEditMenu()
-    });
-
     template.push(createViewMenu());
 
-    template.push(createDeveloperMenu());
+    if (is.dev()) {
+        template.push(createDeveloperMenu());
+    }
 
     template.push({
         label   : 'Window',

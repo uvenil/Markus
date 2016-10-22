@@ -30,9 +30,8 @@ export default function createWindowMenu() {
         ]
     });
 
-    const editMenu = createEditMenu();
+    const editMenu = [];
 
-    editMenu.push({ type : 'separator' });
     editMenu.push(createPreferencesMenu());
 
     template.push({
@@ -42,7 +41,9 @@ export default function createWindowMenu() {
 
     template.push(createViewMenu());
 
-    template.push(createDeveloperMenu());
+    if (is.dev()) {
+        template.push(createDeveloperMenu());
+    }
 
     template.push({
         label   : 'Help',

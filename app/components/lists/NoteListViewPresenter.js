@@ -6,6 +6,8 @@ import ListViewStore from './ListViewStore';
 import Database from '../../data/Database';
 import Record from '../../data/Record';
 import Config from '../../../config.json';
+import Rx from 'rx-lite';
+import moment from 'moment';
 import _ from 'lodash';
 
 export default class NoteListViewPresenter {
@@ -22,6 +24,14 @@ export default class NoteListViewPresenter {
         this._database            = database;
         this._sorting             = NoteListViewPresenter.DEFAULT_SORTING;
         this._keyword             = undefined;
+
+        Rx.Observable.interval(1000).subscribe(() => {
+            this._store.items.forEach(item => {
+                if (item.record) {
+                    item.tertiaryText = moment(item.record.lastUpdatedAt).fromNow();
+                }
+            });
+        });
     }
 
     get store() {
@@ -37,38 +47,38 @@ export default class NoteListViewPresenter {
 
         switch (sorting) {
             case 0:
-                this._store.items = _.reverse(_.sortBy(this._store.items, item => item.primaryText));
-                break;
-
-            case 1:
                 this._store.items = _.sortBy(this._store.items, item => item.primaryText);
                 break;
 
+            case 1:
+                this._store.items = _.reverse(_.sortBy(this._store.items, item => item.primaryText));
+                break;
+
             case 2:
-                this._store.items = _.reverse(_.sortBy(this._store.items, item => {
+                this._store.items = _.sortBy(this._store.items, item => {
                     return item.record ? item.record.lastUpdatedAt : item.primaryText;
-                }));
+                });
 
                 break;
 
             case 3:
-                this._store.items = _.sortBy(this._store.items, item => {
-                    return item.record ? item.record.lastUpdatedAt : item.primaryText;
-                });
-
-                break;
-
-            case 4:
                 this._store.items = _.reverse(_.sortBy(this._store.items, item => {
-                    return item.record ? item.record.createdAt : item.primaryText;
+                    return item.record ? item.record.lastUpdatedAt : item.primaryText;
                 }));
 
                 break;
 
-            case 5:
+            case 4:
                 this._store.items = _.sortBy(this._store.items, item => {
                     return item.record ? item.record.createdAt : item.primaryText;
                 });
+
+                break;
+
+            case 5:
+                this._store.items = _.reverse(_.sortBy(this._store.items, item => {
+                    return item.record ? item.record.createdAt : item.primaryText;
+                }));
 
                 break;
 
