@@ -56,7 +56,7 @@ export default class SettingsDialog extends React.Component {
                 width={this.props.width}
                 height={this.props.height}
                 theme={this.props.theme}
-                onAfterOpen={this.props.masterStore.selectedIndex = 0}>
+                onAfterOpen={() => this.props.masterStore.selectedIndex = 0}>
                 <MasterDetailPane
                     masterWidth={this.props.masterWidth}
                     masterStore={this.props.masterStore}

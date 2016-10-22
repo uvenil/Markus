@@ -453,7 +453,7 @@ export default class AppPresenter {
         this._editorPresenter.load(this._store.notesStore.selectedItemId)
             .then(() => {
                 if (this._store.notesStore.selectedItemId) {
-                    this._updateSyntaxMenu();
+                    this._store.currentSyntaxListViewStore.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.editorStore.record.syntax);
                 }
             }).catch(error => console.error(error));
     }
