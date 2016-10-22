@@ -30,9 +30,8 @@ export default function createWindowMenu() {
         ]
     });
 
-    const editMenu = createEditMenu();
+    const editMenu = [];
 
-    editMenu.push({ type : 'separator' });
     editMenu.push(createPreferencesMenu());
 
     template.push({

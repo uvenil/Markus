@@ -24,41 +24,6 @@ const createPreferencesMenu = () => {
     };
 };
 
-const createEditMenu = () => {
-    return [
-        {
-            role        : 'undo',
-            accelerator : 'CmdOrCtrl+Z'
-        },
-        {
-            role        : 'redo',
-            accelerator : 'Shift+CmdOrCtrl+Z'
-        },
-        {
-            type : 'separator'
-        },
-        {
-            role        : 'cut',
-            accelerator : 'CmdOrCtrl+X'
-        },
-        {
-            role        : 'copy',
-            accelerator : 'CmdOrCtrl+C'
-        },
-        {
-            role        : 'paste',
-            accelerator : 'CmdOrCtrl+V'
-        },
-        {
-            type : 'separator'
-        },
-        {
-            role        : 'selectall',
-            accelerator : 'CmdOrCtrl+A'
-        }
-    ];
-};
-
 const createViewMenu = () => {
     return {
         label   : 'View',
@@ -118,4 +83,4 @@ const createDeveloperMenu = () => {
     };
 };
 
-module.exports = { setMenuItemEnabled, createPreferencesMenu, createEditMenu, createViewMenu, createDeveloperMenu };
+module.exports = { setMenuItemEnabled, createPreferencesMenu, createViewMenu, createDeveloperMenu };
