@@ -122,7 +122,7 @@ export default class TextEditor extends React.Component {
         require('brace/theme/' + this.props.store.theme);
 
         return (
-            <div style={{ width : '100%', height : 'calc(100vh - ' + (Config.topBarHeight + Config.bottomBarHeight + 2) + 'px)' }}>
+            <div style={{ width : '100%', height : 'calc(100vh - ' + (Config.bottomBarHeight + 1) + 'px)' }}>
                 <AceEditor
                     id={this._editorId}
                     ref="editor"
@@ -130,7 +130,7 @@ export default class TextEditor extends React.Component {
                     theme={this.props.store.theme}
                     value={this.props.store.record ? this.props.store.record.fullText : undefined}
                     width="100%"
-                    height={'calc(100vh - ' + (Config.topBarHeight + Config.bottomBarHeight + 2) + 'px)'}
+                    height={'calc(100vh - ' + (Config.bottomBarHeight + 1) + 'px)'}
                     fontSize={this.props.store.textSize}
                     showGutter={this.props.store.showGutter}
                     highlightActiveLine={this.props.store.highlightActiveLine}
@@ -141,7 +141,7 @@ export default class TextEditor extends React.Component {
                     onChange={value => this._handleChange(value)} />
                 <div
                     id={this._placeHolderId}
-                    style={{ display : this.props.store.record ? 'none' : 'block', width : '100%', height : 'calc(100vh - ' + (Config.topBarHeight + Config.bottomBarHeight + 2) + 'px)', backgroundColor : theme.disabledBackgroundColor }} />
+                    style={{ display : this.props.store.record ? 'none' : 'block', width : '100%', height : 'calc(100vh - ' + (Config.bottomBarHeight + 1) + 'px)', backgroundColor : theme.disabledBackgroundColor }} />
             </div>
         );
     }

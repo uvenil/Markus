@@ -187,67 +187,55 @@ export default class App extends React.Component {
                         </SplitPane>
                         <SplitPane
                             split="horizontal"
-                            defaultSize={Config.topBarHeight}
+                            defaultSize={Config.bottomBarHeight}
                             allowResize={false}
+                            primary="second"
                             style={{ backgroundColor : theme.primaryBackgroundColor }}>
-                            {/* Search note contents */}
-                            <div style={{ width : '100%', display : 'flex', flexFlow : 'row', padding : Config.paddingX0, paddingRight : Config.paddingX1 }}>
-                                <SearchBox
-                                    hintText="Search contents"
-                                    theme={this.props.store.theme} />
-                            </div>
-                            <SplitPane
-                                split="horizontal"
-                                defaultSize={Config.bottomBarHeight}
-                                allowResize={false}
-                                primary="second"
-                                style={{ backgroundColor : theme.primaryBackgroundColor }}>
-                                {/* Note editor */}
-                                <TextEditor
-                                    store={this.props.store.editorStore}
-                                    theme={this.props.store.theme} />
-                                {/* Note editor tools */}
-                                <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
-                                    <div>
-                                        {/* Star note */}
-                                        <Button
-                                            backgroundColor="none"
-                                            theme={this.props.store.theme}
-                                            disabled={_.isNil(this.props.store.editorStore.record)}
-                                            onClick={() => this.props.presenter.handleStarClick()}>
-                                            <i
-                                                className={'fa fa-fw fa-star' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.starred) ? '' : '-o')}
-                                                title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.starred) ? 'Un-star this note' : 'Star this note'} />
-                                        </Button>
-                                        {/* Archive note */}
-                                        <Button
-                                            backgroundColor="none"
-                                            theme={this.props.store.theme}
-                                            disabled={_.isNil(this.props.store.editorStore.record)}
-                                            onClick={() => this.props.presenter.handleArchiveClick()}>
-                                            <i
-                                                className={'fa fa-fw fa-trash' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? '' : '-o')}
-                                                title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? 'Un-archive this note' : 'Archive this note'} />
-                                        </Button>
-                                        <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
-                                        {/* Select category */}
-                                        <Button
-                                            backgroundColor="none"
-                                            theme={this.props.store.theme}
-                                            disabled={_.isNil(this.props.store.editorStore.record)}
-                                            onClick={() => this.props.presenter.handleSelectCategoryClick()}>
-                                            {this.props.store.editorStore.record ? this.props.store.editorStore.record.category ? this.props.store.editorStore.record.category : 'Uncategorized' : ''}
-                                        </Button>
-                                    </div>
-                                    <div style={{ margin : 'auto', paddingLeft : Config.paddingX0 + 'px', paddingRight : Config.paddingX0 + 'px', flex : '1 1 0', textAlign : 'right' }}>
-                                        {/* Overwrite status */}
-                                        <Label theme={this.props.store.theme}>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
-                                        <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
-                                        {/* Row/column position */}
-                                        <Label theme={this.props.store.theme}>{this.props.store.editorStore.cursorPosition ? this.props.store.editorStore.cursorPosition.row + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
-                                    </div>
+                            {/* Note editor */}
+                            <TextEditor
+                                store={this.props.store.editorStore}
+                                theme={this.props.store.theme} />
+                            {/* Note editor tools */}
+                            <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
+                                <div>
+                                    {/* Star note */}
+                                    <Button
+                                        backgroundColor="none"
+                                        theme={this.props.store.theme}
+                                        disabled={_.isNil(this.props.store.editorStore.record)}
+                                        onClick={() => this.props.presenter.handleStarClick()}>
+                                        <i
+                                            className={'fa fa-fw fa-star' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.starred) ? '' : '-o')}
+                                            title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.starred) ? 'Un-star this note' : 'Star this note'} />
+                                    </Button>
+                                    {/* Archive note */}
+                                    <Button
+                                        backgroundColor="none"
+                                        theme={this.props.store.theme}
+                                        disabled={_.isNil(this.props.store.editorStore.record)}
+                                        onClick={() => this.props.presenter.handleArchiveClick()}>
+                                        <i
+                                            className={'fa fa-fw fa-trash' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? '' : '-o')}
+                                            title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? 'Un-archive this note' : 'Archive this note'} />
+                                    </Button>
+                                    <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
+                                    {/* Select category */}
+                                    <Button
+                                        backgroundColor="none"
+                                        theme={this.props.store.theme}
+                                        disabled={_.isNil(this.props.store.editorStore.record)}
+                                        onClick={() => this.props.presenter.handleSelectCategoryClick()}>
+                                        {this.props.store.editorStore.record ? this.props.store.editorStore.record.category ? this.props.store.editorStore.record.category : 'Uncategorized' : ''}
+                                    </Button>
                                 </div>
-                            </SplitPane>
+                                <div style={{ margin : 'auto', paddingLeft : Config.paddingX0 + 'px', paddingRight : Config.paddingX0 + 'px', flex : '1 1 0', textAlign : 'right' }}>
+                                    {/* Overwrite status */}
+                                    <Label theme={this.props.store.theme}>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
+                                    <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
+                                    {/* Row/column position */}
+                                    <Label theme={this.props.store.theme}>{this.props.store.editorStore.cursorPosition ? this.props.store.editorStore.cursorPosition.row + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
+                                </div>
+                            </div>
                         </SplitPane>
                     </SplitPane>
                 </SplitPane>
