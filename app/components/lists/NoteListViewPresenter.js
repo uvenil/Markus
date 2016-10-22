@@ -6,6 +6,8 @@ import ListViewStore from './ListViewStore';
 import Database from '../../data/Database';
 import Record from '../../data/Record';
 import Config from '../../../config.json';
+import Rx from 'rx-lite';
+import moment from 'moment';
 import _ from 'lodash';
 
 export default class NoteListViewPresenter {
@@ -22,6 +24,14 @@ export default class NoteListViewPresenter {
         this._database            = database;
         this._sorting             = NoteListViewPresenter.DEFAULT_SORTING;
         this._keyword             = undefined;
+
+        Rx.Observable.interval(1000).subscribe(() => {
+            this._store.items.forEach(item => {
+                if (item.record) {
+                    item.tertiaryText = moment(item.record.lastUpdatedAt).fromNow();
+                }
+            });
+        });
     }
 
     get store() {
