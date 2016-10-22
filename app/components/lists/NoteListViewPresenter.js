@@ -47,38 +47,38 @@ export default class NoteListViewPresenter {
 
         switch (sorting) {
             case 0:
-                this._store.items = _.reverse(_.sortBy(this._store.items, item => item.primaryText));
-                break;
-
-            case 1:
                 this._store.items = _.sortBy(this._store.items, item => item.primaryText);
                 break;
 
+            case 1:
+                this._store.items = _.reverse(_.sortBy(this._store.items, item => item.primaryText));
+                break;
+
             case 2:
-                this._store.items = _.reverse(_.sortBy(this._store.items, item => {
+                this._store.items = _.sortBy(this._store.items, item => {
                     return item.record ? item.record.lastUpdatedAt : item.primaryText;
-                }));
+                });
 
                 break;
 
             case 3:
-                this._store.items = _.sortBy(this._store.items, item => {
-                    return item.record ? item.record.lastUpdatedAt : item.primaryText;
-                });
-
-                break;
-
-            case 4:
                 this._store.items = _.reverse(_.sortBy(this._store.items, item => {
-                    return item.record ? item.record.createdAt : item.primaryText;
+                    return item.record ? item.record.lastUpdatedAt : item.primaryText;
                 }));
 
                 break;
 
-            case 5:
+            case 4:
                 this._store.items = _.sortBy(this._store.items, item => {
                     return item.record ? item.record.createdAt : item.primaryText;
                 });
+
+                break;
+
+            case 5:
+                this._store.items = _.reverse(_.sortBy(this._store.items, item => {
+                    return item.record ? item.record.createdAt : item.primaryText;
+                }));
 
                 break;
 

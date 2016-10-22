@@ -7,7 +7,6 @@ import Label from './components/text/Label.jsx';
 import Text from './components/text/Text.jsx';
 import SearchBox from './components/text/SearchBox.jsx';
 import TextEditor from './components/text/TextEditor.jsx';
-import CheckBox from './components/toggles/CheckBox.jsx';
 import ListView from './components/lists/ListView.jsx';
 import FilterListView from './components/lists/FilterListView.jsx';
 import NoteListView from './components/lists/NoteListView.jsx';
@@ -180,7 +179,7 @@ export default class App extends React.Component {
                                             backgroundColor="none"
                                             theme={this.props.store.theme}
                                             onClick={() => this.props.presenter.handleNotesSortingClick()}>
-                                            {sorting === 0 || sorting === 1 ? 'Name' : sorting === 2 || sorting === 3 ? 'Last updated' : 'Created'} <i className={'fa fa-fw fa-caret-' + (sorting === 0 || sorting === 2 || sorting === 4 ? 'down' : 'up')} />
+                                            {sorting === 0 || sorting === 1 ? 'Name' : sorting === 2 || sorting === 3 ? 'Last updated' : 'Created'} <i className={'fa fa-fw fa-caret-' + (sorting === 1 || sorting === 3 || sorting === 5 ? 'down' : 'up')} />
                                         </Button>
                                     </div>
                                 </div>
