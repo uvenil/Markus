@@ -153,18 +153,18 @@ export default class AppPresenter {
             this._notesPresenter.refresh();
         }
 
-        let promise;
+        let countPromise;
 
         if (index === 0) {
-            promise = this._database.countAll();
+            countPromise = this._database.countAll();
         } else if (index === 1) {
-            promise = this._database.countByStarred();
+            countPromise = this._database.countByStarred();
         } else if (index === 2) {
-            promise = this._database.countByArchived();
+            countPromise = this._database.countByArchived();
         }
 
-        if (promise) {
-            promise.then(count => {
+        if (countPromise) {
+            countPromise.then(count => {
                 const menu = new Menu();
 
                 menu.append(new MenuItem({
@@ -179,7 +179,7 @@ export default class AppPresenter {
 
                 if (count > 0) {
                     menu.append(new MenuItem({
-                        label : 'Export notes…',
+                        label : 'Export all notes…',
                         click : () => {
                             this._store.filtersStore.selectedIndex    = index;
                             this._store.categoriesStore.selectedIndex = -1;
@@ -193,30 +193,41 @@ export default class AppPresenter {
                     type : 'separator'
                 }));
 
+                if (index === 2) {
+                    menu.append(new MenuItem({
+                        label : 'Restore notes',
+                        click : () => {
+                            this._database.unarchiveAll().catch(error => console.error(error));
+                        }
+                    }));
+                }
+
+                const action = index === 2 ? 'Delete' : 'Archive';
+
                 menu.append(new MenuItem({
-                    label : 'Delete notes…',
+                    label : action + ' all notes…',
                     click : () => {
                         dialog.showMessageBox(remote.getCurrentWindow(), {
                             type      : 'question',
-                            title     : 'Delete notes',
-                            message   : 'Are you sure you want to delete the notes?',
+                            title     : action + ' notes',
+                            message   : 'Are you sure you want to ' + action.toLowerCase() + ' the notes?',
                             buttons   : [ 'Yes', 'No' ],
                             defaultId : 0,
                             cancelId  : 1
                         }, response => {
                             if (response === 0) {
-                                let promise;
+                                let updatePromise;
 
                                 if (index === 0) {
-                                    promise = this._database.removeByEverything();
+                                    updatePromise = this._database.archiveByEverything();
                                 } else if (index === 1) {
-                                    promise = this._database.removeByStarred();
+                                    updatePromise = this._database.archiveByStarred();
                                 } else if (index === 2) {
-                                    promise = this._database.removeByArchived();
+                                    updatePromise = this._database.removeByArchived();
                                 }
 
-                                if (promise) {
-                                    promise.then(() => {
+                                if (updatePromise) {
+                                    updatePromise.then(() => {
                                         this._categoriesPresenter.notifyDataSetChanged();
 
                                         this._notesPresenter.refresh();
@@ -272,7 +283,7 @@ export default class AppPresenter {
 
                 if (count > 0) {
                     menu.append(new MenuItem({
-                        label : 'Export notes…',
+                        label : 'Export all notes…',
                         click : () => {
                             this._store.filtersStore.selectedIndex    = -1;
                             this._store.categoriesStore.selectedIndex = index;
@@ -324,8 +335,8 @@ export default class AppPresenter {
                     click : () => {
                         dialog.showMessageBox(remote.getCurrentWindow(), {
                             type      : 'question',
-                            title     : 'Delete category and notes',
-                            message   : 'Are you sure you want to delete category "' + category + '" and its notes?',
+                            title     : 'Delete category and archive notes',
+                            message   : 'Are you sure you want to delete category "' + category + '" and archive its notes?',
                             buttons   : [ 'Yes', 'No' ],
                             defaultId : 0,
                             cancelId  : 1
@@ -345,18 +356,18 @@ export default class AppPresenter {
                 }));
 
                 menu.append(new MenuItem({
-                    label : 'Delete notes…',
+                    label : 'Archive all notes…',
                     click : () => {
                         dialog.showMessageBox(remote.getCurrentWindow(), {
                             type      : 'question',
-                            title     : 'Delete notes',
-                            message   : 'Are you sure you want to delete notes of category "' + category + '"?',
+                            title     : 'Archive notes',
+                            message   : 'Are you sure you want to archive all notes of category "' + category + '"?',
                             buttons   : [ 'Yes', 'No' ],
                             defaultId : 0,
                             cancelId  : 1
                         }, response => {
                             if (response === 0) {
-                                this._database.removeByCategory(category)
+                                this._database.archiveByCategory(category)
                                     .then(() => {
                                         this._categoriesPresenter.notifyDataSetChanged();
 
@@ -397,7 +408,7 @@ export default class AppPresenter {
         const menu = new Menu();
 
         menu.append(new MenuItem({
-            label : 'Export note…',
+            label : 'Export…',
             click : () => {
                 this._store.notesStore.selectedIndex = index;
 
@@ -409,19 +420,35 @@ export default class AppPresenter {
             type : 'separator'
         }));
 
+        if (this._store.filtersStore.selectedIndex === 2) {
+            menu.append(new MenuItem({
+                label : 'Restore',
+                click : () => {
+                    this._database.unarchiveById(this._store.notesStore.selectedItem.itemId)
+                        .then(() => {
+                            this._notesPresenter.refresh();
+                            this._filtersPresenter.refresh();
+                            this._categoriesPresenter.notifyDataSetChanged();
+                        }).catch(error => console.error(error));
+                }
+            }));
+        }
+
+        const action = this._store.filtersStore.selectedIndex === 2 ? 'Delete' : 'Archive';
+
         menu.append(new MenuItem({
-            label : 'Delete note…',
+            label : action + '…',
             click : () => {
                 dialog.showMessageBox(remote.getCurrentWindow(), {
                     type      : 'question',
-                    title     : 'Delete note',
-                    message   : 'Are you sure you want to delete this note?',
+                    title     : action + ' note',
+                    message   : 'Are you sure you want to ' + action.toLowerCase() + ' this note?',
                     buttons   : [ 'Yes', 'No' ],
                     defaultId : 0,
                     cancelId  : 1
                 }, response => {
                     if (response === 0) {
-                        this._database.removeById(this._store.notesStore.selectedItem.itemId)
+                        (this._store.filtersStore.selectedIndex === 2 ? this._database.removeById(this._store.notesStore.selectedItem.itemId) : this._database.archiveById(this._store.notesStore.selectedItem.itemId))
                             .then(() => {
                                 this._notesPresenter.refresh();
                                 this._filtersPresenter.refresh();

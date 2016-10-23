@@ -84,9 +84,7 @@ export default class Database {
      */
     findById(id) {
         return new Promise((resolve, reject) => {
-            this._db.findOne({
-                _id : id
-            }, (error, doc) => {
+            this._db.findOne({ _id : id }, (error, doc) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -107,9 +105,7 @@ export default class Database {
             this._db.find(keyword ? {
                 fullText : keyword ? new RegExp(keyword) : undefined,
                 archived : false
-            } : {
-                archived : false
-            }).sort(SORTINGS[sorting]).exec((error, docs) => {
+            } : { archived : false }).sort(SORTINGS[sorting]).exec((error, docs) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -125,9 +121,7 @@ export default class Database {
      */
     countAll() {
         return new Promise((resolve, reject) => {
-            this._db.count({
-                archived : false
-            }, (error, count) => {
+            this._db.count({ archived : false }, (error, count) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -192,9 +186,7 @@ export default class Database {
             this._db.find(keyword ? {
                 fullText : keyword ? new RegExp(keyword) : undefined,
                 archived : true
-            } : {
-                archived : true
-            }).sort(SORTINGS[sorting]).exec((error, docs) => {
+            } : { archived : true }).sort(SORTINGS[sorting]).exec((error, docs) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -210,9 +202,7 @@ export default class Database {
      */
     countByArchived() {
         return new Promise((resolve, reject) => {
-            this._db.count({
-                archived : true
-            }, (error, count) => {
+            this._db.count({ archived : true }, (error, count) => {
                 if (error) {
                     reject(error);
                 } else {
@@ -363,7 +353,7 @@ export default class Database {
     /**
      * Removes a category.
      * @param {String} category The category to remove.
-     * @param {boolean} [withNotes] Whether to include notes of the specified category in the deletion.
+     * @param {boolean} [withNotes] Whether to archive notes of the specified category in the deletion.
      */
     removeCategory(category, withNotes) {
         return new Promise((resolve, reject) => {
@@ -377,7 +367,10 @@ export default class Database {
                                 this._settings.set(_KEY_CATEGORIES, categories)
                                     .then(() => {
                                         if (withNotes) {
-                                            this._db.remove({ category : category }, { multi : true }, error => {
+                                            this._db.update({ category : category }, { $set : {
+                                                category : null,
+                                                archived : true
+                                            }}, { multi : true }, error => {
                                                 if (error) {
                                                     reject(error);
                                                 } else {
@@ -385,7 +378,7 @@ export default class Database {
                                                 }
                                             });
                                         } else {
-                                            this._db.update({ category : category }, { $set : { category : null } }, { multi : true }, error => {
+                                            this._db.update({ category : category }, { $set : { category : null }}, { multi : true }, error => {
                                                 if (error) {
                                                     reject(error);
                                                 } else {
@@ -420,9 +413,7 @@ export default class Database {
                     }
                 });
             } else {
-                this._db.update({
-                    _id : record._id
-                }, record, {}, error => {
+                this._db.update({ _id : record._id }, record, {}, error => {
                     if (error) {
                         reject(error);
                     } else {
@@ -439,9 +430,7 @@ export default class Database {
      */
     removeAll() {
         return new Promise((resolve, reject) => {
-            this._db.remove({}, {
-                multi : true
-            }, error => {
+            this._db.remove({}, { multi : true }, error => {
                 if (error) {
                     reject(error);
                 } else {
@@ -459,9 +448,7 @@ export default class Database {
     removeById(id) {
         return new Promise((resolve, reject) => {
             this.findById(id).then(doc => {
-                this._db.remove({
-                    _id : id
-                }, {}, error => {
+                this._db.remove({ _id : id }, {}, error => {
                     if (error) {
                         reject(error);
                     } else {
@@ -473,42 +460,52 @@ export default class Database {
     }
 
     /**
-     * Removes all notes (except those starred and archived).
-     * @returns {Promise}
+     * Archives a record specified by its unique ID from the database.
+     * @param {String} id An unique ID of the record to be removed.
+     * @return {Promise}
      */
-    removeByEverything() {
+    archiveById(id) {
         return new Promise((resolve, reject) => {
-            this._db.remove({
-                starred  : false,
-                archived : false
-            }, {
-                multi : true
-            }, error => {
+            this._db.update({ _id : id }, { $set : { archived : true }}, { multi : true }, error => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(doc);
+                    resolve();
                 }
             });
         });
     }
 
     /**
-     * Removes all starred notes.
+     * Archives all notes (except those starred and archived).
      * @returns {Promise}
      */
-    removeByStarred() {
+    archiveByEverything() {
         return new Promise((resolve, reject) => {
-            this._db.remove({
-                starred  : true,
-                archived : false
-            }, {
-                multi : true
-            }, error => {
+            this._db.update({ archived : false }, { $set : { archived : true }}, { multi : true }, error => {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(doc);
+                    resolve();
+                }
+            });
+        });
+    }
+
+    /**
+     * Archives all starred notes.
+     * @returns {Promise}
+     */
+    archiveByStarred() {
+        return new Promise((resolve, reject) => {
+            this._db.update({
+                starred  : true,
+                archived : false
+            }, { $set : { archived : true }}, { multi : true }, error => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
                 }
             });
         });
@@ -520,11 +517,7 @@ export default class Database {
      */
     removeByArchived() {
         return new Promise((resolve, reject) => {
-            this._db.remove({
-                archived : true
-            }, {
-                multi : true
-            }, error => {
+            this._db.remove({ archived : true }, { multi : true }, error => {
                 if (error) {
                     reject(error);
                 } else {
@@ -535,21 +528,56 @@ export default class Database {
     }
 
     /**
-     * Removes records of specified category.
+     * Archives records of specified category.
      * @param {String} category
      * @returns {Promise}
      */
-    removeByCategory(category) {
+    archiveByCategory(category) {
         return new Promise((resolve, reject) => {
-            this._db.remove({
-                category : category
-            }, {
-                multi : true
-            }, error => {
+            this._db.update({
+                category : category,
+                archived : false
+            }, { $set : { archived : true }}, { multi : true }, error => {
                 if (error) {
                     reject(error);
                 } else {
                     resolve(doc);
+                }
+            });
+        });
+    }
+
+    /**
+     * Un-archives all archived notes.
+     * @return {Promise}
+     */
+    unarchiveAll() {
+        return new Promise((resolve, reject) => {
+            this._db.update({ archived : true }, { $set : { archived : false }}, { multi : true }, error => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
+                }
+            });
+        });
+    }
+
+    /**
+     * Un-archives the note with the specified ID.
+     * @param {String} id The unique ID of the note to un-archive.
+     * @return {Promise}
+     */
+    unarchiveById(id) {
+        return new Promise((resolve, reject) => {
+            this._db.update({
+                _id      : id,
+                archived : true
+            }, { $set : { archived : false }}, {}, error => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve();
                 }
             });
         });
