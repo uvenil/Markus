@@ -96,15 +96,7 @@ export default class Record {
      * @returns {ListItemStore}
      */
     toListItemStore() {
-        const store = new ListItemStore();
-
-        store.itemId        = this._id;
-        store.primaryText   = this.title;
-        store.secondaryText = this.description ? this.description.split('\n').map(line => <span key={Unique.elementId()}>{line}<br /></span>) : this.description;
-        store.tertiaryText  = moment(this.lastUpdatedAt).fromNow();
-        store.record        = this;
-
-        return store;
+        return new ListItemStore().update(this);
     }
 
     /**
