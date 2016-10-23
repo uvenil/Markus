@@ -215,7 +215,7 @@ export default class App extends React.Component {
                                         onClick={() => this.props.presenter.handleArchiveClick()}>
                                         <i
                                             className={'fa fa-fw fa-trash' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? '' : '-o')}
-                                            title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? 'Un-archive this note' : 'Archive this note'} />
+                                            title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? 'Restore this note' : 'Archive this note'} />
                                     </Button>
                                     <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
                                     {/* Select category */}
@@ -232,7 +232,7 @@ export default class App extends React.Component {
                                     <Label theme={this.props.store.theme}>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
                                     <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
                                     {/* Row/column position */}
-                                    <Label theme={this.props.store.theme}>{this.props.store.editorStore.cursorPosition ? this.props.store.editorStore.cursorPosition.row + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
+                                    <Label theme={this.props.store.theme}>{this.props.store.editorStore.record && this.props.store.editorStore.cursorPosition ? (this.props.store.editorStore.cursorPosition.row + 1) + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
                                 </div>
                             </div>
                         </SplitPane>
