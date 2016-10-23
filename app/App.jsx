@@ -45,17 +45,13 @@ export default class App extends React.Component {
         this._handleFilterListWidthChange = size => {
             this.props.store.filterListWidth = size;
 
-            this._settings.set('filterListWidth', this.props.store.filterListWidth)
-                .then(() => console.trace('Saved filterListWidth = ' + size))
-                .catch(error => console.error(error));
+            this._settings.set('filterListWidth', this.props.store.filterListWidth).catch(error => PubSub.publish('Event.error', error));
         };
 
         this._handleNoteListWidthChange = size => {
             this.props.store.noteListWidth = size;
 
-            this._settings.set('noteListWidth', this.props.store.noteListWidth)
-                .then(() => console.trace('Saved noteListWidth = ' + size))
-                .catch(error => console.error(error));
+            this._settings.set('noteListWidth', this.props.store.noteListWidth).catch(error => PubSub.publish('Event.error', error));
         };
 
         this._handleNewNote = () => {

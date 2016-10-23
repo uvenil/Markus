@@ -8,7 +8,11 @@ import Record from '../../data/Record';
 import Config from '../../../config.json';
 import Rx from 'rx-lite';
 import moment from 'moment';
+import PubSub from 'pubsub-js';
+import is from 'electron-is';
 import _ from 'lodash';
+
+if (is.dev()) PubSub.immediateExceptions = true;
 
 export default class NoteListViewPresenter {
     /**
@@ -123,7 +127,7 @@ export default class NoteListViewPresenter {
                 docs.forEach(doc => {
                     this._store.items.push(Record.fromDoc(doc).toListItemStore());
                 });
-            }).catch(error => console.error(error));
+            }).catch(error => PubSub.publish('Event.error', error));
         }
     }
 
