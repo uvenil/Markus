@@ -15,13 +15,15 @@ import Settings from './utils/Settings';
 import Database from './data/Database';
 import Record from './data/Record';
 import Rx from 'rx-lite';
-import SyntaxNames from './syntax-names.json';
-import SyntaxCodes from './syntax-codes.json';
-import ThemeNames from './theme-names.json';
-import ThemeCodes from './theme-codes.json';
+import SyntaxNames from './definitions/syntax-names.json';
+import SyntaxCodes from './definitions/syntax-codes.json';
+import ThemeNames from './definitions/theme-names.json';
+import ThemeCodes from './definitions/theme-codes.json';
 import Config from '../config.json';
+import Path from 'path';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
+import fs from 'fs';
 import _ from 'lodash';
 
 if (is.dev()) PubSub.immediateExceptions = true;
@@ -30,7 +32,7 @@ const { remote } = require('electron');
 const { dialog, Menu, MenuItem } = remote;
 
 const EVENT_ERROR = 'Event.error';
-const DARK_THEMES = [ 'ambiance', 'chaos', 'clouds_midnight', 'cobalt', 'idle_fingers', 'ipastic', 'kr_theme', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monokai', 'pastel_on_dark', 'solarized_dark', 'terminal', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink' ];
+const DARK_THEMES = [ 'ambiance', 'chaos', 'clouds_midnight', 'cobalt', 'idle_fingers', 'iplastic', 'kr_theme', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monokai', 'pastel_on_dark', 'solarized_dark', 'terminal', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink' ];
 
 export default class AppPresenter {
     constructor() {
@@ -131,10 +133,10 @@ export default class AppPresenter {
 
     //region Event handlers
 
+    //region Filter operations
+
     handleFilterItemClick(index) {
         if (this._store.filtersStore.selectedIndex !== index) {
-            console.trace('Selected filter index = ' + index);
-
             this._store.filtersStore.selectedIndex    = index;
             this._store.categoriesStore.selectedIndex = -1;
 
@@ -144,49 +146,109 @@ export default class AppPresenter {
     }
 
     handleFilterItemRightClick(index) {
-        const menu = new Menu();
+        if (this._store.filtersStore.selectedIndex !== index) {
+            this._store.filtersStore.selectedIndex    = index;
+            this._store.categoriesStore.selectedIndex = -1;
 
-        menu.append(new MenuItem({
-            label : 'Delete notes',
-            click : () => {
-                dialog.showMessageBox(remote.getCurrentWindow(), {
-                    type      : 'question',
-                    title     : 'Delete notes',
-                    message   : 'Are you sure you want to delete the notes?',
-                    buttons   : [ 'Yes', 'No' ],
-                    defaultId : 0,
-                    cancelId  : 1
-                }, response => {
-                    if (response === 0) {
-                        let promise;
+            this._notesPresenter.refresh();
+        }
 
-                        if (index === 0) {
-                            promise = this._database.removeByEverything();
-                        } else if (index === 1) {
-                            promise = this._database.removeByStarred();
-                        } else if (index === 2) {
-                            promise = this._database.removeByArchived();
-                        }
+        let countPromise;
 
-                        if (promise) {
-                            promise.then(() => {
-                                this._categoriesPresenter.notifyDataSetChanged();
+        if (index === 0) {
+            countPromise = this._database.countAll();
+        } else if (index === 1) {
+            countPromise = this._database.countByStarred();
+        } else if (index === 2) {
+            countPromise = this._database.countByArchived();
+        }
 
-                                this._notesPresenter.refresh();
-                            }).catch(error => console.error(error));
-                        }
+        if (countPromise) {
+            countPromise.then(count => {
+                const menu = new Menu();
+
+                menu.append(new MenuItem({
+                    label : 'Import notes…',
+                    click : () => {
+                        this._store.filtersStore.selectedIndex    = index;
+                        this._store.categoriesStore.selectedIndex = -1;
+
+                        this.handleImportNotes();
                     }
-                });
-            }
-        }));
+                }));
 
-        menu.popup(remote.getCurrentWindow());
+                if (count > 0) {
+                    menu.append(new MenuItem({
+                        label : 'Export all notes…',
+                        click : () => {
+                            this._store.filtersStore.selectedIndex    = index;
+                            this._store.categoriesStore.selectedIndex = -1;
+
+                            this.handleExportNotes();
+                        }
+                    }));
+                }
+
+                menu.append(new MenuItem({
+                    type : 'separator'
+                }));
+
+                if (index === 2) {
+                    menu.append(new MenuItem({
+                        label : 'Restore notes',
+                        click : () => {
+                            this._database.unarchiveAll().catch(error => console.error(error));
+                        }
+                    }));
+                }
+
+                const action = index === 2 ? 'Delete' : 'Archive';
+
+                menu.append(new MenuItem({
+                    label : action + ' all notes…',
+                    click : () => {
+                        dialog.showMessageBox(remote.getCurrentWindow(), {
+                            type      : 'question',
+                            title     : action + ' notes',
+                            message   : 'Are you sure you want to ' + action.toLowerCase() + ' the notes?',
+                            buttons   : [ 'Yes', 'No' ],
+                            defaultId : 0,
+                            cancelId  : 1
+                        }, response => {
+                            if (response === 0) {
+                                let updatePromise;
+
+                                if (index === 0) {
+                                    updatePromise = this._database.archiveByEverything();
+                                } else if (index === 1) {
+                                    updatePromise = this._database.archiveByStarred();
+                                } else if (index === 2) {
+                                    updatePromise = this._database.removeByArchived();
+                                }
+
+                                if (updatePromise) {
+                                    updatePromise.then(() => {
+                                        this._categoriesPresenter.notifyDataSetChanged();
+
+                                        this._notesPresenter.refresh();
+                                    }).catch(error => console.error(error));
+                                }
+                            }
+                        });
+                    }
+                }));
+
+                menu.popup(remote.getCurrentWindow());
+            }).catch(error => console.error(error));
+        }
     }
+
+    //endregion
+
+    //region Category operations
 
     handleCategoryItemClick(index) {
         if (this._store.categoriesStore.selectedIndex !== index) {
-            console.trace('Selected category index = ' + index);
-
             this._store.filtersStore.selectedIndex    = -1;
             this._store.categoriesStore.selectedIndex = index;
 
@@ -196,14 +258,161 @@ export default class AppPresenter {
     }
 
     handleCategoryItemRightClick(index) {
+        if (this._store.categoriesStore.selectedIndex !== index) {
+            this._store.filtersStore.selectedIndex    = -1;
+            this._store.categoriesStore.selectedIndex = index;
+
+            this._notesPresenter.refresh();
+        }
+
         const category = this._store.categoriesStore.items[index].primaryText;
-        const menu     = new Menu();
+
+        this._database.countByCategory(category)
+            .then(count => {
+                const menu = new Menu();
+
+                menu.append(new MenuItem({
+                        label : 'Import notes…',
+                        click : () => {
+                            this._store.filtersStore.selectedIndex    = -1;
+                            this._store.categoriesStore.selectedIndex = index;
+
+                            this.handleImportNotes();
+                        }
+                    }));
+
+                if (count > 0) {
+                    menu.append(new MenuItem({
+                        label : 'Export all notes…',
+                        click : () => {
+                            this._store.filtersStore.selectedIndex    = -1;
+                            this._store.categoriesStore.selectedIndex = index;
+
+                            this.handleExportNotes();
+                        }
+                    }));
+                }
+
+                menu.append(new MenuItem({
+                    label : 'Rename ' + category + '…',
+                    click : () => {
+                        this._store.updateCategoryDialogStore.value   = category;
+                        this._store.updateCategoryDialogStore.visible = true;
+                    }
+                }));
+
+                menu.append(new MenuItem({
+                    type : 'separator'
+                }));
+
+                menu.append(new MenuItem({
+                    label : 'Delete ' + category + '…',
+                    click : () => {
+                        dialog.showMessageBox(remote.getCurrentWindow(), {
+                            type      : 'question',
+                            title     : 'Delete category',
+                            message   : 'Are you sure you want to delete category "' + category + '"?',
+                            buttons   : [ 'Yes', 'No' ],
+                            defaultId : 0,
+                            cancelId  : 1
+                        }, response => {
+                            if (response === 0) {
+                                this._database.removeCategory(category)
+                                    .then(() => {
+                                        this._categoriesPresenter.notifyDataSetChanged();
+
+                                        if (this._store.categoriesStore.selectedIndex < 0) {
+                                            this._notesPresenter.refresh();
+                                        }
+                                    }).catch(error => console.error(error));
+                            }
+                        });
+                    }
+                }));
+
+                menu.append(new MenuItem({
+                    label : 'Delete ' + category + ' and notes…',
+                    click : () => {
+                        dialog.showMessageBox(remote.getCurrentWindow(), {
+                            type      : 'question',
+                            title     : 'Delete category and archive notes',
+                            message   : 'Are you sure you want to delete category "' + category + '" and archive its notes?',
+                            buttons   : [ 'Yes', 'No' ],
+                            defaultId : 0,
+                            cancelId  : 1
+                        }, response => {
+                            if (response === 0) {
+                                this._database.removeCategory(category, true)
+                                    .then(() => {
+                                        this._categoriesPresenter.notifyDataSetChanged();
+
+                                        if (this._store.categoriesStore.selectedIndex < 0) {
+                                            this._notesPresenter.refresh();
+                                        }
+                                    }).catch(error => console.error(error));
+                            }
+                        });
+                    }
+                }));
+
+                menu.append(new MenuItem({
+                    label : 'Archive all notes…',
+                    click : () => {
+                        dialog.showMessageBox(remote.getCurrentWindow(), {
+                            type      : 'question',
+                            title     : 'Archive notes',
+                            message   : 'Are you sure you want to archive all notes of category "' + category + '"?',
+                            buttons   : [ 'Yes', 'No' ],
+                            defaultId : 0,
+                            cancelId  : 1
+                        }, response => {
+                            if (response === 0) {
+                                this._database.archiveByCategory(category)
+                                    .then(() => {
+                                        this._categoriesPresenter.notifyDataSetChanged();
+
+                                        this._notesPresenter.refresh();
+                                    }).catch(error => console.error(error));
+                            }
+                        });
+                    }
+                }));
+
+                menu.popup(remote.getCurrentWindow());
+            }).catch(error => console.error(error));
+    }
+
+    handleAddCategoryClick() {
+        this._store.addCategoryDialogStore.visible = true;
+    }
+
+    //endregion
+
+    //region Note operations
+
+    handleNoteItemClick(index) {
+        if (this._store.notesStore.selectedIndex !== index) {
+            this._store.notesStore.selectedIndex = index;
+
+            this._noteSelection.onNext(index);
+
+            this.refreshEditor();
+        }
+    }
+
+    handleNoteItemRightClick(index) {
+        if (this._store.notesStore.selectedIndex !== index) {
+            this._store.notesStore.selectedIndex = index;
+        }
+
+        const menu = new Menu();
 
         menu.append(new MenuItem({
-            label : 'Rename ' + category,
+            label : 'Export…',
             click : () => {
-                this._store.updateCategoryDialogStore.value   = category;
-                this._store.updateCategoryDialogStore.visible = true;
+                this._store.notesStore.selectedIndex = index;
+
+                this.handleExportNote();
             }
         }));
 
@@ -211,73 +420,39 @@ export default class AppPresenter {
             type : 'separator'
         }));
 
+        if (this._store.filtersStore.selectedIndex === 2) {
+            menu.append(new MenuItem({
+                label : 'Restore',
+                click : () => {
+                    this._database.unarchiveById(this._store.notesStore.selectedItem.itemId)
+                        .then(() => {
+                            this._notesPresenter.refresh();
+                            this._filtersPresenter.refresh();
+                            this._categoriesPresenter.notifyDataSetChanged();
+                        }).catch(error => console.error(error));
+                }
+            }));
+        }
+
+        const action = this._store.filtersStore.selectedIndex === 2 ? 'Delete' : 'Archive';
+
         menu.append(new MenuItem({
-            label : 'Delete ' + category,
+            label : action + '…',
             click : () => {
                 dialog.showMessageBox(remote.getCurrentWindow(), {
                     type      : 'question',
-                    title     : 'Delete category',
-                    message   : 'Are you sure you want to delete category "' + category + '"?',
+                    title     : action + ' note',
+                    message   : 'Are you sure you want to ' + action.toLowerCase() + ' this note?',
                     buttons   : [ 'Yes', 'No' ],
                     defaultId : 0,
                     cancelId  : 1
                 }, response => {
                     if (response === 0) {
-                        this._database.removeCategory(category)
+                        (this._store.filtersStore.selectedIndex === 2 ? this._database.removeById(this._store.notesStore.selectedItem.itemId) : this._database.archiveById(this._store.notesStore.selectedItem.itemId))
                             .then(() => {
-                                this._categoriesPresenter.notifyDataSetChanged();
-
-                                if (this._store.categoriesStore.selectedIndex < 0) {
-                                    this._notesPresenter.refresh();
-                                }
-                            }).catch(error => console.error(error));
-                    }
-                });
-            }
-        }));
-
-        menu.append(new MenuItem({
-            label : 'Delete ' + category + ' and notes',
-            click : () => {
-                dialog.showMessageBox(remote.getCurrentWindow(), {
-                    type      : 'question',
-                    title     : 'Delete category and notes',
-                    message   : 'Are you sure you want to delete category "' + category + '" and its notes?',
-                    buttons   : [ 'Yes', 'No' ],
-                    defaultId : 0,
-                    cancelId  : 1
-                }, response => {
-                    if (response === 0) {
-                        this._database.removeCategory(category, true)
-                            .then(() => {
-                                this._categoriesPresenter.notifyDataSetChanged();
-
-                                if (this._store.categoriesStore.selectedIndex < 0) {
-                                    this._notesPresenter.refresh();
-                                }
-                            }).catch(error => console.error(error));
-                    }
-                });
-            }
-        }));
-
-        menu.append(new MenuItem({
-            label : 'Delete notes',
-            click : () => {
-                dialog.showMessageBox(remote.getCurrentWindow(), {
-                    type      : 'question',
-                    title     : 'Delete notes',
-                    message   : 'Are you sure you want to delete notes of category "' + category + '"?',
-                    buttons   : [ 'Yes', 'No' ],
-                    defaultId : 0,
-                    cancelId  : 1
-                }, response => {
-                    if (response === 0) {
-                        this._database.removeByCategory(category)
-                            .then(() => {
-                                this._categoriesPresenter.notifyDataSetChanged();
-
                                 this._notesPresenter.refresh();
+                                this._filtersPresenter.refresh();
+                                this._categoriesPresenter.notifyDataSetChanged();
                             }).catch(error => console.error(error));
                     }
                 });
@@ -285,18 +460,6 @@ export default class AppPresenter {
         }));
 
         menu.popup(remote.getCurrentWindow());
-    }
-
-    handleNoteItemClick(index) {
-        if (this._store.notesStore.selectedIndex !== index) {
-            console.trace('Selected note index = ' + index);
-
-            this._store.notesStore.selectedIndex = index;
-
-            this._noteSelection.onNext(index);
-
-            this.refreshEditor();
-        }
     }
 
     handleNotesSortingClick() {
@@ -335,10 +498,6 @@ export default class AppPresenter {
         menu.popup(remote.getCurrentWindow());
     }
 
-    handleAddCategoryClick() {
-        this._store.addCategoryDialogStore.visible = true;
-    }
-
     handleAddNoteClick() {
         this._notesPresenter.addNote(this._defaultSyntax)
             .then(() => {
@@ -349,6 +508,133 @@ export default class AppPresenter {
                 this._noteSelection.onNext(0);
             }).catch(error => console.error(error));
     }
+
+    handleImportNotes() {
+        if (this._store.filtersStore.selectedIndex > -1 || this._store.categoriesStore.selectedIndex > -1) {
+            dialog.showOpenDialog(remote.getCurrentWindow(), {
+                title      : 'Import from a text file',
+                filters    : [
+                    {
+                        name       : 'All files',
+                        extensions : [ '*' ]
+                    }
+                ],
+                properties : [ 'openFile', 'multiSelections' ]
+            }, filenames => {
+                if (filenames) {
+                    const syntax = this._store.defaultSyntaxListViewStore.selectedIndex > -1 ? SyntaxCodes[this._store.defaultSyntaxListViewStore.selectedIndex] : Config.defaultSyntax;
+
+                    filenames.forEach(filename => {
+                        fs.readFile(filename, {
+                            encoding: 'utf-8',
+                            flag    : 'r'
+                        }, (error, fullText) => {
+                            if (error) {
+                                console.error(error);
+                            } else {
+                                this._database.addOrUpdate(Record.fromText(syntax, fullText))
+                                    .then(doc => {
+                                        this._store.notesStore.items.unshift(Record.fromDoc(doc).toListItemStore());
+                                    }).catch(error => console.error(error));
+                            }
+                        });
+                    });
+                }
+            });
+        }
+    }
+
+    handleExportNote() {
+        if (this._store.notesStore.selectedIndex > -1) {
+            dialog.showSaveDialog(remote.getCurrentWindow(), {
+                title   : 'Export to a text file',
+                filters : [
+                    {
+                        name       : 'All files',
+                        extensions : [ '*' ]
+                    }
+                ]
+            }, filename => {
+                if (filename) {
+                    fs.access(filename, fs.constants.F_OK, error => {
+                        if (error) {
+                            this._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
+                        } else {
+                            dialog.showMessageBox(remote.getCurrentWindow(), {
+                                type     : 'question',
+                                title    : 'File already exists',
+                                message  : 'Are you sure you want to overwrite this file?',
+                                buttons  : ['Yes', 'No'],
+                                defaultId: 0,
+                                cancelId : 1
+                            }, response => {
+                                if (response === 0) {
+                                    this._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    }
+
+    handleExportNotes() {
+        let countPromise;
+
+        if (this._store.filtersStore.selectedIndex === 0) {
+            countPromise = this._database.countAll();
+        } else if (this._store.filtersStore.selectedIndex === 1) {
+            countPromise = this._database.countByStarred();
+        } else if (this._store.filtersStore.selectedIndex === 2) {
+            countPromise = this._database.countByArchived();
+        } else if (this._store.categoriesStore.selectedIndex > -1) {
+            countPromise = this._database.countByCategory(this._store.categoriesStore.selectedItem.primaryText);
+        }
+
+        if (countPromise) {
+            countPromise.then(count => {
+                if (count > 0) {
+                    let findPromise;
+
+                    if (this._store.filtersStore.selectedIndex === 0) {
+                        findPromise = this._database.findAll(this._store.notesSorting);
+                    } else if (this._store.filtersStore.selectedIndex === 1) {
+                        findPromise = this._database.findByStarred(this._store.notesSorting);
+                    } else if (this._store.filtersStore.selectedIndex === 2) {
+                        findPromise = this._database.findByArchived(this._store.notesSorting);
+                    } else if (this._store.categoriesStore.selectedIndex > -1) {
+                        findPromise = this._database.findByCategory(this._store.categoriesStore.selectedItem.primaryText, this._store.notesSorting);
+                    }
+
+                    if (findPromise) {
+                        dialog.showOpenDialog(remote.getCurrentWindow(), {
+                            title      : 'Export text files to a directory',
+                            filters    : [
+                                {
+                                    name       : 'All files',
+                                    extensions : [ '*' ]
+                                }
+                            ],
+                            properties : [ 'openDirectory', 'createDirectory' ]
+                        }, directory => {
+                            if (directory) {
+                                promise.then(docs => {
+                                    docs.forEach(doc => {
+                                        this._exportNote(Path.join(directory[0], doc._id + '.txt'), doc.fullText);
+                                    });
+                                });
+                            }
+                        });
+                    }
+                }
+            }).catch(error => console.error(error));
+        }
+    }
+
+    //endregion
+
+    //region Editor operation
 
     handleStarClick() {
         this._store.editorStore.record.starred = !this._store.editorStore.record.starred;
@@ -391,8 +677,6 @@ export default class AppPresenter {
      * @param {number} index The category item index the user selects.
      */
     handleSelectCategoryItemClick(index) {
-        console.trace('Selected category index in dialog = ' + index);
-
         if (this._store.selectCategoryDialogStore.list.selectedIndex !== index) {
             this._store.selectCategoryDialogStore.list.selectedIndex = index;
         }
@@ -401,8 +685,6 @@ export default class AppPresenter {
     handleSelectCategoryOkClick() {
         this._store.editorStore.record.category = this._store.selectCategoryDialogStore.list.selectedItem.primaryText;
         this._store.editorStore.changes.onNext(this._store.editorStore.record);
-
-        console.trace('Changed category to ' + this._store.editorStore.record.category);
 
         this._categoriesPresenter.notifyDataSetChanged();
 
@@ -413,12 +695,12 @@ export default class AppPresenter {
         this._store.editorStore.record.category = null;
         this._store.editorStore.changes.onNext(this._store.editorStore.record);
 
-        console.trace('Uncategorized');
-
         this._categoriesPresenter.notifyDataSetChanged();
 
         this._store.selectCategoryDialogStore.visible = false;
     }
+
+    //endregion
 
     //endregion
 
@@ -431,6 +713,8 @@ export default class AppPresenter {
         this.refreshEditor();
 
         this._noteSelection.onNext(-1);
+
+        this._store.filtersStore.selectedIndex = 0;
     }
 
     refreshCategories() {
@@ -448,8 +732,6 @@ export default class AppPresenter {
     }
 
     refreshEditor() {
-        console.trace('Selected note id = ' + this._store.notesStore.selectedItemId);
-
         this._editorPresenter.load(this._store.notesStore.selectedItemId)
             .then(() => {
                 if (this._store.notesStore.selectedItemId) {
@@ -597,9 +879,7 @@ export default class AppPresenter {
             console.warn('Unrecognized setting ' + data.name + ' = ' + data.value);
         }
 
-        this._settings.set(data.name, data.value)
-            .then(() => console.trace('Saved setting ' + data.name + ' = ' + data.value))
-            .catch(error => console.error(error));
+        this._settings.set(data.name, data.value).catch(error => console.error(error));
     }
 
     //endregion
@@ -728,17 +1008,10 @@ export default class AppPresenter {
 
     _initAutoSave() {
         this._store.editorStore.changes.subscribe(record => {
-            console.trace('Auto save record ' + this._store.notesStore.selectedItemId);
-            console.trace(record);
-
             this._database.findById(this._store.notesStore.selectedItemId)
                 .then(() => {
-                    console.trace('Found record ' + record._id);
-
                     this._database.addOrUpdate(record.toDoc())
                         .then(doc => {
-                            console.trace('Saved record ' + doc._id);
-
                             this._store.notesStore.selectedItem.update(Record.fromDoc(doc));
                         }).catch(error => console.error(error));
                 }).catch(error => console.error(error));
@@ -769,6 +1042,21 @@ export default class AppPresenter {
         this._notesPresenter.sorting = sorting;
 
         this._settings.set('notesSorting', sorting).catch(error => console.error(error));
+    }
+
+    /**
+     * Writes text to the specified file
+     * @param {String} filename
+     * @param {String} fullText
+     * @private
+     */
+    _exportNote(filename, fullText) {
+        fs.writeFile(filename, fullText, {
+            encoding : 'utf-8',
+            flag     : 'w'
+        }, error => {
+            if (error) dialog.showErrorBox('Error', error);
+        });
     }
 
     //endregion

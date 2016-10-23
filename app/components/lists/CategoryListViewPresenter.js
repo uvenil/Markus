@@ -3,7 +3,12 @@
 import ListViewPresenter from './ListViewPresenter';
 import ListItemStore from './ListItemStore';
 import Database from '../../data/Database';
+import Unique from '../../utils/Unique';
+import PubSub from 'pubsub-js';
+import is from 'electron-is';
 import _ from 'lodash';
+
+if (is.dev()) PubSub.immediateExceptions = true;
 
 export default class CategoryListViewPresenter extends ListViewPresenter {
     /**
@@ -23,19 +28,19 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                     categories.forEach(category => {
                         const categoryStore = new ListItemStore();
 
-                        categoryStore.itemId      = category;
+                        categoryStore.itemId      = 'categoryListItem-' + Unique.elementId();
                         categoryStore.primaryText = category;
 
                         this.database.countByCategory(category)
                             .then(count => categoryStore.secondaryText = count)
-                            .catch(error => console.error(error));
+                            .catch(error => PubSub.publish('Event.error', error));
 
                         this.store.items.push(categoryStore);
                     });
 
                     this._sort();
                 }
-            }).catch(error => console.error(error));
+            }).catch(error => PubSub.publish('Event.error', error));
     }
 
     notifyDataSetChanged() {
@@ -86,7 +91,7 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                 newCategories.forEach(category => {
                     const categoryStore = new ListItemStore();
 
-                    categoryStore.itemId        = category;
+                    categoryStore.itemId        = 'categoryListItem-' + Unique.elementId();
                     categoryStore.primaryText   = category;
                     categoryStore.secondaryText = '0';
 
@@ -98,9 +103,9 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                 this.store.items.forEach(item => {
                     this.database.countByCategory(item.primaryText)
                         .then(count => item.secondaryText = count)
-                        .catch(error => console.error(error));
+                        .catch(error => PubSub.publish('Event.error', error));
                 });
-            }).catch(error => console.error(error));
+            }).catch(error => PubSub.publish('Event.error', error));
     }
 
     initStore() {

@@ -8,7 +8,11 @@ import Record from '../../data/Record';
 import Config from '../../../config.json';
 import Rx from 'rx-lite';
 import moment from 'moment';
+import PubSub from 'pubsub-js';
+import is from 'electron-is';
 import _ from 'lodash';
+
+if (is.dev()) PubSub.immediateExceptions = true;
 
 export default class NoteListViewPresenter {
     /**
@@ -104,8 +108,6 @@ export default class NoteListViewPresenter {
         const selectedFilterItemId   = this._filtersPresenter.store.selectedItemId;
         const selectedCategoryItemId = this._categoriesPresenter.store.selectedItemId;
 
-        console.trace('selectedFilterItemId = ' + selectedFilterItemId + ', selectedCategoryItemId = ' + selectedCategoryItemId);
-
         let promise;
 
         if (selectedFilterItemId === FilterListViewPresenter.FILTER_EVERYTHING_ID) {
@@ -125,7 +127,7 @@ export default class NoteListViewPresenter {
                 docs.forEach(doc => {
                     this._store.items.push(Record.fromDoc(doc).toListItemStore());
                 });
-            }).catch(error => console.error(error));
+            }).catch(error => PubSub.publish('Event.error', error));
         }
     }
 

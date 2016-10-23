@@ -19,8 +19,8 @@ import { observer } from 'mobx-react';
 import Settings from './utils/Settings';
 import Path from 'path';
 import PubSub from 'pubsub-js';
-import SyntaxCodes from './syntax-codes.json';
-import ThemeCodes from './theme-codes.json';
+import SyntaxCodes from './definitions/syntax-codes.json';
+import ThemeCodes from './definitions/theme-codes.json';
 import Package from '../package.json';
 import Config from '../config.json';
 import is from 'electron-is';
@@ -45,17 +45,13 @@ export default class App extends React.Component {
         this._handleFilterListWidthChange = size => {
             this.props.store.filterListWidth = size;
 
-            this._settings.set('filterListWidth', this.props.store.filterListWidth)
-                .then(() => console.trace('Saved filterListWidth = ' + size))
-                .catch(error => console.error(error));
+            this._settings.set('filterListWidth', this.props.store.filterListWidth).catch(error => PubSub.publish('Event.error', error));
         };
 
         this._handleNoteListWidthChange = size => {
             this.props.store.noteListWidth = size;
 
-            this._settings.set('noteListWidth', this.props.store.noteListWidth)
-                .then(() => console.trace('Saved noteListWidth = ' + size))
-                .catch(error => console.error(error));
+            this._settings.set('noteListWidth', this.props.store.noteListWidth).catch(error => PubSub.publish('Event.error', error));
         };
 
         this._handleNewNote = () => {
@@ -77,6 +73,8 @@ export default class App extends React.Component {
         this._subscriptions.push(PubSub.subscribe('Theme.change', (eventName, theme) => this.props.presenter.changeTheme(theme)));
         this._subscriptions.push(PubSub.subscribe('TextEditor.settings', (eventName, data) => this.props.presenter.changeSettings(data)));
         this._subscriptions.push(PubSub.subscribe('Application.newNote', () => this._handleNewNote()));
+        this._subscriptions.push(PubSub.subscribe('Application.importNotes', () => this.props.presenter.handleImportNotes()));
+        this._subscriptions.push(PubSub.subscribe('Application.exportNotes', () => this.props.presenter.handleExportNotes()));
 
         this.props.presenter.init();
     }
@@ -162,7 +160,8 @@ export default class App extends React.Component {
                                 <NoteListView
                                     store={this.props.store.notesStore}
                                     theme={this.props.store.theme}
-                                    onItemClick={index => this.props.presenter.handleNoteItemClick(index)} />
+                                    onItemClick={index => this.props.presenter.handleNoteItemClick(index)}
+                                    onItemRightClick={index => this.props.presenter.handleNoteItemRightClick(index)} />
                                 {/* Note list tools */}
                                 <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
                                     <Button
@@ -216,7 +215,7 @@ export default class App extends React.Component {
                                         onClick={() => this.props.presenter.handleArchiveClick()}>
                                         <i
                                             className={'fa fa-fw fa-trash' + ((!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? '' : '-o')}
-                                            title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? 'Un-archive this note' : 'Archive this note'} />
+                                            title={(!_.isNil(this.props.store.editorStore.record) && this.props.store.editorStore.record.archived) ? 'Restore this note' : 'Archive this note'} />
                                     </Button>
                                     <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
                                     {/* Select category */}
@@ -233,7 +232,7 @@ export default class App extends React.Component {
                                     <Label theme={this.props.store.theme}>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
                                     <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
                                     {/* Row/column position */}
-                                    <Label theme={this.props.store.theme}>{this.props.store.editorStore.cursorPosition ? this.props.store.editorStore.cursorPosition.row + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
+                                    <Label theme={this.props.store.theme}>{this.props.store.editorStore.record && this.props.store.editorStore.cursorPosition ? (this.props.store.editorStore.cursorPosition.row + 1) + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
                                 </div>
                             </div>
                         </SplitPane>

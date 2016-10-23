@@ -2,27 +2,31 @@ html, body {
     margin : 0;
 }
 
+body {
+    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
+}
+
 .full-width {
     width : calc(100% - 12px);
 }
 
 .Label {
-    font-family : -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
     font-size   : 13px;
 }
 
 .Text {
-    font-family : -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
     font-size   : 13px;
 }
 
 .TextBox {
-    font-family : -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
     font-size   : 13px;
 }
 
 .SearchBox {
-    font-family : -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
     font-size   : 13px;
 }
 
@@ -31,7 +35,7 @@ html, body {
 }
 
 .Button {
-    font-family : -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
     font-size   : 13px;
 }
 
@@ -40,7 +44,7 @@ html, body {
 }
 
 .CheckBox {
-    font-family : -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
     font-size   : 13px;
 }
 
@@ -73,7 +77,7 @@ html, body {
 }
 
 .ListView {
-    font-family : -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
     font-size   : 13px;
 }
 
