@@ -1,7 +1,9 @@
 'use strict';
 
+import React from 'react';
 import { extendObservable } from 'mobx';
 import moment from 'moment';
+import Unique from '../../utils/Unique';
 import Config from '../../../config.json';
 import _ from 'lodash';
 
@@ -24,7 +26,7 @@ export default class ListItemStore {
     update(record) {
         this.itemId        = record._id;
         this.primaryText   = _.isEmpty(record.title) ? Config.defaultNoteTitle : record.title;
-        this.secondaryText = record.description;
+        this.secondaryText = record.description ? record.description.split('\n').map(line => <span key={Unique.elementId()}>{line}<br /></span>) : record.description;
         this.tertiaryText  = moment(record.lastUpdatedAt).fromNow();
         this.record        = record;
     }

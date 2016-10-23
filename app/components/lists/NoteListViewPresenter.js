@@ -104,8 +104,6 @@ export default class NoteListViewPresenter {
         const selectedFilterItemId   = this._filtersPresenter.store.selectedItemId;
         const selectedCategoryItemId = this._categoriesPresenter.store.selectedItemId;
 
-        console.trace('selectedFilterItemId = ' + selectedFilterItemId + ', selectedCategoryItemId = ' + selectedCategoryItemId);
-
         let promise;
 
         if (selectedFilterItemId === FilterListViewPresenter.FILTER_EVERYTHING_ID) {

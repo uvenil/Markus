@@ -137,8 +137,6 @@ export default class AppPresenter {
 
     handleFilterItemClick(index) {
         if (this._store.filtersStore.selectedIndex !== index) {
-            console.trace('Selected filter index = ' + index);
-
             this._store.filtersStore.selectedIndex    = index;
             this._store.categoriesStore.selectedIndex = -1;
 
@@ -221,8 +219,6 @@ export default class AppPresenter {
 
     handleCategoryItemClick(index) {
         if (this._store.categoriesStore.selectedIndex !== index) {
-            console.trace('Selected category index = ' + index);
-
             this._store.filtersStore.selectedIndex    = -1;
             this._store.categoriesStore.selectedIndex = index;
 
@@ -608,8 +604,6 @@ export default class AppPresenter {
      * @param {number} index The category item index the user selects.
      */
     handleSelectCategoryItemClick(index) {
-        console.trace('Selected category index in dialog = ' + index);
-
         if (this._store.selectCategoryDialogStore.list.selectedIndex !== index) {
             this._store.selectCategoryDialogStore.list.selectedIndex = index;
         }
@@ -619,8 +613,6 @@ export default class AppPresenter {
         this._store.editorStore.record.category = this._store.selectCategoryDialogStore.list.selectedItem.primaryText;
         this._store.editorStore.changes.onNext(this._store.editorStore.record);
 
-        console.trace('Changed category to ' + this._store.editorStore.record.category);
-
         this._categoriesPresenter.notifyDataSetChanged();
 
         this._store.selectCategoryDialogStore.visible = false;
@@ -629,8 +621,6 @@ export default class AppPresenter {
     handleSelectCategoryNoneClick() {
         this._store.editorStore.record.category = null;
         this._store.editorStore.changes.onNext(this._store.editorStore.record);
-
-        console.trace('Uncategorized');
 
         this._categoriesPresenter.notifyDataSetChanged();
 
@@ -650,6 +640,8 @@ export default class AppPresenter {
         this.refreshEditor();
 
         this._noteSelection.onNext(-1);
+
+        this._store.filtersStore.selectedIndex = 0;
     }
 
     refreshCategories() {
@@ -667,8 +659,6 @@ export default class AppPresenter {
     }
 
     refreshEditor() {
-        console.trace('Selected note id = ' + this._store.notesStore.selectedItemId);
-
         this._editorPresenter.load(this._store.notesStore.selectedItemId)
             .then(() => {
                 if (this._store.notesStore.selectedItemId) {
@@ -816,9 +806,7 @@ export default class AppPresenter {
             console.warn('Unrecognized setting ' + data.name + ' = ' + data.value);
         }
 
-        this._settings.set(data.name, data.value)
-            .then(() => console.trace('Saved setting ' + data.name + ' = ' + data.value))
-            .catch(error => console.error(error));
+        this._settings.set(data.name, data.value).catch(error => console.error(error));
     }
 
     //endregion
@@ -947,17 +935,10 @@ export default class AppPresenter {
 
     _initAutoSave() {
         this._store.editorStore.changes.subscribe(record => {
-            console.trace('Auto save record ' + this._store.notesStore.selectedItemId);
-            console.trace(record);
-
             this._database.findById(this._store.notesStore.selectedItemId)
                 .then(() => {
-                    console.trace('Found record ' + record._id);
-
                     this._database.addOrUpdate(record.toDoc())
                         .then(doc => {
-                            console.trace('Saved record ' + doc._id);
-
                             this._store.notesStore.selectedItem.update(Record.fromDoc(doc));
                         }).catch(error => console.error(error));
                 }).catch(error => console.error(error));
