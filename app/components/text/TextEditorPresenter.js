@@ -24,8 +24,6 @@ export default class TextEditorPresenter {
      * @return {Promise
      */
     load(recordId) {
-        console.trace('Loads record ' + recordId);
-
         return new Promise((resolve, reject) => {
             if (recordId) {
                 this._database.findById(recordId)

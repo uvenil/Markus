@@ -3,6 +3,7 @@
 import ListViewPresenter from './ListViewPresenter';
 import ListItemStore from './ListItemStore';
 import Database from '../../data/Database';
+import Unique from '../../utils/Unique';
 import _ from 'lodash';
 
 export default class CategoryListViewPresenter extends ListViewPresenter {
@@ -23,7 +24,7 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                     categories.forEach(category => {
                         const categoryStore = new ListItemStore();
 
-                        categoryStore.itemId      = category;
+                        categoryStore.itemId      = 'categoryListItem-' + Unique.elementId();
                         categoryStore.primaryText = category;
 
                         this.database.countByCategory(category)
@@ -86,7 +87,7 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                 newCategories.forEach(category => {
                     const categoryStore = new ListItemStore();
 
-                    categoryStore.itemId        = category;
+                    categoryStore.itemId        = 'categoryListItem-' + Unique.elementId();
                     categoryStore.primaryText   = category;
                     categoryStore.secondaryText = '0';
 

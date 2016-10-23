@@ -147,70 +147,89 @@ export default class AppPresenter {
 
     handleFilterItemRightClick(index) {
         if (this._store.filtersStore.selectedIndex !== index) {
-            this._store.filtersStore.selectedIndex = index;
+            this._store.filtersStore.selectedIndex    = index;
+            this._store.categoriesStore.selectedIndex = -1;
+
+            this._notesPresenter.refresh();
         }
 
-        const menu = new Menu();
+        let promise;
 
-        menu.append(new MenuItem({
-            label : 'Import notes…',
-            click : () => {
-                this._store.filtersStore.selectedIndex    = index;
-                this._store.categoriesStore.selectedIndex = -1;
+        if (index === 0) {
+            promise = this._database.countAll();
+        } else if (index === 1) {
+            promise = this._database.countByStarred();
+        } else if (index === 2) {
+            promise = this._database.countByArchived();
+        }
 
-                this.handleImportNotes();
-            }
-        }));
+        if (promise) {
+            promise.then(count => {
+                const menu = new Menu();
 
-        menu.append(new MenuItem({
-            label : 'Export notes…',
-            click : () => {
-                this._store.filtersStore.selectedIndex    = index;
-                this._store.categoriesStore.selectedIndex = -1;
+                menu.append(new MenuItem({
+                    label : 'Import notes…',
+                    click : () => {
+                        this._store.filtersStore.selectedIndex    = index;
+                        this._store.categoriesStore.selectedIndex = -1;
 
-                this.handleExportNotes();
-            }
-        }));
-
-        menu.append(new MenuItem({
-            type : 'separator'
-        }));
-
-        menu.append(new MenuItem({
-            label : 'Delete notes…',
-            click : () => {
-                dialog.showMessageBox(remote.getCurrentWindow(), {
-                    type      : 'question',
-                    title     : 'Delete notes',
-                    message   : 'Are you sure you want to delete the notes?',
-                    buttons   : [ 'Yes', 'No' ],
-                    defaultId : 0,
-                    cancelId  : 1
-                }, response => {
-                    if (response === 0) {
-                        let promise;
-
-                        if (index === 0) {
-                            promise = this._database.removeByEverything();
-                        } else if (index === 1) {
-                            promise = this._database.removeByStarred();
-                        } else if (index === 2) {
-                            promise = this._database.removeByArchived();
-                        }
-
-                        if (promise) {
-                            promise.then(() => {
-                                this._categoriesPresenter.notifyDataSetChanged();
-
-                                this._notesPresenter.refresh();
-                            }).catch(error => console.error(error));
-                        }
+                        this.handleImportNotes();
                     }
-                });
-            }
-        }));
+                }));
 
-        menu.popup(remote.getCurrentWindow());
+                if (count > 0) {
+                    menu.append(new MenuItem({
+                        label : 'Export notes…',
+                        click : () => {
+                            this._store.filtersStore.selectedIndex    = index;
+                            this._store.categoriesStore.selectedIndex = -1;
+
+                            this.handleExportNotes();
+                        }
+                    }));
+                }
+
+                menu.append(new MenuItem({
+                    type : 'separator'
+                }));
+
+                menu.append(new MenuItem({
+                    label : 'Delete notes…',
+                    click : () => {
+                        dialog.showMessageBox(remote.getCurrentWindow(), {
+                            type      : 'question',
+                            title     : 'Delete notes',
+                            message   : 'Are you sure you want to delete the notes?',
+                            buttons   : [ 'Yes', 'No' ],
+                            defaultId : 0,
+                            cancelId  : 1
+                        }, response => {
+                            if (response === 0) {
+                                let promise;
+
+                                if (index === 0) {
+                                    promise = this._database.removeByEverything();
+                                } else if (index === 1) {
+                                    promise = this._database.removeByStarred();
+                                } else if (index === 2) {
+                                    promise = this._database.removeByArchived();
+                                }
+
+                                if (promise) {
+                                    promise.then(() => {
+                                        this._categoriesPresenter.notifyDataSetChanged();
+
+                                        this._notesPresenter.refresh();
+                                    }).catch(error => console.error(error));
+                                }
+                            }
+                        });
+                    }
+                }));
+
+                menu.popup(remote.getCurrentWindow());
+            }).catch(error => console.error(error));
+        }
     }
 
     //endregion
@@ -229,118 +248,127 @@ export default class AppPresenter {
 
     handleCategoryItemRightClick(index) {
         if (this._store.categoriesStore.selectedIndex !== index) {
+            this._store.filtersStore.selectedIndex    = -1;
             this._store.categoriesStore.selectedIndex = index;
+
+            this._notesPresenter.refresh();
         }
 
         const category = this._store.categoriesStore.items[index].primaryText;
-        const menu     = new Menu();
 
-        menu.append(new MenuItem({
-            label : 'Import notes…',
-            click : () => {
-                this._store.filtersStore.selectedIndex    = -1;
-                this._store.categoriesStore.selectedIndex = index;
+        this._database.countByCategory(category)
+            .then(count => {
+                const menu = new Menu();
 
-                this.handleImportNotes();
-            }
-        }));
+                menu.append(new MenuItem({
+                        label : 'Import notes…',
+                        click : () => {
+                            this._store.filtersStore.selectedIndex    = -1;
+                            this._store.categoriesStore.selectedIndex = index;
 
-        menu.append(new MenuItem({
-            label : 'Export notes…',
-            click : () => {
-                this._store.filtersStore.selectedIndex    = -1;
-                this._store.categoriesStore.selectedIndex = index;
+                            this.handleImportNotes();
+                        }
+                    }));
 
-                this.handleExportNotes();
-            }
-        }));
+                if (count > 0) {
+                    menu.append(new MenuItem({
+                        label : 'Export notes…',
+                        click : () => {
+                            this._store.filtersStore.selectedIndex    = -1;
+                            this._store.categoriesStore.selectedIndex = index;
 
-        menu.append(new MenuItem({
-            label : 'Rename ' + category + '…',
-            click : () => {
-                this._store.updateCategoryDialogStore.value   = category;
-                this._store.updateCategoryDialogStore.visible = true;
-            }
-        }));
+                            this.handleExportNotes();
+                        }
+                    }));
+                }
 
-        menu.append(new MenuItem({
-            type : 'separator'
-        }));
-
-        menu.append(new MenuItem({
-            label : 'Delete ' + category + '…',
-            click : () => {
-                dialog.showMessageBox(remote.getCurrentWindow(), {
-                    type      : 'question',
-                    title     : 'Delete category',
-                    message   : 'Are you sure you want to delete category "' + category + '"?',
-                    buttons   : [ 'Yes', 'No' ],
-                    defaultId : 0,
-                    cancelId  : 1
-                }, response => {
-                    if (response === 0) {
-                        this._database.removeCategory(category)
-                            .then(() => {
-                                this._categoriesPresenter.notifyDataSetChanged();
-
-                                if (this._store.categoriesStore.selectedIndex < 0) {
-                                    this._notesPresenter.refresh();
-                                }
-                            }).catch(error => console.error(error));
+                menu.append(new MenuItem({
+                    label : 'Rename ' + category + '…',
+                    click : () => {
+                        this._store.updateCategoryDialogStore.value   = category;
+                        this._store.updateCategoryDialogStore.visible = true;
                     }
-                });
-            }
-        }));
+                }));
 
-        menu.append(new MenuItem({
-            label : 'Delete ' + category + ' and notes…',
-            click : () => {
-                dialog.showMessageBox(remote.getCurrentWindow(), {
-                    type      : 'question',
-                    title     : 'Delete category and notes',
-                    message   : 'Are you sure you want to delete category "' + category + '" and its notes?',
-                    buttons   : [ 'Yes', 'No' ],
-                    defaultId : 0,
-                    cancelId  : 1
-                }, response => {
-                    if (response === 0) {
-                        this._database.removeCategory(category, true)
-                            .then(() => {
-                                this._categoriesPresenter.notifyDataSetChanged();
+                menu.append(new MenuItem({
+                    type : 'separator'
+                }));
 
-                                if (this._store.categoriesStore.selectedIndex < 0) {
-                                    this._notesPresenter.refresh();
-                                }
-                            }).catch(error => console.error(error));
+                menu.append(new MenuItem({
+                    label : 'Delete ' + category + '…',
+                    click : () => {
+                        dialog.showMessageBox(remote.getCurrentWindow(), {
+                            type      : 'question',
+                            title     : 'Delete category',
+                            message   : 'Are you sure you want to delete category "' + category + '"?',
+                            buttons   : [ 'Yes', 'No' ],
+                            defaultId : 0,
+                            cancelId  : 1
+                        }, response => {
+                            if (response === 0) {
+                                this._database.removeCategory(category)
+                                    .then(() => {
+                                        this._categoriesPresenter.notifyDataSetChanged();
+
+                                        if (this._store.categoriesStore.selectedIndex < 0) {
+                                            this._notesPresenter.refresh();
+                                        }
+                                    }).catch(error => console.error(error));
+                            }
+                        });
                     }
-                });
-            }
-        }));
+                }));
 
-        menu.append(new MenuItem({
-            label : 'Delete notes…',
-            click : () => {
-                dialog.showMessageBox(remote.getCurrentWindow(), {
-                    type      : 'question',
-                    title     : 'Delete notes',
-                    message   : 'Are you sure you want to delete notes of category "' + category + '"?',
-                    buttons   : [ 'Yes', 'No' ],
-                    defaultId : 0,
-                    cancelId  : 1
-                }, response => {
-                    if (response === 0) {
-                        this._database.removeByCategory(category)
-                            .then(() => {
-                                this._categoriesPresenter.notifyDataSetChanged();
+                menu.append(new MenuItem({
+                    label : 'Delete ' + category + ' and notes…',
+                    click : () => {
+                        dialog.showMessageBox(remote.getCurrentWindow(), {
+                            type      : 'question',
+                            title     : 'Delete category and notes',
+                            message   : 'Are you sure you want to delete category "' + category + '" and its notes?',
+                            buttons   : [ 'Yes', 'No' ],
+                            defaultId : 0,
+                            cancelId  : 1
+                        }, response => {
+                            if (response === 0) {
+                                this._database.removeCategory(category, true)
+                                    .then(() => {
+                                        this._categoriesPresenter.notifyDataSetChanged();
 
-                                this._notesPresenter.refresh();
-                            }).catch(error => console.error(error));
+                                        if (this._store.categoriesStore.selectedIndex < 0) {
+                                            this._notesPresenter.refresh();
+                                        }
+                                    }).catch(error => console.error(error));
+                            }
+                        });
                     }
-                });
-            }
-        }));
+                }));
 
-        menu.popup(remote.getCurrentWindow());
+                menu.append(new MenuItem({
+                    label : 'Delete notes…',
+                    click : () => {
+                        dialog.showMessageBox(remote.getCurrentWindow(), {
+                            type      : 'question',
+                            title     : 'Delete notes',
+                            message   : 'Are you sure you want to delete notes of category "' + category + '"?',
+                            buttons   : [ 'Yes', 'No' ],
+                            defaultId : 0,
+                            cancelId  : 1
+                        }, response => {
+                            if (response === 0) {
+                                this._database.removeByCategory(category)
+                                    .then(() => {
+                                        this._categoriesPresenter.notifyDataSetChanged();
+
+                                        this._notesPresenter.refresh();
+                                    }).catch(error => console.error(error));
+                            }
+                        });
+                    }
+                }));
+
+                menu.popup(remote.getCurrentWindow());
+            }).catch(error => console.error(error));
     }
 
     handleAddCategoryClick() {
@@ -525,37 +553,55 @@ export default class AppPresenter {
     }
 
     handleExportNotes() {
-        let promise;
+        let countPromise;
 
         if (this._store.filtersStore.selectedIndex === 0) {
-            promise = this._database.findAll(this._store.notesSorting);
+            countPromise = this._database.countAll();
         } else if (this._store.filtersStore.selectedIndex === 1) {
-            promise = this._database.findByStarred(this._store.notesSorting);
+            countPromise = this._database.countByStarred();
         } else if (this._store.filtersStore.selectedIndex === 2) {
-            promise = this._database.findByArchived(this._store.notesSorting);
+            countPromise = this._database.countByArchived();
         } else if (this._store.categoriesStore.selectedIndex > -1) {
-            promise = this._database.findByCategory(this._store.categoriesStore.selectedItem.primaryText, this._store.notesSorting);
+            countPromise = this._database.countByCategory(this._store.categoriesStore.selectedItem.primaryText);
         }
 
-        if (promise) {
-            dialog.showOpenDialog(remote.getCurrentWindow(), {
-                title      : 'Export text files to a directory',
-                filters    : [
-                    {
-                        name       : 'All files',
-                        extensions : [ '*' ]
+        if (countPromise) {
+            countPromise.then(count => {
+                if (count > 0) {
+                    let findPromise;
+
+                    if (this._store.filtersStore.selectedIndex === 0) {
+                        findPromise = this._database.findAll(this._store.notesSorting);
+                    } else if (this._store.filtersStore.selectedIndex === 1) {
+                        findPromise = this._database.findByStarred(this._store.notesSorting);
+                    } else if (this._store.filtersStore.selectedIndex === 2) {
+                        findPromise = this._database.findByArchived(this._store.notesSorting);
+                    } else if (this._store.categoriesStore.selectedIndex > -1) {
+                        findPromise = this._database.findByCategory(this._store.categoriesStore.selectedItem.primaryText, this._store.notesSorting);
                     }
-                ],
-                properties : [ 'openDirectory', 'createDirectory' ]
-            }, directory => {
-                if (directory) {
-                    promise.then(docs => {
-                        docs.forEach(doc => {
-                            this._exportNote(Path.join(directory[0], doc._id + '.txt'), doc.fullText);
+
+                    if (findPromise) {
+                        dialog.showOpenDialog(remote.getCurrentWindow(), {
+                            title      : 'Export text files to a directory',
+                            filters    : [
+                                {
+                                    name       : 'All files',
+                                    extensions : [ '*' ]
+                                }
+                            ],
+                            properties : [ 'openDirectory', 'createDirectory' ]
+                        }, directory => {
+                            if (directory) {
+                                promise.then(docs => {
+                                    docs.forEach(doc => {
+                                        this._exportNote(Path.join(directory[0], doc._id + '.txt'), doc.fullText);
+                                    });
+                                });
+                            }
                         });
-                    });
+                    }
                 }
-            });
+            }).catch(error => console.error(error));
         }
     }
 
