@@ -148,7 +148,21 @@ export default class AppPresenter {
     }
 
     handleFilterItemRightClick(index) {
+        if (this._store.filtersStore.selectedIndex !== index) {
+            this._store.filtersStore.selectedIndex = index;
+        }
+
         const menu = new Menu();
+
+        menu.append(new MenuItem({
+            label : 'Import notes…',
+            click : () => {
+                this._store.filtersStore.selectedIndex    = index;
+                this._store.categoriesStore.selectedIndex = -1;
+
+                this.handleImportNotes();
+            }
+        }));
 
         menu.append(new MenuItem({
             label : 'Export notes…',
@@ -158,6 +172,10 @@ export default class AppPresenter {
 
                 this.handleExportNotes();
             }
+        }));
+
+        menu.append(new MenuItem({
+            type : 'separator'
         }));
 
         menu.append(new MenuItem({
@@ -214,8 +232,22 @@ export default class AppPresenter {
     }
 
     handleCategoryItemRightClick(index) {
+        if (this._store.categoriesStore.selectedIndex !== index) {
+            this._store.categoriesStore.selectedIndex = index;
+        }
+
         const category = this._store.categoriesStore.items[index].primaryText;
         const menu     = new Menu();
+
+        menu.append(new MenuItem({
+            label : 'Import notes…',
+            click : () => {
+                this._store.filtersStore.selectedIndex    = -1;
+                this._store.categoriesStore.selectedIndex = index;
+
+                this.handleImportNotes();
+            }
+        }));
 
         menu.append(new MenuItem({
             label : 'Export notes…',
@@ -325,8 +357,6 @@ export default class AppPresenter {
 
     handleNoteItemClick(index) {
         if (this._store.notesStore.selectedIndex !== index) {
-            console.trace('Selected note index = ' + index);
-
             this._store.notesStore.selectedIndex = index;
 
             this._noteSelection.onNext(index);
@@ -336,6 +366,10 @@ export default class AppPresenter {
     }
 
     handleNoteItemRightClick(index) {
+        if (this._store.notesStore.selectedIndex !== index) {
+            this._store.notesStore.selectedIndex = index;
+        }
+
         const menu = new Menu();
 
         menu.append(new MenuItem({
@@ -366,6 +400,8 @@ export default class AppPresenter {
                         this._database.removeById(this._store.notesStore.selectedItem.itemId)
                             .then(() => {
                                 this._notesPresenter.refresh();
+                                this._filtersPresenter.refresh();
+                                this._categoriesPresenter.notifyDataSetChanged();
                             }).catch(error => console.error(error));
                     }
                 });
@@ -434,23 +470,25 @@ export default class AppPresenter {
                 ],
                 properties : [ 'openFile', 'multiSelections' ]
             }, filenames => {
-                const syntax = this._store.defaultSyntaxListViewStore.selectedIndex > -1 ? SyntaxCodes[this._store.defaultSyntaxListViewStore.selectedIndex] : Config.defaultSyntax;
+                if (filenames) {
+                    const syntax = this._store.defaultSyntaxListViewStore.selectedIndex > -1 ? SyntaxCodes[this._store.defaultSyntaxListViewStore.selectedIndex] : Config.defaultSyntax;
 
-                filenames.forEach(filename => {
-                    fs.readFile(filename, {
-                        encoding : 'utf-8',
-                        flag     : 'r'
-                    }, (error, fullText) => {
-                        if (error) {
-                            dialog.showErrorBox('Error', error);
-                        } else {
-                            this._database.addOrUpdate(Record.fromText(syntax, fullText))
-                                .then(record => {
-                                    this._store.notesStore.unshift(record.toListItemStore());
-                                }).catch(error => dialog.showErrorBox('Error', error));
-                        }
+                    filenames.forEach(filename => {
+                        fs.readFile(filename, {
+                            encoding: 'utf-8',
+                            flag    : 'r'
+                        }, (error, fullText) => {
+                            if (error) {
+                                console.error(error);
+                            } else {
+                                this._database.addOrUpdate(Record.fromText(syntax, fullText))
+                                    .then(doc => {
+                                        this._store.notesStore.items.unshift(Record.fromDoc(doc).toListItemStore());
+                                    }).catch(error => console.error(error));
+                            }
+                        });
                     });
-                });
+                }
             });
         }
     }
@@ -466,24 +504,26 @@ export default class AppPresenter {
                     }
                 ]
             }, filename => {
-                fs.access(filename, fs.constants.F_OK, error => {
-                    if (error) {
-                        this._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
-                    } else {
-                        dialog.showMessageBox(remote.getCurrentWindow(), {
-                            type      : 'question',
-                            title     : 'File already exists',
-                            message   : 'Are you sure you want to overwrite this file?',
-                            buttons   : [ 'Yes', 'No' ],
-                            defaultId : 0,
-                            cancelId  : 1
-                        }, response => {
-                            if (response === 0) {
-                                this._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
-                            }
-                        });
-                    }
-                });
+                if (filename) {
+                    fs.access(filename, fs.constants.F_OK, error => {
+                        if (error) {
+                            this._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
+                        } else {
+                            dialog.showMessageBox(remote.getCurrentWindow(), {
+                                type     : 'question',
+                                title    : 'File already exists',
+                                message  : 'Are you sure you want to overwrite this file?',
+                                buttons  : ['Yes', 'No'],
+                                defaultId: 0,
+                                cancelId : 1
+                            }, response => {
+                                if (response === 0) {
+                                    this._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
+                                }
+                            });
+                        }
+                    });
+                }
             });
         }
     }
@@ -512,11 +552,13 @@ export default class AppPresenter {
                 ],
                 properties : [ 'openDirectory', 'createDirectory' ]
             }, directory => {
-                promise.then(docs => {
-                    docs.forEach(doc => {
-                        this._exportNote(Path.join(directory, doc._id), doc.fullText);
+                if (directory) {
+                    promise.then(docs => {
+                        docs.forEach(doc => {
+                            this._exportNote(Path.join(directory[0], doc._id + '.txt'), doc.fullText);
+                        });
                     });
-                });
+                }
             });
         }
     }
