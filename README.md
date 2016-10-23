@@ -1,5 +1,5 @@
 # Artisan
-A note-taking app for programmers, handcrafted with ♥.
+A note-taking app for programmers, handcrafted with ♥
 
 ## Features
 
