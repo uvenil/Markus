@@ -87,7 +87,7 @@ export default class NoteListViewPresenter {
                 break;
 
             default:
-                console.warn('Unrecognized sorting ' + sorting);
+                console.warn('Unrecognized sorting: ' + sorting);
                 break;
         }
     }
