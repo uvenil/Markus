@@ -17,9 +17,11 @@ const createWindow = () => {
         backgroundColor : '#f0f2f4',
         show            : false,
         webPreferences  : {
-            defaultEncoding : 'UTF-8',
-            webaudio        : false,
-            webgl           : false
+            defaultEncoding          : 'UTF-8',
+            defaultFontSize          : 13,
+            defaultMonospaceFontSize : 13,
+            webaudio                 : false,
+            webgl                    : false
         }
     });
 
