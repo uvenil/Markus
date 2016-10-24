@@ -33,9 +33,9 @@ export default class FilterListView extends React.Component {
                                     <Text theme={this.props.theme}>{item.primaryText}</Text>
                                 </div>
                                 <Text
-                                    fontFamily="monospace"
                                     fontWeight={300}
-                                    theme={this.props.theme}>{item.secondaryText}</Text>
+                                    theme={this.props.theme}
+                                    className="Text monospace">{item.secondaryText}</Text>
                             </div>
                         );
                     })}

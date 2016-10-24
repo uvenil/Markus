@@ -31,5 +31,5 @@
     "defaultShowGutter"          : true,
     "defaultDisplayIndentGuides" : true,
     "defaultScrollPastEnd"       : false,
-    "defaultNotesSorting"        : 2
+    "defaultNotesSorting"        : 3
 }

@@ -45,10 +45,44 @@ export default class SettingsDialog extends React.Component {
                 this.props.onThemeChanged(index);
             }
         };
+
+        this._handleFontChanged = index => {
+            this.props.fontListViewStore.selectedIndex = index;
+
+            if (this.props.onFontChanged) {
+                this.props.onFontChanged(index);
+            }
+        };
     }
 
     render() {
         const theme = this.props.theme === 'dark' ? require('../../theme.dark.json') : require('../../theme.light.json');
+
+        const renderListItem = item => {
+            return (
+                <div
+                    key={item.itemId}
+                    style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px - ' + Config.paddingX2 + 'px)', paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px', borderBottom : '1px solid ' + theme.borderColor }}>
+                    <Text theme={this.props.theme}>{item.primaryText}</Text>
+                </div>
+            );
+        };
+
+        const renderListView = (listViewStore, onItemClick) => {
+            return (
+                <div style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px)', height : this.props.height + 'px', display : 'flex', flexFlow : 'column', overflowX : 'hidden', overflowY : 'auto' }}>
+                    <div style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px)', flex : '1 1 0' }}>
+                        <ListView
+                            selectedIndex={listViewStore.selectedIndex}
+                            backgroundColor={theme.primaryBackgroundColor}
+                            theme={this.props.theme}
+                            onItemClick={onItemClick}>
+                            {listViewStore.items.map(item => renderListItem(item))}
+                        </ListView>
+                    </div>
+                </div>
+            );
+        };
 
         return (
             <Dialog
@@ -301,65 +335,13 @@ export default class SettingsDialog extends React.Component {
                         </div>
                     </div>
                     {/* Current syntax */}
-                    <div style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px)', height : this.props.height + 'px', display : 'flex', flexFlow : 'column', overflowX : 'hidden', overflowY : 'auto' }}>
-                        <div style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px)', flex : '1 1 0' }}>
-                            <ListView
-                                selectedIndex={this.props.currentSyntaxListViewStore.selectedIndex}
-                                backgroundColor={theme.primaryBackgroundColor}
-                                theme={this.props.theme}
-                                onItemClick={index => this._handleCurrentSyntaxChanged(index)}>
-                                {this.props.currentSyntaxListViewStore.items.map(item => {
-                                    return (
-                                        <div
-                                            key={item.itemId}
-                                            style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px - ' + Config.paddingX2 + 'px)', paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px', borderBottom : '1px solid ' + theme.borderColor }}>
-                                            <Text theme={this.props.theme}>{item.primaryText}</Text>
-                                        </div>
-                                    );
-                                })}
-                            </ListView>
-                        </div>
-                    </div>
+                    {renderListView(this.props.currentSyntaxListViewStore, index => this._handleCurrentSyntaxChanged(index))}
                     {/* Default syntax */}
-                    <div style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px)', height : this.props.height + 'px', display : 'flex', flexFlow : 'column', overflowX : 'hidden', overflowY : 'auto' }}>
-                        <div style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px)', flex : '1 1 0' }}>
-                            <ListView
-                                selectedIndex={this.props.defaultSyntaxListViewStore.selectedIndex}
-                                backgroundColor={theme.primaryBackgroundColor}
-                                theme={this.props.theme}
-                                onItemClick={index => this._handleDefaultSyntaxChanged(index)}>
-                                {this.props.defaultSyntaxListViewStore.items.map(item => {
-                                    return (
-                                        <div
-                                            key={item.itemId}
-                                            style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px - ' + Config.paddingX2 + 'px)', paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px', borderBottom : '1px solid ' + theme.borderColor }}>
-                                            <Text theme={this.props.theme}>{item.primaryText}</Text>
-                                        </div>
-                                    );
-                                })}
-                            </ListView>
-                        </div>
-                    </div>
+                    {renderListView(this.props.defaultSyntaxListViewStore, index => this._handleDefaultSyntaxChanged(index))}
                     {/* Theme */}
-                    <div style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px)', height : this.props.height + 'px', display : 'flex', flexFlow : 'column', overflowX : 'hidden', overflowY : 'auto' }}>
-                        <div style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px)', flex : '1 1 0' }}>
-                            <ListView
-                                selectedIndex={this.props.themeListViewStore.selectedIndex}
-                                backgroundColor={theme.primaryBackgroundColor}
-                                theme={this.props.theme}
-                                onItemClick={index => this._handleThemeChanged(index)}>
-                                {this.props.themeListViewStore.items.map(item => {
-                                    return (
-                                        <div
-                                            key={item.itemId}
-                                            style={{ width : 'calc(' + this.props.width + 'px - 1px - ' + this.props.masterWidth + 'px - ' + Config.paddingX2 + 'px)', paddingLeft : Config.paddingX1 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px', borderBottom : '1px solid ' + theme.borderColor }}>
-                                            <Text theme={this.props.theme}>{item.primaryText}</Text>
-                                        </div>
-                                    );
-                                })}
-                            </ListView>
-                        </div>
-                    </div>
+                    {renderListView(this.props.themeListViewStore, index => this._handleThemeChanged(index))}
+                    {/* Font */}
+                    {renderListView(this.props.fontListViewStore, index => this._handleFontChanged(index))}
                 </MasterDetailPane>
             </Dialog>
         );
@@ -373,13 +355,15 @@ SettingsDialog.propTypes = {
     currentSyntaxListViewStore : React.PropTypes.instanceOf(ListViewStore).isRequired,
     defaultSyntaxListViewStore : React.PropTypes.instanceOf(ListViewStore).isRequired,
     themeListViewStore         : React.PropTypes.instanceOf(ListViewStore).isRequired,
+    fontListViewStore          : React.PropTypes.instanceOf(ListViewStore).isRequired,
     width                      : React.PropTypes.number.isRequired,
     height                     : React.PropTypes.number.isRequired,
     masterWidth                : React.PropTypes.number.isRequired,
     theme                      : React.PropTypes.oneOf([ 'light', 'dark' ]),
     onCurrentSyntaxChanged     : React.PropTypes.func,
     onDefaultSyntaxChanged     : React.PropTypes.func,
-    onThemeChanged             : React.PropTypes.func
+    onThemeChanged             : React.PropTypes.func,
+    onFontChanged              : React.PropTypes.func
 };
 
 SettingsDialog.defaultProps = {
