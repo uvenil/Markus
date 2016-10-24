@@ -104,7 +104,7 @@ export default class App extends React.Component {
                         primary="second"
                         style={{ backgroundColor : theme.secondaryBackgroundColor }}>
                         {/* Filter list */}
-                        <div style={{ height : 'calc(100vh - ' + Config.bottomBarHeight + 'px)', display : 'flex', flexFlow : 'column' }}>
+                        <div style={{ height : 'calc(100vh - ' + Config.bottomBarHeight + 'px)', display : 'flex', flexFlow : 'column', overflow : 'auto' }}>
                             <FilterListView
                                 store={this.props.store.filtersStore}
                                 backgroundColor={theme.secondaryBackgroundColor}
