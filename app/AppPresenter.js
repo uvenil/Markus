@@ -31,6 +31,8 @@ if (is.dev()) PubSub.immediateExceptions = true;
 const { remote } = require('electron');
 const { dialog, Menu, MenuItem } = remote;
 
+const CLEAR_CACHE_INTERVAL = 5 * 60 * 1000;
+
 const EVENT_ERROR = 'Event.error';
 const DARK_THEMES = [ 'ambiance', 'chaos', 'clouds_midnight', 'cobalt', 'idle_fingers', 'iplastic', 'kr_theme', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monokai', 'pastel_on_dark', 'solarized_dark', 'terminal', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink' ];
 
@@ -129,6 +131,8 @@ export default class AppPresenter {
                 .then(() => this._initAutoSave())
                 .catch(error => console.error(error)))
             .catch(error => console.error(error));
+
+        AppPresenter._clearCache();
     }
 
     //region Event handlers
@@ -272,14 +276,14 @@ export default class AppPresenter {
                 const menu = new Menu();
 
                 menu.append(new MenuItem({
-                        label : 'Import notes…',
-                        click : () => {
-                            this._store.filtersStore.selectedIndex    = -1;
-                            this._store.categoriesStore.selectedIndex = index;
+                    label : 'Import notes…',
+                    click : () => {
+                        this._store.filtersStore.selectedIndex    = -1;
+                        this._store.categoriesStore.selectedIndex = index;
 
-                            this.handleImportNotes();
-                        }
-                    }));
+                        this.handleImportNotes();
+                    }
+                }));
 
                 if (count > 0) {
                     menu.append(new MenuItem({
@@ -526,8 +530,8 @@ export default class AppPresenter {
 
                     filenames.forEach(filename => {
                         fs.readFile(filename, {
-                            encoding: 'utf-8',
-                            flag    : 'r'
+                            encoding : 'utf-8',
+                            flag     : 'r'
                         }, (error, fullText) => {
                             if (error) {
                                 console.error(error);
@@ -558,18 +562,18 @@ export default class AppPresenter {
                 if (filename) {
                     fs.access(filename, fs.constants.F_OK, error => {
                         if (error) {
-                            this._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
+                            AppPresenter._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
                         } else {
                             dialog.showMessageBox(remote.getCurrentWindow(), {
-                                type     : 'question',
-                                title    : 'File already exists',
-                                message  : 'Are you sure you want to overwrite this file?',
-                                buttons  : ['Yes', 'No'],
-                                defaultId: 0,
-                                cancelId : 1
+                                type      : 'question',
+                                title     : 'File already exists',
+                                message   : 'Are you sure you want to overwrite this file?',
+                                buttons   : [ 'Yes', 'No' ],
+                                defaultId : 0,
+                                cancelId  : 1
                             }, response => {
                                 if (response === 0) {
-                                    this._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
+                                    AppPresenter._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
                                 }
                             });
                         }
@@ -621,7 +625,7 @@ export default class AppPresenter {
                             if (directory) {
                                 promise.then(docs => {
                                     docs.forEach(doc => {
-                                        this._exportNote(Path.join(directory[0], doc._id + '.txt'), doc.fullText);
+                                        AppPresenter._exportNote(Path.join(directory[0], doc._id + '.txt'), doc.fullText);
                                     });
                                 });
                             }
@@ -924,31 +928,38 @@ export default class AppPresenter {
                 this._settings.get('scrollPastEnd',       Config.defaultScrollPastEnd),
                 this._settings.get('notesSorting',        Config.defaultNotesSorting)
             ]).then(values => {
-                this._store.showFilterList  = values[0]  !== undefined ? values[0]  : Config.defaultShowFilterList;
-                this._store.showNoteList    = values[1]  !== undefined ? values[1]  : Config.defaultShowNoteList;
-                this._store.filterListWidth = values[2]  !== undefined ? values[2]  : Config.filterListWidth;
-                this._store.noteListWidth   = values[3]  !== undefined ? values[3]  : Config.noteListWidth;
-                this._store.notesSorting    = values[20] !== undefined ? values[20] : Config.defaultNotesSorting;
+                let i = 0;
 
-                this._notesPresenter.sorting = this._store.notesSorting;
-
-                this._store.defaultSyntaxListViewStore.selectedIndex = _.indexOf(SyntaxCodes.items, values[4] !== undefined ? values[4] : Config.defaultSyntax);
-                this._store.themeListViewStore.selectedIndex         = _.indexOf(ThemeCodes.items,  values[5] !== undefined ? values[5] : Config.defaultTheme);
+                this._store.showFilterList         = values[i] !== undefined ? values[i] : Config.defaultShowFilterList; i++;
+                this._store.showNoteList           = values[i] !== undefined ? values[i] : Config.defaultShowNoteList;   i++;
+                this._store.filterListWidth        = values[i] !== undefined ? values[i] : Config.filterListWidth;       i++;
+                this._store.noteListWidth          = values[i] !== undefined ? values[i] : Config.noteListWidth;         i++;
+                this._store.editorStore.syntax     = values[i] !== undefined ? values[i] : Config.defaultSyntax;         i++;
+                this._store.editorStore.theme      = values[i] !== undefined ? values[i] : Config.defaultTheme;          i++;
+                this._store.editorStore.fontFamily = values[i] !== undefined ? values[i] : undefined;                    i++;
+                this._store.editorStore.textSize   = values[i] !== undefined ? values[i] : undefined;                    i++;
 
                 const data = {};
 
-                data.highlightActiveLine = values[8]  !== undefined ? values[8]  : Config.defaultHighlightActiveLine;
-                data.tabSize             = values[9]  !== undefined ? values[9]  : Config.defaultTabSize;
-                data.useSoftTabs         = values[10] !== undefined ? values[10] : Config.defaultUseSoftTabs;
-                data.wordWrap            = values[11] !== undefined ? values[11] : Config.defaultWordWrap;
-                data.showLineNumebrs     = values[12] !== undefined ? values[12] : Config.defaultShowLineNumbers;
-                data.showPrintMargin     = values[13] !== undefined ? values[13] : Config.defaultShowPrintMargin;
-                data.printMarginColumn   = values[14] !== undefined ? values[14] : Config.defaultPrintMarginColumn;
-                data.showInvisibles      = values[15] !== undefined ? values[15] : Config.defaultShowInvisibles;
-                data.showFoldWidgets     = values[16] !== undefined ? values[16] : Config.defaultShowFoldWidgets;
-                data.showGutter          = values[17] !== undefined ? values[17] : Config.defaultShowGutter;
-                data.displayIndentGuides = values[18] !== undefined ? values[18] : Config.defaultDisplayIndentGuides;
-                data.scrollPastEnd       = values[19] !== undefined ? values[19] : Config.defaultScrollPastEnd;
+                data.highlightActiveLine = values[i] !== undefined ? values[i] : Config.defaultHighlightActiveLine; i++;
+                data.tabSize             = values[i] !== undefined ? values[i] : Config.defaultTabSize;             i++;
+                data.useSoftTabs         = values[i] !== undefined ? values[i] : Config.defaultUseSoftTabs;         i++;
+                data.wordWrap            = values[i] !== undefined ? values[i] : Config.defaultWordWrap;            i++;
+                data.showLineNumebrs     = values[i] !== undefined ? values[i] : Config.defaultShowLineNumbers;     i++;
+                data.showPrintMargin     = values[i] !== undefined ? values[i] : Config.defaultShowPrintMargin;     i++;
+                data.printMarginColumn   = values[i] !== undefined ? values[i] : Config.defaultPrintMarginColumn;   i++;
+                data.showInvisibles      = values[i] !== undefined ? values[i] : Config.defaultShowInvisibles;      i++;
+                data.showFoldWidgets     = values[i] !== undefined ? values[i] : Config.defaultShowFoldWidgets;     i++;
+                data.showGutter          = values[i] !== undefined ? values[i] : Config.defaultShowGutter;          i++;
+                data.displayIndentGuides = values[i] !== undefined ? values[i] : Config.defaultDisplayIndentGuides; i++;
+                data.scrollPastEnd       = values[i] !== undefined ? values[i] : Config.defaultScrollPastEnd;       i++;
+
+                this._store.notesSorting = values[i] !== undefined ? values[i] : Config.defaultNotesSorting;
+
+                this._notesPresenter.sorting = this._store.notesSorting;
+
+                this._store.defaultSyntaxListViewStore.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.editorStore.syntax);
+                this._store.themeListViewStore.selectedIndex         = _.indexOf(ThemeCodes.items,  this._store.editorStore.theme);
 
                 this._store.settingsStore.highlightCurrentLine.checked = data.highlightActiveLine;
                 this._store.settingsStore.tabSize2.checked             = data.tabSize === 2;
@@ -967,23 +978,18 @@ export default class AppPresenter {
                 this._store.settingsStore.showGutter.checked           = data.showGutter;
                 this._store.settingsStore.showIndentGuides.checked     = data.displayIndentGuides;
                 this._store.settingsStore.scrollPastLastLine.checked   = data.scrollPastEnd;
-
-                this._store.editorStore.syntax              = values[4] ? values[4] : Config.defaultSyntax;
-                this._store.editorStore.theme               = values[5] ? values[5] : Config.defaultTheme;
-                this._store.editorStore.fontFamily          = values[6] ? values[6] : undefined;
-                this._store.editorStore.textSize            = values[7] ? values[7] : undefined;
-                this._store.editorStore.highlightActiveLine = data.highlightActiveLine;
-                this._store.editorStore.tabSize             = data.tabSize;
-                this._store.editorStore.useSoftTabs         = data.useSoftTabs;
-                this._store.editorStore.wordWrap            = data.wordWrap;
-                this._store.editorStore.showLineNumbers     = data.showLineNumebrs;
-                this._store.editorStore.showPrintMargin     = data.showPrintMargin;
-                this._store.editorStore.printMarginColumn   = data.printMarginColumn;
-                this._store.editorStore.showInvisibles      = data.showInvisibles;
-                this._store.editorStore.showFoldWidgets     = data.showFoldWidgets;
-                this._store.editorStore.showGutter          = data.showGutter;
-                this._store.editorStore.displayIndentGuides = data.displayIndentGuides;
-                this._store.editorStore.scrollPastEnd       = data.scrollPastEnd;
+                this._store.editorStore.highlightActiveLine            = data.highlightActiveLine;
+                this._store.editorStore.tabSize                        = data.tabSize;
+                this._store.editorStore.useSoftTabs                    = data.useSoftTabs;
+                this._store.editorStore.wordWrap                       = data.wordWrap;
+                this._store.editorStore.showLineNumbers                = data.showLineNumebrs;
+                this._store.editorStore.showPrintMargin                = data.showPrintMargin;
+                this._store.editorStore.printMarginColumn              = data.printMarginColumn;
+                this._store.editorStore.showInvisibles                 = data.showInvisibles;
+                this._store.editorStore.showFoldWidgets                = data.showFoldWidgets;
+                this._store.editorStore.showGutter                     = data.showGutter;
+                this._store.editorStore.displayIndentGuides            = data.displayIndentGuides;
+                this._store.editorStore.scrollPastEnd                  = data.scrollPastEnd;
 
                 PubSub.publish('TextEditor.init', data);
 
@@ -1019,7 +1025,7 @@ export default class AppPresenter {
     }
 
     _updateMenu() {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             const viewMenu = Menu.getApplicationMenu().items[is.macOS() ? 3 : 2];
 
             viewMenu.submenu.items[0].checked = this._store.showFilterList;
@@ -1050,13 +1056,17 @@ export default class AppPresenter {
      * @param {String} fullText
      * @private
      */
-    _exportNote(filename, fullText) {
+    static _exportNote(filename, fullText) {
         fs.writeFile(filename, fullText, {
             encoding : 'utf-8',
             flag     : 'w'
         }, error => {
             if (error) dialog.showErrorBox('Error', error);
         });
+    }
+
+    static _clearCache() {
+        Rx.Observable.interval(CLEAR_CACHE_INTERVAL).subscribe(() => remote.getCurrentWindow().webContents.session.clearCache(() => console.trace('Cache cleared')));
     }
 
     //endregion
