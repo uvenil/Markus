@@ -36,6 +36,8 @@ const CLEAR_CACHE_INTERVAL = 5 * 60 * 1000;
 const EVENT_ERROR = 'Event.error';
 const DARK_THEMES = [ 'ambiance', 'chaos', 'clouds_midnight', 'cobalt', 'idle_fingers', 'iplastic', 'kr_theme', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monokai', 'pastel_on_dark', 'solarized_dark', 'terminal', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink' ];
 
+const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
+
 export default class AppPresenter {
     constructor() {
         this._store    = new AppStore();
@@ -52,6 +54,7 @@ export default class AppPresenter {
         this._store.currentSyntaxListViewStore = new ListViewStore();
         this._store.defaultSyntaxListViewStore = new ListViewStore();
         this._store.themeListViewStore         = new ListViewStore();
+        this._store.fontListViewStore          = new ListViewStore();
         this._store.settingsStore              = new SettingsStore();
         this._store.filtersStore               = this._filtersPresenter.store;
         this._store.categoriesStore            = this._categoriesPresenter.store;
@@ -96,6 +99,11 @@ export default class AppPresenter {
         themeSetting.primaryText = 'Theme';
         this._store.settingsPaneStore.items.push(themeSetting);
 
+        const fontSetting = new ListItemStore();
+        fontSetting.itemId      = 'setting-font';
+        fontSetting.primaryText = 'Font';
+        this._store.settingsPaneStore.items.push(fontSetting);
+
         SyntaxNames.items.forEach((syntaxName, i) => {
             const currentItem = new ListItemStore();
             const defaultItem = new ListItemStore();
@@ -116,6 +124,15 @@ export default class AppPresenter {
             item.primaryText = themeName;
 
             this._store.themeListViewStore.items.push(item);
+        });
+
+        FONTS.items.forEach((font, i) => {
+            const item = new ListItemStore();
+
+            item.itemId      = 'setting-font-' + i;
+            item.primaryText = font;
+
+            this._store.fontListViewStore.items.push(item);
         });
 
         //endregion
@@ -854,6 +871,16 @@ export default class AppPresenter {
             .catch(error => console.error(error));
     }
 
+    /**
+     * @param {String} font
+     */
+    changeFont(font) {
+        AppPresenter._updateFont(font);
+
+        this._settings.set('font', font)
+            .catch(error => console.error(error));
+    }
+
     changeSettings(data) {
         if (data.name === 'highlightActiveLine') {
             this._store.editorStore.highlightActiveLine = data.value;
@@ -912,6 +939,7 @@ export default class AppPresenter {
                 this._settings.get('noteListWidth',       Config.noteListWidth),
                 this._settings.get('defaultSyntax',       Config.defaultSyntax),
                 this._settings.get('theme',               Config.defaultTheme),
+                this._settings.get('font',                undefined),
                 this._settings.get('fontFamily',          undefined),
                 this._settings.get('textSize',            undefined),
                 this._settings.get('highlightActiveLine', Config.defaultHighlightActiveLine),
@@ -936,8 +964,15 @@ export default class AppPresenter {
                 this._store.noteListWidth          = values[i] !== undefined ? values[i] : Config.noteListWidth;         i++;
                 this._store.editorStore.syntax     = values[i] !== undefined ? values[i] : Config.defaultSyntax;         i++;
                 this._store.editorStore.theme      = values[i] !== undefined ? values[i] : Config.defaultTheme;          i++;
-                this._store.editorStore.fontFamily = values[i] !== undefined ? values[i] : undefined;                    i++;
-                this._store.editorStore.textSize   = values[i] !== undefined ? values[i] : undefined;                    i++;
+
+                if (values[i] !== undefined) {
+                    AppPresenter._updateFont(values[i]);
+                }
+
+                i++;
+
+                this._store.editorStore.fontFamily = values[i] !== undefined ? values[i] : undefined; i++;
+                this._store.editorStore.textSize   = values[i] !== undefined ? values[i] : undefined; i++;
 
                 const data = {};
 
@@ -1037,6 +1072,10 @@ export default class AppPresenter {
 
     _updateTheme() {
         this._store.theme = _.indexOf(DARK_THEMES, this._store.editorStore.theme) > -1 ? 'dark' : 'light';
+    }
+
+    static _updateFont(font) {
+        PubSub.publish('TextEditor.changeFont', font);
     }
 
     /**

@@ -13,6 +13,7 @@ export default class AppStore {
             currentSyntaxListViewStore : undefined,
             defaultSyntaxListViewStore : undefined,
             themeListViewStore         : undefined,
+            fontListViewStore          : undefined,
             settingsStore              : undefined,
             showFilterList             : Config.defaultShowFilterList,
             showNoteList               : Config.defaultShowNoteList,
@@ -26,7 +27,7 @@ export default class AppStore {
             addCategoryDialogStore     : undefined,
             updateCategoryDialogStore  : undefined,
             selectCategoryDialogStore  : undefined,
-            notesSorting               : 2
+            notesSorting               : 3
         });
     }
 }

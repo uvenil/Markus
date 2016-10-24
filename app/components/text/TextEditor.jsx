@@ -103,11 +103,16 @@ export default class TextEditor extends React.Component {
                 console.warn('Unrecognized setting ' + data.name + ' = ' + data.value);
             }
         };
+
+        this._changeFont = font => {
+            this.refs.editor.editor.setOptions({ fontFamily : font });
+        };
     }
 
     componentDidMount() {
         this._subscriptions.push(PubSub.subscribe('TextEditor.init', (eventName, data) => this._init(data)));
         this._subscriptions.push(PubSub.subscribe('TextEditor.settings', (eventName, data) => this._changeSettings(data)));
+        this._subscriptions.push(PubSub.subscribe('TextEditor.changeFont', (eventName, font) => this._changeFont(font)));
     }
 
     componentWillUnmount() {

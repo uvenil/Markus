@@ -30,6 +30,8 @@ if (is.dev()) PubSub.immediateExceptions = true;
 
 const { dialog } = require('electron').remote;
 
+const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
+
 @observer
 export default class App extends React.Component {
     constructor(props) {
@@ -282,6 +284,7 @@ export default class App extends React.Component {
                     currentSyntaxListViewStore={this.props.store.currentSyntaxListViewStore}
                     defaultSyntaxListViewStore={this.props.store.defaultSyntaxListViewStore}
                     themeListViewStore={this.props.store.themeListViewStore}
+                    fontListViewStore={this.props.store.fontListViewStore}
                     width={480}
                     height={360}
                     masterWidth={120}
@@ -292,7 +295,8 @@ export default class App extends React.Component {
                         }
                     }}
                     onDefaultSyntaxChanged={index => this.props.presenter.changeDefaultSyntax(SyntaxCodes.items[index])}
-                    onThemeChanged={index => this.props.presenter.changeTheme(ThemeCodes.items[index])} />
+                    onThemeChanged={index => this.props.presenter.changeTheme(ThemeCodes.items[index])}
+                    onFontChanged={index => this.props.presenter.changeFont(FONTS.items[index])} />
                 {/* Rename category dialog */}
                 <PromptDialog
                     store={this.props.store.updateCategoryDialogStore}
