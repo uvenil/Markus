@@ -29,9 +29,9 @@
     ],
     "main"            : "index.js",
     "scripts"         : {
-        "start" : "electron .",
-        "test"  : "jest",
-        "lint"  : "eslint app"
+        "start"   : "electron .",
+        "lint"    : "eslint app",
+        "package" : "electron-packager . Artisan --platform=win32 --arch=x64 --icon=./app/images/artisan.ico --ignore=.idea --ignore=.gitignore --ignore=yarn.lock --ignore=.DS_Store"
     },
     "devDependencies" : {
         "babel-eslint"        : "^7.0.0",
@@ -50,7 +50,7 @@
         "lodash"                                   : "^4.16.4",
         "mobx"                                     : "^2.6.0",
         "mobx-react"                               : "^3.5.8",
-        "moment"                                   : "^2.15.1",
+        "moment"                                   : "^2.15.2",
         "nedb"                                     : "^1.8.0",
         "pubsub-js"                                : "^1.5.4",
         "randomstring"                             : "^1.1.5",
