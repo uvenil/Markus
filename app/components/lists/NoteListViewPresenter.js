@@ -117,7 +117,7 @@ export default class NoteListViewPresenter {
         } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_ARCHIVED_ID) {
             promise = this._database.findByArchived(this._sorting, this._keyword);
         } else if (selectedCategoryItemId) {
-            promise = this._database.findByCategory(selectedCategoryItemId, this._sorting, this._keyword);
+            promise = this._database.findByCategory(this._categoriesPresenter.store.selectedItem.primaryText, this._sorting, this._keyword);
         }
 
         this._store.items = [];
