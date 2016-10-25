@@ -3,50 +3,40 @@
 import React from 'react';
 import Config from '../../../config.json';
 
-export default class Button extends React.Component {
-    constructor(props) {
-        super(props);
+const Button = props => {
+    const theme = props.theme === 'dark' ? require('../../theme.dark.json') : require('../../theme.light.json');
 
-        this._handleClick = () => {
-            if (this.props.onClick) {
-                this.props.onClick();
-            }
-        };
+    let textColor       = props.textColor ? props.textColor : theme.primaryTextColor;
+    let backgroundColor = theme.buttonDefaultColor;
+
+    if (props.backgroundColor === 'primary') {
+        textColor       = theme.primaryTextColorInverted;
+        backgroundColor = theme.buttonPrimaryColor;
+    } else if (props.backgroundColor === 'success') {
+        textColor       = theme.primaryTextColorInverted;
+        backgroundColor = theme.buttonSuccessColor;
+    } else if (props.backgroundColor === 'error') {
+        textColor       = theme.primaryTextColorInverted;
+        backgroundColor = theme.buttonErrorColor;
+    } else if (props.backgroundColor === 'warning') {
+        textColor       = theme.primaryTextColorInverted;
+        backgroundColor = theme.buttonWarningColor;
+    } else if (props.backgroundColor === 'none') {
+        backgroundColor = 'transparent';
     }
 
-    render() {
-        const theme = this.props.theme === 'dark' ? require('../../theme.dark.json') : require('../../theme.light.json');
-
-        let textColor       = this.props.textColor ? this.props.textColor : theme.primaryTextColor;
-        let backgroundColor = theme.buttonDefaultColor;
-
-        if (this.props.backgroundColor === 'primary') {
-            textColor       = theme.primaryTextColorInverted;
-            backgroundColor = theme.buttonPrimaryColor;
-        } else if (this.props.backgroundColor === 'success') {
-            textColor       = theme.primaryTextColorInverted;
-            backgroundColor = theme.buttonSuccessColor;
-        } else if (this.props.backgroundColor === 'error') {
-            textColor       = theme.primaryTextColorInverted;
-            backgroundColor = theme.buttonErrorColor;
-        } else if (this.props.backgroundColor === 'warning') {
-            textColor       = theme.primaryTextColorInverted;
-            backgroundColor = theme.buttonWarningColor;
-        } else if (this.props.backgroundColor === 'none') {
-            backgroundColor = 'transparent';
-        }
-
-        return (
-            <button
-                type="button"
-                className={this.props.className}
-                style={{ WebkitUserSelect : 'none', cursor : 'default', width : this.props.width, fontFamily : this.props.fontFamily, fontSize : this.props.textSize, color : textColor, backgroundColor : backgroundColor, outline : 'none', borderWidth : '1px', borderStyle : 'solid', borderRadius : Config.paddingX0 + 'px', borderColor : backgroundColor, padding : Config.paddingX0 + 'px ' + Config.paddingX0 + 'px', pointerEvents : this.props.disabled ? 'none' : 'auto' }}
-                onClick={() => this._handleClick()}>
-                {this.props.children}
-            </button>
-        );
-    }
-}
+    return (
+        <button
+            type="button"
+            className={props.className}
+            style={{ WebkitUserSelect : 'none', cursor : 'default', width : props.width, fontFamily : props.fontFamily, fontSize : props.textSize, color : textColor, backgroundColor : backgroundColor, outline : 'none', borderWidth : '1px', borderStyle : 'solid', borderRadius : Config.paddingX0 + 'px', borderColor : backgroundColor, padding : Config.paddingX0 + 'px ' + Config.paddingX0 + 'px', pointerEvents : props.disabled ? 'none' : 'auto' }}
+            onClick={() => {
+                if (props.onClick) props.onClick();
+            }}>
+            {props.children}
+        </button>
+    );
+};
 
 Button.propTypes = {
     className       : React.PropTypes.string,
@@ -67,4 +57,4 @@ Button.defaultProps = {
     disabled        : false
 };
 
-module.exports = Button;
+module.exports = { Button };

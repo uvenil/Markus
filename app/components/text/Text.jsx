@@ -2,24 +2,18 @@
 
 import React from 'react';
 
-export default class Text extends React.Component {
-    constructor(props) {
-        super(props);
-    }
+const Text = props => {
+    const theme     = props.theme === 'dark' ? require('../../theme.dark.json') : require('../../theme.light.json');
+    const textColor = props.textColor ? props.textColor : theme.primaryTextColor;
 
-    render() {
-        const theme     = this.props.theme === 'dark' ? require('../../theme.dark.json') : require('../../theme.light.json');
-        const textColor = this.props.textColor ? this.props.textColor : theme.primaryTextColor;
-
-        return (
-            <span
-                className={this.props.className}
-                style={{ display : 'block', WebkitUserSelect : 'none', cursor : 'default', fontFamily : this.props.fontFamily, fontWeight : this.props.fontWeight, fontSize : this.props.textSize, color : textColor, pointerEvents : this.props.disabled ? 'none' : 'auto' }}>
-                {this.props.children}
+    return (
+        <span
+            className={props.className}
+            style={{ display : 'block', WebkitUserSelect : 'none', cursor : 'default', fontFamily : props.fontFamily, fontWeight : props.fontWeight, fontSize : props.textSize, color : textColor, pointerEvents : props.disabled ? 'none' : 'auto' }}>
+                {props.children}
             </span>
-        );
-    }
-}
+    );
+};
 
 Text.propTypes = {
     className  : React.PropTypes.string,
@@ -37,4 +31,4 @@ Text.defaultProps = {
     disabled  : false
 };
 
-module.exports = Text;
+module.exports = { Text };

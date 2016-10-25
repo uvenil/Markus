@@ -1,9 +1,9 @@
 'use strict';
 
 import React from 'react';
-import ListView from './ListView.jsx';
+import { ListView } from './ListView.jsx';
 import ListViewStore from './ListViewStore';
-import Text from '../text/Text.jsx';
+import { Text } from '../text/Text.jsx';
 import { observer } from 'mobx-react';
 import Unique from '../../utils/Unique';
 import Config from '../../../config.json';

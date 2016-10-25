@@ -3,9 +3,9 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import SplitPane from 'react-split-pane';
-import Text from '../text/Text.jsx';
-import Button from '../buttons/Button.jsx';
-import ListView from '../lists/ListView.jsx';
+import { Button } from '../buttons/Button.jsx';
+import { Text } from '../text/Text.jsx';
+import { ListView } from '../lists/ListView.jsx';
 import ListViewStore from '../lists/ListViewStore';
 import Unique from '../../utils/Unique';
 import Config from '../../../config.json';
