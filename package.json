@@ -29,9 +29,8 @@
     ],
     "main"            : "index.js",
     "scripts"         : {
-        "start"   : "electron .",
-        "lint"    : "eslint app",
-        "package" : "electron-packager . Artisan --platform=win32 --arch=x64 --icon=./app/images/artisan.ico --ignore=.idea --ignore=.gitignore --ignore=yarn.lock --ignore=.DS_Store"
+        "start" : "electron .",
+        "lint"  : "eslint app"
     },
     "devDependencies" : {
         "babel-eslint"        : "^7.0.0",
