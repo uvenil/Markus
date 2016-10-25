@@ -10,8 +10,8 @@ const Text = props => {
         <span
             className={props.className}
             style={{ display : 'block', WebkitUserSelect : 'none', cursor : 'default', fontFamily : props.fontFamily, fontWeight : props.fontWeight, fontSize : props.textSize, color : textColor, pointerEvents : props.disabled ? 'none' : 'auto' }}>
-                {props.children}
-            </span>
+            {props.children}
+        </span>
     );
 };
 
