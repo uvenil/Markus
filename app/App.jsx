@@ -2,12 +2,12 @@
 
 import React from 'react';
 import SplitPane from 'react-split-pane';
-import Button from './components/buttons/Button.jsx';
-import Label from './components/text/Label.jsx';
-import Text from './components/text/Text.jsx';
-import SearchBox from './components/text/SearchBox.jsx';
+import { Button } from './components/buttons/Button.jsx';
+import { Label } from './components/text/Label.jsx';
+import { Text } from './components/text/Text.jsx';
+import { SearchBox } from './components/text/SearchBox.jsx';
 import TextEditor from './components/text/TextEditor.jsx';
-import ListView from './components/lists/ListView.jsx';
+import { ListView } from './components/lists/ListView.jsx';
 import FilterListView from './components/lists/FilterListView.jsx';
 import NoteListView from './components/lists/NoteListView.jsx';
 import Dialog from './components/dialogs/Dialog.jsx';

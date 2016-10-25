@@ -1,13 +1,15 @@
 'use strict';
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import Dialog from './Dialog.jsx';
 import DialogStore from './DialogStore';
-import Button from '../buttons/Button.jsx';
-import Text from '../text/Text.jsx';
+import { Button } from '../buttons/Button.jsx';
+import { Text } from '../text/Text.jsx';
 import TextBox from '../text/TextBox.jsx';
 import Config from '../../../config.json';
 
+@observer
 export default class PromptDialog extends React.Component {
     constructor(props) {
         super(props);

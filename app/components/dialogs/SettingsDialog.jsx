@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import Label from '../text/Label.jsx';
-import Text from '../text/Text.jsx';
+import { Label } from '../text/Label.jsx';
+import { Text } from '../text/Text.jsx';
 import CheckBox from '../toggles/CheckBox.jsx';
 import Dialog from '../dialogs/Dialog.jsx';
 import MasterDetailPane from '../panes/MasterDetailPane.jsx';
-import ListView from '../lists/ListView.jsx';
+import { ListView } from '../lists/ListView.jsx';
 import DialogStore from './DialogStore';
 import ListViewStore from '../lists/ListViewStore';
 import SettingsStore from '../../SettingsStore';
