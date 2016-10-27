@@ -249,7 +249,8 @@ export default class AppPresenter {
 
                                 if (updatePromise) {
                                     updatePromise.then(() => {
-                                        this._categoriesPresenter.notifyDataSetChanged();
+                                        this._filtersPresenter.refresh();
+                                        this._categoriesPresenter.refresh();
 
                                         this._notesPresenter.refresh();
                                     }).catch(error => console.error(error));
@@ -365,6 +366,7 @@ export default class AppPresenter {
                             if (response === 0) {
                                 this._database.removeCategory(category, true)
                                     .then(() => {
+                                        this._filtersPresenter.refresh();
                                         this._categoriesPresenter.notifyDataSetChanged();
 
                                         if (this._store.categoriesStore.selectedIndex < 0) {
@@ -390,7 +392,8 @@ export default class AppPresenter {
                             if (response === 0) {
                                 this._database.archiveByCategory(category)
                                     .then(() => {
-                                        this._categoriesPresenter.notifyDataSetChanged();
+                                        this._filtersPresenter.refresh();
+                                        this._categoriesPresenter.refresh();
 
                                         this._notesPresenter.refresh();
                                     }).catch(error => console.error(error));
