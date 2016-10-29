@@ -80,7 +80,7 @@ export default class Database {
     /**
      * Returns the record specified by an unique ID in the database.
      * @param {String} id An unique ID of the record to find.
-     * @returns {Promise}
+     * @return {Promise}
      */
     findById(id) {
         return new Promise((resolve, reject) => {
@@ -98,7 +98,7 @@ export default class Database {
      * Returns all records in the order specified by the give sorting.
      * @param {number} sorting One of the pre-defined sorting.
      * @param {String} [keyword] Filter the results by the matching keyword.
-     * @returns {Promise}
+     * @return {Promise}
      */
     findAll(sorting, keyword) {
         return new Promise((resolve, reject) => {

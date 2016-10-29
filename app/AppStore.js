@@ -7,8 +7,14 @@ export default class AppStore {
     constructor() {
         extendObservable(this, {
             theme                      : 'light',
+            drawerOpened               : false,
             aboutDialogStore           : undefined,
+            editorSettingsDialogStore  : undefined,
             settingsDialogStore        : undefined,
+            currentSyntaxDialogStore   : undefined,
+            defaultSyntaxDialogStore   : undefined,
+            themeDialogStore           : undefined,
+            fontDialogStore            : undefined,
             settingsPaneStore          : undefined,
             currentSyntaxListViewStore : undefined,
             defaultSyntaxListViewStore : undefined,

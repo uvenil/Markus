@@ -50,7 +50,12 @@ export default class AppPresenter {
         this._editorPresenter     = new TextEditorPresenter(this._database);
 
         this._store.aboutDialogStore           = new DialogStore();
+        this._store.editorSettingsDialogStore  = new DialogStore();
         this._store.settingsDialogStore        = new DialogStore();
+        this._store.currentSyntaxDialogStore   = new DialogStore();
+        this._store.defaultSyntaxDialogStore   = new DialogStore();
+        this._store.themeDialogStore           = new DialogStore();
+        this._store.fontDialogStore            = new DialogStore();
         this._store.currentSyntaxListViewStore = new ListViewStore();
         this._store.defaultSyntaxListViewStore = new ListViewStore();
         this._store.themeListViewStore         = new ListViewStore();
