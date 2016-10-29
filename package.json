@@ -57,7 +57,7 @@
         "pubsub-js"                                      : "^1.5.4",
         "randomstring"                                   : "^1.1.5",
         "react"                                          : "^15.3.2",
-        "react-ace"                                      : "^3.6.1",
+        "react-ace"                                      : "^3.7.0",
         "react-dom"                                      : "^15.3.2",
         "react-modal"                                    : "^1.5.2",
         "react-split-pane"                               : "^0.1.51",

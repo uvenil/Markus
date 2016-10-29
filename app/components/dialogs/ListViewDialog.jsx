@@ -3,7 +3,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
+import { Button } from '../buttons/Button.jsx';
 import { Text } from '../text/Text.jsx';
 import { ListView } from '../lists/ListView.jsx';
 import DialogStore from './DialogStore';
@@ -27,7 +27,7 @@ export default class ListViewDialog extends React.Component {
             return (
                 <div
                     key={item.itemId}
-                    style={{ width : '100%', paddingLeft : Constants.PADDING_X1 + 'px', paddingRight : Constants.PADDING_X1 + 'px', paddingTop : Constants.PADDING_X0 + 'px', paddingBottom : Constants.PADDING_X0 + 'px', borderBottom : '1px solid ' + theme.borderColor }}>
+                    style={{ width : '100%', padding : Constants.PADDING_X1, borderBottom : '1px solid ' + theme.borderColor }}>
                     <Text theme={this.props.theme}>{item.primaryText}</Text>
                 </div>
             );
@@ -40,9 +40,9 @@ export default class ListViewDialog extends React.Component {
                 open={this.props.store.visible}
                 bodyStyle={{ padding : 0, overflowX : 'hidden' }}
                 actions={[
-                    <FlatButton
+                    <Button
                         label="Close"
-                        primary={true}
+                        color="primary"
                         onTouchTap={() => this.props.store.visible = false} />
                 ]}
                 onRequestClose={() => this.props.store.visible = false}>

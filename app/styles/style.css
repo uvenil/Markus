@@ -38,15 +38,6 @@ body {
     font-size   : 15px;
 }
 
-.Button {
-    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
-    font-size   : 13px;
-}
-
-.Button:active {
-    filter : brightness(90%);
-}
-
 .CheckBox {
     font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
     font-size   : 13px;

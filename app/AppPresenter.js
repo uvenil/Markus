@@ -712,12 +712,14 @@ export default class AppPresenter {
     }
 
     handleSelectCategoryOkClick() {
-        this._store.editorStore.record.category = this._store.selectCategoryDialogStore.list.selectedItem.primaryText;
-        this._store.editorStore.changes.onNext(this._store.editorStore.record);
+        if (this._store.selectCategoryDialogStore.list.selectedIndex > -1) {
+            this._store.editorStore.record.category = this._store.selectCategoryDialogStore.list.selectedItem.primaryText;
+            this._store.editorStore.changes.onNext(this._store.editorStore.record);
 
-        this._categoriesPresenter.notifyDataSetChanged();
+            this._categoriesPresenter.notifyDataSetChanged();
 
-        this._store.selectCategoryDialogStore.visible = false;
+            this._store.selectCategoryDialogStore.visible = false;
+        }
     }
 
     handleSelectCategoryNoneClick() {

@@ -2,11 +2,11 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';;
 import Checkbox from 'material-ui/Checkbox';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import { Label } from '../text/Label.jsx';
+import { Button } from '../buttons/Button.jsx';
 import DialogStore from './DialogStore';
 import SettingsStore from '../../SettingsStore';
 import Constants from '../../utils/Constants';
@@ -29,9 +29,9 @@ export default class EditorSettingsDialog extends React.Component {
                 open={this.props.store.visible}
                 bodyStyle={{ padding : Constants.PADDING_X2 }}
                 actions={[
-                    <FlatButton
+                    <Button
                         label="Close"
-                        primary={true}
+                        color="primary"
                         onTouchTap={() => this.props.store.visible = false} />
                 ]}
                 onRequestClose={() => this.props.store.visible = false}>

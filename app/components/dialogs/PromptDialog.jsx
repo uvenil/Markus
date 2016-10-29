@@ -3,8 +3,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
+import { Button } from '../buttons/Button.jsx';
 import DialogStore from './DialogStore';
 
 @observer
@@ -25,12 +25,12 @@ export default class PromptDialog extends React.Component {
                 title={this.props.title}
                 open={this.props.store.visible}
                 actions={[
-                    <FlatButton
+                    <Button
                         label="Cancel"
                         onTouchTap={() => this.props.store.visible = false} />,
-                    <FlatButton
+                    <Button
                         label="OK"
-                        primary={true}
+                        color="primary"
                         onTouchTap={() => this._handleEnter(this.props.store.value)} />
                 ]}
                 onRequestClose={() => this.props.store.visible = false}>
