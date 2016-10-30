@@ -112,3 +112,5 @@ export default class Record {
         this.lastUpdatedAt = Date.now();
     }
 }
+
+module.exports = Record;

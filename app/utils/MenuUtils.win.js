@@ -1,6 +1,6 @@
 'use strict';
 
-import { createPreferencesMenu, createEditMenu, createViewMenu, createDeveloperMenu } from './MenuUtils.common';
+import { createEditMenu, createViewMenu, createDeveloperMenu } from './MenuUtils.common';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
