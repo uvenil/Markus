@@ -1,6 +1,9 @@
 # Artisan
 A note-taking app for programmers, hand crafted with ♥
 
+<img src="https://github.com/ayltai/artisan/blob/master/screenshots/screenshot_light.png?raw=true" width="824" height="581" />
+<img src="https://github.com/ayltai/artisan/blob/master/screenshots/screenshot_dark.png?raw=true" width="824" height="581" />
+
 ## Features
 
 ### ♥ Code Editing
@@ -48,7 +51,7 @@ npm start
 Run this command from the app project directory:
 ```
 npm install -g electron-packager
-electron-packager . Artisan --platform=darwin --arch=x64 --icon=./app/images/artisan.icns --ignore=.idea --ignore=.gitignore --ignore=yarn.lock --ignore=.DS_Store
+electron-packager . Artisan --platform=darwin --arch=x64 --icon=./app/images/artisan.icns --ignore=screenshots --ignore=.idea --ignore=.gitignore --ignore=yarn.lock --ignore=.DS_Store
 ```
 `Artisan-darwin-x64/Artisan.app` will be generated. Double-click to run it.
 
@@ -57,6 +60,6 @@ Run this command from the app project directory:
 
 ```
 npm install -g electron-packager
-electron-packager . Artisan --platform=win32 --arch=x64 --icon=./app/images/artisan.ico --ignore=.idea --ignore=.gitignore --ignore=yarn.lock --ignore=.DS_Store
+electron-packager . Artisan --platform=win32 --arch=x64 --icon=./app/images/artisan.ico --ignore=screenshots --ignore=.idea --ignore=.gitignore --ignore=yarn.lock --ignore=.DS_Store
 ```
 `Artisan-win32-x64` folder will be generated. Double-click `Artisan-win32-x64\Artisan.exe` to start the app.
