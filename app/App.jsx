@@ -8,6 +8,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
 import Drawer from 'material-ui/Drawer';
+import Snackbar from 'material-ui/Snackbar';
 import FontIcon from 'material-ui/FontIcon';
 import { List, ListItem } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
@@ -19,24 +20,24 @@ import TextEditor from './components/text/TextEditor.jsx';
 import ListView from './components/lists/ListView.jsx';
 import FilterListView from './components/lists/FilterListView.jsx';
 import NoteListView from './components/lists/NoteListView.jsx';
+import BooleanDialog from './components/dialogs/BooleanDialog.jsx';
 import PromptDialog from './components/dialogs/PromptDialog.jsx';
 import EditorSettingsDialog from './components/dialogs/EditorSettingsDialog.jsx';
 import ListViewDialog from './components/dialogs/ListViewDialog.jsx';
 import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
 import Settings from './utils/Settings';
-import Path from 'path';
-import PubSub from 'pubsub-js';
 import SyntaxCodes from './definitions/syntax-codes.json';
 import ThemeCodes from './definitions/theme-codes.json';
-import Package from '../package.json';
 import Constants from './utils/Constants';
+import Path from 'path';
+import PubSub from 'pubsub-js';
 import is from 'electron-is';
 import _ from 'lodash';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
-const { app, dialog } = require('electron').remote;
+const { app } = require('electron').remote;
 
 const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
 
@@ -84,7 +85,8 @@ export default class App extends React.Component {
         this._settings      = new Settings();
 
         this._handleError = message => {
-            dialog.showErrorBox('Error', message);
+            this.props.store.snackbarMessage = message;
+            this.props.store.snackbarOpened  = true;
         };
 
         this._handleFilterListWidthChange = size => {
@@ -152,6 +154,13 @@ export default class App extends React.Component {
         return (
             <MuiThemeProvider muiTheme={muiTheme}>
                 <div style={{ backgroundColor : muiTheme.palette.canvasColor }}>
+                    {/* Error or information message */}
+                    <Snackbar
+                        open={this.props.store.snackbarOpened}
+                        message={this.props.store.snackbarMessage}
+                        autoHideDuration={Constants.SNACKBAR_DURATION}
+                        onRequestClose={() => this.props.store.snackbarOpened = false} />
+                    <BooleanDialog store={this.props.store.booleanDialogStore} />
                     {/* Drawer */}
                     <Drawer
                         docked={false}
@@ -324,7 +333,7 @@ export default class App extends React.Component {
                                 textSize="large">
                                 {app.getName()}
                             </Text>
-                            <Text>{'Version ' + Package.version}</Text>
+                            <Text>{'Version ' + app.getVersion()}</Text>
                             <Text
                                 fontWeight={300}
                                 textSize="small">

@@ -2,7 +2,7 @@
     "name"            : "artisan",
     "productName"     : "Artisan",
     "version"         : "0.1.0",
-    "description"     : "A note taking app for programmers, handcrafted with ❤",
+    "description"     : "A note taking app for programmers, hand crafted with ❤",
     "author"          : "Alan Tai",
     "license"         : "Apache-2.0",
     "homepage"        : "https://github.com/ayltai/artisan",

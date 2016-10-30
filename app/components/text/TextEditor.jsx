@@ -105,8 +105,10 @@ class TextEditor extends React.Component {
             }
         };
 
-        this._changeFont = font => {
-            this.refs.editor.editor.setOptions({ fontFamily : font });
+        this._changeFont = font => this.refs.editor.editor.setOptions({ fontFamily : font });
+
+        this._handleRefresh = () => {
+            this.refs.editor.editor.resize();
         };
     }
 
@@ -114,6 +116,7 @@ class TextEditor extends React.Component {
         this._subscriptions.push(PubSub.subscribe('TextEditor.init', (eventName, data) => this._init(data)));
         this._subscriptions.push(PubSub.subscribe('TextEditor.settings', (eventName, data) => this._changeSettings(data)));
         this._subscriptions.push(PubSub.subscribe('TextEditor.changeFont', (eventName, font) => this._changeFont(font)));
+        this._subscriptions.push(PubSub.subscribe('TextEditor.refresh', () => this._handleRefresh()));
     }
 
     componentWillUnmount() {

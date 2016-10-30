@@ -17,6 +17,8 @@ const TEXT_FONT_SIZE        = '13px';
 const HEADING_FONT_SIZE     = '16px';
 const SUB_HEADING_FONT_SIZE = '14px';
 
+const SNACKBAR_DURATION = 4000;
+
 module.exports = {
     FILTER_LIST_MIN_WIDTH,
     NOTE_LIST_MIN_WIDTH,
@@ -32,5 +34,6 @@ module.exports = {
     ICON_FONT_SIZE,
     TEXT_FONT_SIZE,
     HEADING_FONT_SIZE,
-    SUB_HEADING_FONT_SIZE
+    SUB_HEADING_FONT_SIZE,
+    SNACKBAR_DURATION
 };
