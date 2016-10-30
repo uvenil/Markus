@@ -1,6 +1,7 @@
 'use strict';
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import SplitPane from 'react-split-pane';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -10,12 +11,12 @@ import Drawer from 'material-ui/Drawer';
 import FontIcon from 'material-ui/FontIcon';
 import { List, ListItem } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
-import { Button } from './components/buttons/Button.jsx';
-import { Label } from './components/text/Label.jsx';
-import { Text } from './components/text/Text.jsx';
-import { SearchBox } from './components/text/SearchBox.jsx';
+import Button from './components/buttons/Button.jsx';
+import Label from './components/text/Label.jsx';
+import Text from './components/text/Text.jsx';
+import SearchBox from './components/text/SearchBox.jsx';
 import TextEditor from './components/text/TextEditor.jsx';
-import { ListView } from './components/lists/ListView.jsx';
+import ListView from './components/lists/ListView.jsx';
 import FilterListView from './components/lists/FilterListView.jsx';
 import NoteListView from './components/lists/NoteListView.jsx';
 import PromptDialog from './components/dialogs/PromptDialog.jsx';
@@ -23,30 +24,55 @@ import EditorSettingsDialog from './components/dialogs/EditorSettingsDialog.jsx'
 import ListViewDialog from './components/dialogs/ListViewDialog.jsx';
 import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
-import { observer } from 'mobx-react';
 import Settings from './utils/Settings';
 import Path from 'path';
 import PubSub from 'pubsub-js';
 import SyntaxCodes from './definitions/syntax-codes.json';
 import ThemeCodes from './definitions/theme-codes.json';
 import Package from '../package.json';
-import Config from '../config.json';
 import Constants from './utils/Constants';
 import is from 'electron-is';
 import _ from 'lodash';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
-const { dialog } = require('electron').remote;
+const { app, dialog } = require('electron').remote;
 
 const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
 
-const LIGHT_MUI_THEME = getMuiTheme({
-    palette : {}
+const LIGHT_THEME = require('./theme.light.json');
+const DARK_THEME  = require('./theme.dark.json');
+
+const MUI_LIGHT_THEME = getMuiTheme({
+    palette : {
+        primary1Color      : LIGHT_THEME.primaryColor,
+        primary2Color      : LIGHT_THEME.secondaryBackgroundColor,
+        primary3Color      : LIGHT_THEME.disabledBackgroundColor,
+        accent1Color       : LIGHT_THEME.accentColor,
+        accent2Color       : LIGHT_THEME.selectedBackgroundColor,
+        textColor          : LIGHT_THEME.primaryTextColor,
+        secondaryTextColor : LIGHT_THEME.secondaryTextColor,
+        alternateTextColor : LIGHT_THEME.invertedTextColor,
+        canvasColor        : LIGHT_THEME.primaryBackgroundColor,
+        borderColor        : LIGHT_THEME.borderColor,
+        disabledColor      : LIGHT_THEME.disabledTextColor
+    }
 });
 
-const DARK_MUI_THEME = getMuiTheme({
-    palette : {}
+const MUI_DARK_THEME = getMuiTheme({
+    palette : {
+        primary1Color      : DARK_THEME.primaryColor,
+        primary2Color      : DARK_THEME.secondaryBackgroundColor,
+        primary3Color      : DARK_THEME.disabledBackgroundColor,
+        accent1Color       : DARK_THEME.accentColor,
+        accent2Color       : DARK_THEME.selectedBackgroundColor,
+        textColor          : DARK_THEME.primaryTextColor,
+        secondaryTextColor : DARK_THEME.secondaryTextColor,
+        alternateTextColor : DARK_THEME.invertedTextColor,
+        canvasColor        : DARK_THEME.primaryBackgroundColor,
+        borderColor        : DARK_THEME.borderColor,
+        disabledColor      : DARK_THEME.disabledTextColor
+    }
 });
 
 @observer
@@ -84,7 +110,7 @@ export default class App extends React.Component {
         this._subscriptions.push(PubSub.subscribe('Event.error', (eventName, message) => this._handleError(message)));
         this._subscriptions.push(PubSub.subscribe('Database.reset', () => this.props.presenter.resetDatabase()));
         this._subscriptions.push(PubSub.subscribe('Settings.reset', () => this.props.presenter.resetSettings()));
-        this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', () => this.props.store.aboutDialogStore.visible = true));
+        this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', () => this.props.store.aboutDialogStore.booleanValue = true));
         this._subscriptions.push(PubSub.subscribe('View.showFilterList', (eventName, show) => this.props.presenter.showFilterList(show)));
         this._subscriptions.push(PubSub.subscribe('View.showNoteList', (eventName, show) => this.props.presenter.showNoteList(show)));
         this._subscriptions.push(PubSub.subscribe('Syntax.change', (eventName, syntax) => this.props.presenter.changeCurrentSyntax(syntax)));
@@ -102,9 +128,8 @@ export default class App extends React.Component {
     }
 
     render() {
-        const theme    = this.props.store.theme === 'dark' ? require('./theme.dark.json') : require('./theme.light.json');
-        const muiTheme = this.props.store.theme === 'dark' ? DARK_MUI_THEME : LIGHT_MUI_THEME;
         const sorting  = this.props.store.notesSorting;
+        const muiTheme = this.props.store.theme === 'dark' ? MUI_DARK_THEME : MUI_LIGHT_THEME;
 
         const renderListItem = (primaryText, secondaryText, icon, dialogStore) => {
             return (
@@ -114,19 +139,19 @@ export default class App extends React.Component {
                     leftIcon={
                         <FontIcon
                             className={'fa fa-fw fa-' + icon}
-                            style={{ top : 0, margin : Constants.PADDING_X1, fontSize : Constants.HEADING_FONT_SIZE }} />
+                            style={{ top : 0, margin : Constants.PADDING_X1, fontSize : Constants.HEADING_FONT_SIZE, color : muiTheme.palette.textColor }} />
                     }
                     innerDivStyle={{ paddingLeft : '48px', paddingRight : Constants.PADDING_X1, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1, fontSize : Constants.HEADING_FONT_SIZE }}
                     onTouchTap={() => {
                         this.props.store.drawerOpened = false;
-                        dialogStore.visible           = true;
+                        dialogStore.booleanValue      = true;
                     }} />
             );
         };
 
         return (
             <MuiThemeProvider muiTheme={muiTheme}>
-                <div style={{ backgroundColor : theme.primaryBackgroundColor }}>
+                <div style={{ backgroundColor : muiTheme.palette.canvasColor }}>
                     {/* Drawer */}
                     <Drawer
                         docked={false}
@@ -150,77 +175,74 @@ export default class App extends React.Component {
                     </Drawer>
                     <SplitPane
                         split="vertical"
-                        minSize={this.props.store.showFilterList ? Config.filterListMinWidth : 0}
+                        minSize={this.props.store.showFilterList ? Constants.FILTER_LIST_MIN_WIDTH : 0}
                         defaultSize={this.props.store.showFilterList ? this.props.store.filterListWidth : 0}
                         allowResize={this.props.store.showFilterList}
                         pane1Style={{ display : this.props.store.showFilterList ? 'block' : 'none' }}
-                        style={{ backgroundColor : theme.primaryBackgroundColor }}
+                        style={{ backgroundColor : muiTheme.palette.canvasColor }}
                         onChange={size => this._handleFilterListWidthChange(size)}>
-                        <div style={{ height : '100vh', display : 'flex', flexFlow : 'column', backgroundColor : theme.secondaryBackgroundColor }}>
-                            {/* Application menu */}
-                            <Button
-                                label="Menu"
-                                icon="bars"
-                                width="100%"
-                                height={Constants.TOP_BAR_HEIGHT}
-                                align="left"
-                                onTouchTap={() => this.props.store.drawerOpened = true} />
-                            {/* Filter list */}
-                            <div style={{ height : 'calc(100vh - ' + Config.bottomBarHeight + 'px)', display : 'flex', flexFlow : 'column', flex : '1 1 0', overflow : 'auto' }}>
-                                <FilterListView
-                                    store={this.props.store.filtersStore}
-                                    backgroundColor={theme.secondaryBackgroundColor}
-                                    theme={this.props.store.theme}
-                                    onItemClick={index => this.props.presenter.handleFilterItemClick(index)}
-                                    onItemRightClick={index => this.props.presenter.handleFilterItemRightClick(index)} />
-                                <div style={{ flex : '1 1 0' }}>
+                        <MuiThemeProvider muiTheme={MUI_DARK_THEME}>
+                            <div style={{ height : '100vh', display : 'flex', flexFlow : 'column', backgroundColor : MUI_DARK_THEME.palette.primary2Color }}>
+                                {/* Application menu */}
+                                <Button
+                                    label="Menu"
+                                    icon="bars"
+                                    width="100%"
+                                    height={Constants.TOP_BAR_HEIGHT}
+                                    align="left"
+                                    onTouchTap={() => this.props.store.drawerOpened = true} />
+                                {/* Filter list */}
+                                <div style={{ height : 'calc(100vh - ' + Constants.BOTTOM_BAR_HEIGHT + 'px)', display : 'flex', flexFlow : 'column', flex : '1 1 0', overflow : 'auto' }}>
                                     <FilterListView
-                                        store={this.props.store.categoriesStore}
-                                        backgroundColor={theme.secondaryBackgroundColor}
-                                        theme={this.props.store.theme}
-                                        onItemClick={index => this.props.presenter.handleCategoryItemClick(index)}
-                                        onItemRightClick={index => this.props.presenter.handleCategoryItemRightClick(index)} />
+                                        store={this.props.store.filtersStore}
+                                        onItemClick={index => this.props.presenter.handleFilterItemClick(index)}
+                                        onItemRightClick={index => this.props.presenter.handleFilterItemRightClick(index)} />
+                                    <div style={{ flex : '1 1 0' }}>
+                                        <FilterListView
+                                            store={this.props.store.categoriesStore}
+                                            onItemClick={index => this.props.presenter.handleCategoryItemClick(index)}
+                                            onItemRightClick={index => this.props.presenter.handleCategoryItemRightClick(index)} />
+                                    </div>
                                 </div>
+                                {/* Add category button */}
+                                <Button
+                                    label="Add category…"
+                                    labelWeight="normal"
+                                    icon="plus"
+                                    width="100%"
+                                    height={Constants.BOTTOM_BAR_HEIGHT}
+                                    align="left"
+                                    onTouchTap={() => this.props.presenter.handleAddCategoryClick()} />
                             </div>
-                            {/* Add category button */}
-                            <Button
-                                label="Add category…"
-                                icon="plus"
-                                width="100%"
-                                height={Constants.BOTTOM_BAR_HEIGHT}
-                                align="left"
-                                onTouchTap={() => this.props.presenter.handleAddCategoryClick()} />
-                        </div>
+                        </MuiThemeProvider>
                         <SplitPane
                             split="vertical"
-                            minSize={this.props.store.showNoteList ? Config.noteListMinWidth : 0}
+                            minSize={this.props.store.showNoteList ? Constants.NOTE_LIST_MIN_WIDTH : 0}
                             defaultSize={this.props.store.showNoteList ? this.props.store.noteListWidth : 0}
                             allowResize={this.props.store.showNoteList}
                             pane1Style={{ display : this.props.store.showNoteList ? 'block' : 'none' }}
-                            style={{ backgroundColor : theme.primaryBackgroundColor }}
+                            style={{ backgroundColor : muiTheme.palette.canvasColor }}
                             onChange={size => this._handleNoteListWidthChange(size)}>
                             <SplitPane
                                 split="horizontal"
-                                defaultSize={Config.topBarHeight}
+                                defaultSize={Constants.TOP_BAR_HEIGHT}
                                 allowResize={false}
-                                style={{ backgroundColor : theme.primaryBackgroundColor }}>
+                                style={{ backgroundColor : muiTheme.palette.canvasColor }}>
                                 {/* Search notes */}
-                                <div style={{ width : '100%', display : 'flex', flexFlow : 'row', padding : Config.paddingX0, paddingRight : Config.paddingX1 }}>
+                                <div style={{ width : '100%', display : 'flex', flexFlow : 'row', padding : Constants.PADDING_X0, paddingRight : Constants.PADDING_X1 }}>
                                     <SearchBox
                                         hintText="Search notes"
-                                        theme={this.props.store.theme}
                                         onChange={value => this.props.presenter.filterNoteList(value)} />
                                 </div>
                                 <SplitPane
                                     split="horizontal"
-                                    defaultSize={Config.bottomBarHeight}
+                                    defaultSize={Constants.BOTTOM_BAR_HEIGHT}
                                     allowResize={false}
                                     primary="second"
-                                    style={{ backgroundColor : theme.primaryBackgroundColor }}>
+                                    style={{ backgroundColor : muiTheme.palette.canvasColor }}>
                                     {/* Note list */}
                                     <NoteListView
                                         store={this.props.store.notesStore}
-                                        theme={this.props.store.theme}
                                         onItemClick={index => this.props.presenter.handleNoteItemClick(index)}
                                         onItemRightClick={index => this.props.presenter.handleNoteItemRightClick(index)} />
                                     {/* Note list tools */}
@@ -228,6 +250,7 @@ export default class App extends React.Component {
                                         {/* Add note */}
                                         <Button
                                             label="New note"
+                                            labelWeight="normal"
                                             icon="file-o"
                                             height={Constants.BOTTOM_BAR_HEIGHT}
                                             onTouchTap={() => this.props.presenter.handleAddNoteClick()} />
@@ -235,6 +258,7 @@ export default class App extends React.Component {
                                         <Button
                                             label={sorting === 0 || sorting === 1 ? 'Name' : sorting === 2 || sorting === 3 ? 'Updated' : 'Created'}
                                             labelPosition="before"
+                                            labelWeight="normal"
                                             icon={'caret-' + (sorting === 1 || sorting === 3 || sorting === 5 ? 'down' : 'up')}
                                             height={Constants.BOTTOM_BAR_HEIGHT}
                                             align="right"
@@ -243,12 +267,10 @@ export default class App extends React.Component {
                                     </div>
                                 </SplitPane>
                             </SplitPane>
-                            <div style={{ height : '100vh', display : 'flex', flexFlow : 'column', backgroundColor : theme.primaryBackgroundColor }}>
+                            <div style={{ height : '100vh', display : 'flex', flexFlow : 'column', backgroundColor : muiTheme.palette.canvasColor }}>
                                 {/* Note editor */}
                                 <div style={{ flex : '1 1 0' }}>
-                                    <TextEditor
-                                        store={this.props.store.editorStore}
-                                        theme={this.props.store.theme} />
+                                    <TextEditor store={this.props.store.editorStore} />
                                 </div>
                                 {/* Note editor tools */}
                                 <div style={{ width : '100%', height : Constants.BOTTOM_BAR_HEIGHT, display : 'flex', flexFlow : 'row' }}>
@@ -266,19 +288,20 @@ export default class App extends React.Component {
                                         height={Constants.BOTTOM_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.editorStore.record)}
                                         onTouchTap={() => this.props.presenter.handleArchiveClick()} />
-                                    <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
+                                    <span style={{ marginRight : Constants.PADDING_X1 + 'px' }}></span>
                                     {/* Select category */}
                                     <Button
                                         label={this.props.store.editorStore.record ? this.props.store.editorStore.record.category ? this.props.store.editorStore.record.category : 'Uncategorized' : ''}
+                                        labelWeight="normal"
                                         height={Constants.BOTTOM_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.editorStore.record)}
                                         onTouchTap={() => this.props.presenter.handleSelectCategoryClick()} />
-                                    <div style={{ margin : 'auto', paddingLeft : Config.paddingX0 + 'px', paddingRight : Config.paddingX0 + 'px', flex : '1 1 0', textAlign : 'right' }}>
+                                    <div style={{ margin : 'auto', paddingLeft : Constants.PADDING_X0 + 'px', paddingRight : Constants.PADDING_X0 + 'px', flex : '1 1 0', textAlign : 'right' }}>
                                         {/* Overwrite status */}
-                                        <Label theme={this.props.store.theme}>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
-                                        <span style={{ marginRight : Config.paddingX1 + 'px' }}></span>
+                                        <Label>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
+                                        <span style={{ marginRight : Constants.PADDING_X1 + 'px' }}></span>
                                         {/* Row/column position */}
-                                        <Label theme={this.props.store.theme}>{this.props.store.editorStore.record && this.props.store.editorStore.cursorPosition ? (this.props.store.editorStore.cursorPosition.row + 1) + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
+                                        <Label>{this.props.store.editorStore.record && this.props.store.editorStore.cursorPosition ? (this.props.store.editorStore.cursorPosition.row + 1) + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
                                     </div>
                                 </div>
                             </div>
@@ -286,27 +309,25 @@ export default class App extends React.Component {
                     </SplitPane>
                     {/* About dialog */}
                     <Dialog
-                        open={this.props.store.aboutDialogStore.visible}
+                        open={this.props.store.aboutDialogStore.booleanValue}
                         actions={[
                             <Button
                                 label="Close"
                                 color="primary"
-                                onTouchTap={() => this.props.store.aboutDialogStore.visible = false} />
+                                onTouchTap={() => this.props.store.aboutDialogStore.booleanValue = false} />
                         ]}
-                        onRequestClose={() => this.props.store.aboutDialogStore.visible = false}>
+                        onRequestClose={() => this.props.store.aboutDialogStore.booleanValue = false}>
                         <div style={{ width : '100%', textAlign : 'center' }}>
                             <img src={Path.join(__dirname, './images/artisan.png')} /><br />
                             <Text
                                 fontWeight={500}
-                                textSize="large"
-                                theme={this.props.store.theme}>
-                                {Package.productName}
+                                textSize="large">
+                                {app.getName()}
                             </Text>
-                            <Text theme={this.props.store.theme}>{'Version ' + Package.version}</Text>
+                            <Text>{'Version ' + Package.version}</Text>
                             <Text
                                 fontWeight={300}
-                                textSize="small"
-                                theme={this.props.store.theme}>
+                                textSize="small">
                                 {'Copyright © ' + new Date().getFullYear()}
                             </Text>
                         </div>
@@ -326,41 +347,37 @@ export default class App extends React.Component {
                     {/* Select category dialog */}
                     <Dialog
                         title="Category"
-                        open={this.props.store.selectCategoryDialogStore.visible}
+                        open={this.props.store.selectCategoryDialogStore.booleanValue}
                         autoScrollBodyContent={true}
                         bodyStyle={{ padding : 0, overflowX : 'hidden' }}
                         actions={[
                             <Button
                                 label="Cancel"
-                                onTouchTap={() => this.props.store.selectCategoryDialogStore.visible = false} />,
+                                onTouchTap={() => this.props.store.selectCategoryDialogStore.booleanValue = false} />,
                             <Button
                                 label="None"
+                                color="secondary"
                                 onTouchTap={() => this.props.presenter.handleSelectCategoryNoneClick()} />,
                             <Button
                                 label="OK"
                                 color="primary"
                                 onTouchTap={() => this.props.presenter.handleSelectCategoryOkClick()} />
                         ]}
-                        onRequestClose={() => this.props.store.selectCategoryDialogStore.visible = false}>
-                        <div style={{ height : '248px', display : 'flex', flexFlow : 'column', overflowY : 'auto', overflowX : 'hidden', backgroundColor : theme.primaryBackgroundColor }}>
-                            <div style={{ flex : '1 1 0' }}>
-                                <ListView
-                                    backgroundColor={theme.primaryBackgroundColor}
-                                    theme={this.props.store.theme}
-                                    selectedIndex={this.props.store.selectCategoryDialogStore.list.selectedIndex}
-                                    onItemClick={index => this.props.presenter.handleSelectCategoryItemClick(index)}>
-                                    {this.props.store.selectCategoryDialogStore.list.items.map(item => {
-                                        return (
-                                            <div
-                                                key={item.itemId}
-                                                style={{ width : '100%', padding : Constants.PADDING_X1, borderBottom : '1px solid ' + theme.borderColor }}>
-                                                <Text theme={this.props.store.theme}>{item.primaryText}</Text>
-                                            </div>
-                                        );
-                                    })}
-                                </ListView>
-                            </div>
-                        </div>
+                        onRequestClose={() => this.props.store.selectCategoryDialogStore.booleanValue = false}>
+                        <ListView
+                            backgroundColor={muiTheme.canvasColor}
+                            selectedIndex={this.props.store.selectCategoryDialogStore.list.selectedIndex}
+                            onItemClick={index => this.props.presenter.handleSelectCategoryItemClick(index)}>
+                            {this.props.store.selectCategoryDialogStore.list.items.map(item => {
+                                return (
+                                    <div
+                                        key={item.itemId}
+                                        style={{ width : '100%', paddingLeft : Constants.PADDING_X2, paddingRight : Constants.PADDING_X2, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1, borderBottom : '1px solid ' + muiTheme.palette.borderColor }}>
+                                        <Text>{item.primaryText}</Text>
+                                    </div>
+                                );
+                            })}
+                        </ListView>
                     </Dialog>
                     {/* Editor settings dialog */}
                     <EditorSettingsDialog
@@ -369,10 +386,9 @@ export default class App extends React.Component {
                     {/* Syntax dialog for current note */}
                     <ListViewDialog
                         store={this.props.store.currentSyntaxDialogStore}
-                        listViewStore={this.props.store.currentSyntaxListViewStore}
-                        theme={this.props.store.theme}
+                        title="Syntax for current note"
                         onItemClick={index => {
-                            this.props.store.currentSyntaxListViewStore.selectedIndex = index;
+                            this.props.store.currentSyntaxDialogStore.list.selectedIndex = index;
 
                             if (this.props.store.editorStore.record) {
                                 this.props.presenter.changeCurrentSyntax(SyntaxCodes.items[index]);
@@ -381,30 +397,27 @@ export default class App extends React.Component {
                     {/* Syntax dialog for default notes */}
                     <ListViewDialog
                         store={this.props.store.defaultSyntaxDialogStore}
-                        listViewStore={this.props.store.defaultSyntaxListViewStore}
-                        theme={this.props.store.theme}
+                        title="Syntax for default notes"
                         onItemClick={index => {
-                            this.props.store.defaultSyntaxListViewStore.selectedIndex = index;
+                            this.props.store.defaultSyntaxDialogStore.list.selectedIndex = index;
 
                             this.props.presenter.changeDefaultSyntax(SyntaxCodes.items[index]);
                         }} />
                     {/* Theme dialog */}
                     <ListViewDialog
                         store={this.props.store.themeDialogStore}
-                        listViewStore={this.props.store.themeListViewStore}
-                        theme={this.props.store.theme}
+                        title="Theme"
                         onItemClick={index => {
-                            this.props.store.themeListViewStore.selectedIndex = index;
+                            this.props.store.themeDialogStore.list.selectedIndex = index;
 
                             this.props.presenter.changeTheme(ThemeCodes.items[index]);
                         }} />
                     {/* Font dialog */}
                     <ListViewDialog
                         store={this.props.store.fontDialogStore}
-                        listViewStore={this.props.store.fontListViewStore}
-                        theme={this.props.store.theme}
+                        title="Font"
                         onItemClick={index => {
-                            this.props.store.fontListViewStore.selectedIndex = index;
+                            this.props.store.fontDialogStore.list.selectedIndex = index;
 
                             this.props.presenter.changeFont(FONTS.items[index]);
                         }} />

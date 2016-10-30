@@ -24,7 +24,7 @@ const Button = props => {
             <FlatButton
                 label={props.label}
                 labelPosition={props.labelPosition}
-                labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : Constants.TEXT_FONT_SIZE, textTransform : 'none' } : {}}
+                labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : Constants.TEXT_FONT_SIZE, fontWeight : props.labelWeight === 'light' ? 300 : props.labelWeight === 'bold' ? 500 : 400, textTransform : 'none' } : {}}
                 icon={icon}
                 primary={props.color === 'primary'}
                 secondary={props.color === 'secondary'}
@@ -50,6 +50,7 @@ const Button = props => {
 Button.propTypes = {
     label         : React.PropTypes.string,
     labelPosition : React.PropTypes.oneOf([ 'before', 'after' ]),
+    labelWeight   : React.PropTypes.oneOf([ 'light', 'normal', 'bold' ]),
     icon          : React.PropTypes.string,
     borderless    : React.PropTypes.bool,
     color         : React.PropTypes.oneOf([ 'default', 'primary', 'secondary' ]),
@@ -63,6 +64,7 @@ Button.propTypes = {
 
 Button.defaultProps = {
     labelPosition : 'after',
+    labelWeight   : 'bold',
     width         : Constants.BUTTON_MIN_WIDTH,
     height        : Constants.BUTTON_MIN_HEIGHT,
     borderless    : true,
@@ -71,4 +73,4 @@ Button.defaultProps = {
     disabled      : false
 };
 
-module.exports = { Button };
+export default Button;

@@ -8,9 +8,10 @@ import TextEditorStore from './TextEditorStore';
 import Record from '../../data/Record';
 import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
 import Unique from '../../utils/Unique';
-import Config from '../../../config.json';
+import Constants from '../../utils/Constants';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
 require('brace/ext/searchbox');
 require('brace/ext/spellcheck');
@@ -19,7 +20,7 @@ require('brace/ext/whitespace');
 if (is.dev()) PubSub.immediateExceptions = true;
 
 @observer
-export default class TextEditor extends React.Component {
+class TextEditor extends React.Component {
     constructor(props) {
         super(props);
 
@@ -120,14 +121,13 @@ export default class TextEditor extends React.Component {
     }
 
     render() {
-        const theme  = this.props.theme === 'dark' ? require('../../theme.dark.json') : require('../../theme.light.json');
         const syntax = this.props.store.record && this.props.store.record.syntax ? this.props.store.record.syntax : this.props.store.syntax;
 
         require('brace/mode/' + syntax);
         require('brace/theme/' + this.props.store.theme);
 
         return (
-            <div style={{ width : '100%', height : 'calc(100vh - ' + (Config.bottomBarHeight + 1) + 'px)' }}>
+            <div style={{ width : '100%', height : 'calc(100vh - ' + (Constants.BOTTOM_BAR_HEIGHT + 1) + 'px)' }}>
                 <AceEditor
                     id={this._editorId}
                     ref="editor"
@@ -135,7 +135,7 @@ export default class TextEditor extends React.Component {
                     theme={this.props.store.theme}
                     value={this.props.store.record ? this.props.store.record.fullText : undefined}
                     width="100%"
-                    height={'calc(100vh - ' + (Config.bottomBarHeight + 1) + 'px)'}
+                    height={'calc(100vh - ' + (Constants.BOTTOM_BAR_HEIGHT + 1) + 'px)'}
                     fontSize={this.props.store.textSize}
                     showGutter={this.props.store.showGutter}
                     highlightActiveLine={this.props.store.highlightActiveLine}
@@ -146,20 +146,14 @@ export default class TextEditor extends React.Component {
                     onChange={value => this._handleChange(value)} />
                 <div
                     id={this._placeHolderId}
-                    style={{ display : this.props.store.record ? 'none' : 'block', width : '100%', height : 'calc(100vh - ' + (Config.bottomBarHeight + 1) + 'px)', backgroundColor : theme.disabledBackgroundColor }} />
+                    style={{ display : this.props.store.record ? 'none' : 'block', width : '100%', height : 'calc(100vh - ' + (Constants.BOTTOM_BAR_HEIGHT + 1) + 'px)', backgroundColor : this.props.muiTheme.palette.primary3Color }} />
             </div>
         );
     }
 }
 
 TextEditor.propTypes = {
-    store : React.PropTypes.instanceOf(TextEditorStore).isRequired,
-    theme : React.PropTypes.oneOf([ 'light', 'dark' ])
+    store : React.PropTypes.instanceOf(TextEditorStore).isRequired
 };
 
-TextEditor.defaultProps = {
-    theme : 'light'
-};
-
-module.exports = TextEditor;
-
+export default muiThemeable()(TextEditor);

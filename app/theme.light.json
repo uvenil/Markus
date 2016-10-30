@@ -1,17 +1,13 @@
 {
-    "primaryColor"             : "#6bb9f0",
-    "primaryTextColor"         : "#22313f",
-    "primaryTextColorInverted" : "#f2f1ef",
+    "primaryColor"             : "#0288D1",
+    "accentColor"              : "#ff5722",
+    "primaryTextColor"         : "rgba(0, 0, 0, 0.87)",
+    "secondaryTextColor"       : "#757575",
+    "disabledTextColor"        : "#bdbdbd",
+    "invertedTextColor"        : "#f2f1ef",
     "primaryBackgroundColor"   : "#ffffff",
     "secondaryBackgroundColor" : "#ecf0f1",
-    "dialogBackgroundColor"    : "#ececec",
     "selectedBackgroundColor"  : "#d2d7d3",
     "disabledBackgroundColor"  : "#dadfe1",
-    "borderColor"              : "#d2d7d3",
-    "overlayColor"             : "rgba(0, 0, 0, 0.25)",
-    "buttonDefaultColor"       : "#bdc3c7",
-    "buttonPrimaryColor"       : "#22a7f0",
-    "buttonSuccessColor"       : "#3aca74",
-    "buttonErrorColor"         : "#e44e43",
-    "buttonWarningColor"       : "#e27f31"
+    "borderColor"              : "rgba(0, 0, 0, 0.13)"
 }

@@ -12,6 +12,7 @@ export default class ListItemStore {
     constructor() {
         extendObservable(this, {
             itemId        : undefined,
+            icon          : 'tag',
             primaryText   : '',
             secondaryText : '',
             tertiaryText  : '',

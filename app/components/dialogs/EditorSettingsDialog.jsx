@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import Dialog from 'material-ui/Dialog';;
+import Dialog from 'material-ui/Dialog';
 import Checkbox from 'material-ui/Checkbox';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
-import { Label } from '../text/Label.jsx';
-import { Button } from '../buttons/Button.jsx';
-import DialogStore from './DialogStore';
+import Label from '../text/Label.jsx';
+import Button from '../buttons/Button.jsx';
+import BooleanStore from '../BooleanStore';
 import SettingsStore from '../../SettingsStore';
 import Constants from '../../utils/Constants';
 import PubSub from 'pubsub-js';
@@ -26,15 +26,15 @@ export default class EditorSettingsDialog extends React.Component {
             <Dialog
                 title="Editor"
                 autoScrollBodyContent={true}
-                open={this.props.store.visible}
+                open={this.props.store.booleanValue}
                 bodyStyle={{ padding : Constants.PADDING_X2 }}
                 actions={[
                     <Button
                         label="Close"
                         color="primary"
-                        onTouchTap={() => this.props.store.visible = false} />
+                        onTouchTap={() => this.props.store.booleanValue = false} />
                 ]}
-                onRequestClose={() => this.props.store.visible = false}>
+                onRequestClose={() => this.props.store.booleanValue = false}>
                 <div style={{ width : '100%', display : 'table', textAlign : 'center' }}>
                     {/* Highlight current line */}
                     <div style={{ display : 'table-row' }}>
@@ -43,9 +43,9 @@ export default class EditorSettingsDialog extends React.Component {
                         </div>
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <Checkbox
-                                checked={this.props.settingsStore.highlightCurrentLine.checked}
+                                checked={this.props.settingsStore.highlightCurrentLine.booleanValue}
                                 onCheck={(event, checked) => {
-                                    this.props.settingsStore.highlightCurrentLine.checked = checked;
+                                    this.props.settingsStore.highlightCurrentLine.booleanValue = checked;
                                     PubSub.publish('TextEditor.settings', { name : 'highlightActiveLine', value : checked });
                                 }} />
                         </div>
@@ -57,9 +57,9 @@ export default class EditorSettingsDialog extends React.Component {
                         </div>
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <Checkbox
-                                checked={this.props.settingsStore.showLineNumbers.checked}
+                                checked={this.props.settingsStore.showLineNumbers.booleanValue}
                                 onCheck={(event, checked) => {
-                                    this.props.settingsStore.showLineNumbers.checked = checked;
+                                    this.props.settingsStore.showLineNumbers.booleanValue = checked;
                                     PubSub.publish('TextEditor.settings', { name : 'showLineNumbers', value : checked });
                                 }} />
                         </div>
@@ -72,11 +72,11 @@ export default class EditorSettingsDialog extends React.Component {
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <RadioButtonGroup
                                 name="tabSize"
-                                valueSelected={this.props.settingsStore.tabSize2.checked ? 2 : this.props.settingsStore.tabSize4.checked ? 4 : 8}
+                                valueSelected={this.props.settingsStore.tabSize2.booleanValue ? 2 : this.props.settingsStore.tabSize4.booleanValue ? 4 : 8}
                                 onChange={(event, value) => {
-                                    this.props.settingsStore.tabSize2.checked = value === 2;
-                                    this.props.settingsStore.tabSize4.checked = value === 4;
-                                    this.props.settingsStore.tabSize8.checked = value === 8;
+                                    this.props.settingsStore.tabSize2.booleanValue = value === 2;
+                                    this.props.settingsStore.tabSize4.booleanValue = value === 4;
+                                    this.props.settingsStore.tabSize8.booleanValue = value === 8;
 
                                     PubSub.publish('TextEditor.settings', { name : 'tabSize', value : value });
                                 }}>
@@ -102,9 +102,9 @@ export default class EditorSettingsDialog extends React.Component {
                         </div>
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <Checkbox
-                                checked={this.props.settingsStore.useSoftTabs.checked}
+                                checked={this.props.settingsStore.useSoftTabs.booleanValue}
                                 onCheck={(event, checked) => {
-                                    this.props.settingsStore.useSoftTabs.checked = checked;
+                                    this.props.settingsStore.useSoftTabs.booleanValue = checked;
                                     PubSub.publish('TextEditor.settings', { name : 'useSoftTabs', value : checked });
                                 }} />
                         </div>
@@ -116,9 +116,9 @@ export default class EditorSettingsDialog extends React.Component {
                         </div>
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <Checkbox
-                                checked={this.props.settingsStore.wordWrap.checked}
+                                checked={this.props.settingsStore.wordWrap.booleanValue}
                                 onCheck={(event, checked) => {
-                                    this.props.settingsStore.wordWrap.checked = checked;
+                                    this.props.settingsStore.wordWrap.booleanValue = checked;
                                     PubSub.publish('TextEditor.settings', { name : 'wordWrap', value : checked });
                                 }} />
                         </div>
@@ -130,9 +130,9 @@ export default class EditorSettingsDialog extends React.Component {
                         </div>
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <Checkbox
-                                checked={this.props.settingsStore.showPrintMargin.checked}
+                                checked={this.props.settingsStore.showPrintMargin.booleanValue}
                                 onCheck={(event, checked) => {
-                                    this.props.settingsStore.showPrintMargin.checked = checked;
+                                    this.props.settingsStore.showPrintMargin.booleanValue = checked;
                                     PubSub.publish('TextEditor.settings', { name : 'showPrintMargin', value : checked });
                                 }} />
                         </div>
@@ -145,12 +145,12 @@ export default class EditorSettingsDialog extends React.Component {
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <RadioButtonGroup
                                 name="tabSize"
-                                valueSelected={this.props.settingsStore.printMarginColumn72.checked ? 72 : this.props.settingsStore.printMarginColumn80.checked ? 80 : this.props.settingsStore.printMarginColumn100.checked ? 100 : 120}
+                                valueSelected={this.props.settingsStore.printMarginColumn72.booleanValue ? 72 : this.props.settingsStore.printMarginColumn80.booleanValue ? 80 : this.props.settingsStore.printMarginColumn100.booleanValue ? 100 : 120}
                                 onChange={(event, value) => {
-                                    this.props.settingsStore.printMarginColumn72.checked  = value === 72;
-                                    this.props.settingsStore.printMarginColumn80.checked  = value === 80;
-                                    this.props.settingsStore.printMarginColumn100.checked = value === 100;
-                                    this.props.settingsStore.printMarginColumn120.checked = value === 120;
+                                    this.props.settingsStore.printMarginColumn72.booleanValue  = value === 72;
+                                    this.props.settingsStore.printMarginColumn80.booleanValue  = value === 80;
+                                    this.props.settingsStore.printMarginColumn100.booleanValue = value === 100;
+                                    this.props.settingsStore.printMarginColumn120.booleanValue = value === 120;
 
                                     PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : value });
                                 }}>
@@ -180,9 +180,9 @@ export default class EditorSettingsDialog extends React.Component {
                         </div>
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <Checkbox
-                                checked={this.props.settingsStore.showInvisibles.checked}
+                                checked={this.props.settingsStore.showInvisibles.booleanValue}
                                 onCheck={(event, checked) => {
-                                    this.props.settingsStore.showInvisibles.checked = checked;
+                                    this.props.settingsStore.showInvisibles.booleanValue = checked;
                                     PubSub.publish('TextEditor.settings', { name : 'showInvisibles', value : checked });
                                 }} />
                         </div>
@@ -194,9 +194,9 @@ export default class EditorSettingsDialog extends React.Component {
                         </div>
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <Checkbox
-                                checked={this.props.settingsStore.showFoldWidgets.checked}
+                                checked={this.props.settingsStore.showFoldWidgets.booleanValue}
                                 onCheck={(event, checked) => {
-                                    this.props.settingsStore.showFoldWidgets.checked = checked;
+                                    this.props.settingsStore.showFoldWidgets.booleanValue = checked;
                                     PubSub.publish('TextEditor.settings', { name : 'showFoldWidgets', value : checked });
                                 }} />
                         </div>
@@ -208,9 +208,9 @@ export default class EditorSettingsDialog extends React.Component {
                         </div>
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <Checkbox
-                                checked={this.props.settingsStore.showGutter.checked}
+                                checked={this.props.settingsStore.showGutter.booleanValue}
                                 onCheck={(event, checked) => {
-                                    this.props.settingsStore.showGutter.checked = checked;
+                                    this.props.settingsStore.showGutter.booleanValue = checked;
                                     PubSub.publish('TextEditor.settings', { name : 'showGutter', value : checked });
                                 }} />
                         </div>
@@ -222,9 +222,9 @@ export default class EditorSettingsDialog extends React.Component {
                         </div>
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <Checkbox
-                                checked={this.props.settingsStore.showIndentGuides.checked}
+                                checked={this.props.settingsStore.showIndentGuides.booleanValue}
                                 onCheck={(event, checked) => {
-                                    this.props.settingsStore.showIndentGuides.checked = checked;
+                                    this.props.settingsStore.showIndentGuides.booleanValue = checked;
                                     PubSub.publish('TextEditor.settings', { name : 'displayIndentGuides', value : checked });
                                 }} />
                         </div>
@@ -236,9 +236,9 @@ export default class EditorSettingsDialog extends React.Component {
                         </div>
                         <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
                             <Checkbox
-                                checked={this.props.settingsStore.scrollPastLastLine.checked}
+                                checked={this.props.settingsStore.scrollPastLastLine.booleanValue}
                                 onCheck={(event, checked) => {
-                                    this.props.settingsStore.scrollPastLastLine.checked = checked;
+                                    this.props.settingsStore.scrollPastLastLine.booleanValue = checked;
                                     PubSub.publish('TextEditor.settings', { name : 'scrollPastEnd', value : checked });
                                 }} />
                         </div>
@@ -250,7 +250,7 @@ export default class EditorSettingsDialog extends React.Component {
 }
 
 EditorSettingsDialog.propTypes = {
-    store         : React.PropTypes.instanceOf(DialogStore),
+    store         : React.PropTypes.instanceOf(BooleanStore),
     settingsStore : React.PropTypes.instanceOf(SettingsStore)
 };
 
