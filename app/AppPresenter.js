@@ -39,9 +39,10 @@ const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./
 
 export default class AppPresenter {
     constructor() {
-        this._store    = new AppStore();
-        this._settings = new Settings();
-        this._database = new Database();
+        this._store         = new AppStore();
+        this._settings      = new Settings();
+        this._database      = new Database();
+        this._defaultSyntax = Config.defaultSyntax;
 
         this._filtersPresenter    = new FilterListViewPresenter(this._database);
         this._categoriesPresenter = new CategoryListViewPresenter(this._database);
@@ -73,6 +74,12 @@ export default class AppPresenter {
 
                 this.refreshNotes();
             });
+
+        this._noteSelection.subscribe(index => {
+            this._store.notesStore.selectedIndex = index;
+
+            this.refreshEditor();
+        });
 
         //region Setting dialogs
 
@@ -389,11 +396,7 @@ export default class AppPresenter {
 
     handleNoteItemClick(index) {
         if (this._store.notesStore.selectedIndex !== index) {
-            this._store.notesStore.selectedIndex = index;
-
             this._noteSelection.onNext(index);
-
-            this.refreshEditor();
         }
     }
 
@@ -450,6 +453,8 @@ export default class AppPresenter {
                                 this._notesPresenter.refresh();
                                 this._filtersPresenter.refresh();
                                 this._categoriesPresenter.notifyDataSetChanged();
+
+                                this.refreshEditor();
                             }).catch(error => console.error(error));
                     }
                 });
@@ -499,8 +504,6 @@ export default class AppPresenter {
         this._notesPresenter.addNote(this._defaultSyntax)
             .then(() => {
                 this._store.notesStore.selectedIndex = 0;
-
-                this.refreshEditor();
 
                 this._noteSelection.onNext(0);
             }).catch(error => console.error(error));
@@ -704,10 +707,7 @@ export default class AppPresenter {
     //region Refresh operations
 
     refreshFilters() {
-        this._store.notesStore.selectedItemId = undefined;
-
         this._filtersPresenter.refresh();
-        this.refreshEditor();
 
         this._noteSelection.onNext(-1);
 
@@ -715,16 +715,14 @@ export default class AppPresenter {
     }
 
     refreshCategories() {
-        this._store.notesStore.selectedItemId = undefined;
-
         this._categoriesPresenter.refresh();
-        this.refreshEditor();
 
         this._noteSelection.onNext(-1);
     }
 
     refreshNotes() {
         this._notesPresenter.refresh();
+
         this.refreshEditor();
     }
 
@@ -785,10 +783,9 @@ export default class AppPresenter {
      * @param {String} keyword
      */
     filterNoteList(keyword) {
-        this._store.notesStore.selectedIndex = -1;
-        this._notesPresenter.keyword         = keyword;
+        this._notesPresenter.keyword = keyword;
 
-        this.refreshEditor();
+        this._noteSelection.onNext(-1);
     }
 
     //endregion
@@ -934,12 +931,14 @@ export default class AppPresenter {
             ]).then(values => {
                 let i = 0;
 
-                this._store.showFilterList         = values[i] !== undefined ? values[i] : true;                         i++;
-                this._store.showNoteList           = values[i] !== undefined ? values[i] : true;                         i++;
-                this._store.filterListWidth        = values[i] !== undefined ? values[i] : Config.filterListWidth;       i++;
-                this._store.noteListWidth          = values[i] !== undefined ? values[i] : Config.noteListWidth;         i++;
-                this._store.editorStore.syntax     = values[i] !== undefined ? values[i] : Config.defaultSyntax;         i++;
-                this._store.editorStore.theme      = values[i] !== undefined ? values[i] : Config.defaultTheme;          i++;
+                this._store.showFilterList     = values[i] !== undefined ? values[i] : true;                   i++;
+                this._store.showNoteList       = values[i] !== undefined ? values[i] : true;                   i++;
+                this._store.filterListWidth    = values[i] !== undefined ? values[i] : Config.filterListWidth; i++;
+                this._store.noteListWidth      = values[i] !== undefined ? values[i] : Config.noteListWidth;   i++;
+                this._store.editorStore.syntax = values[i] !== undefined ? values[i] : Config.defaultSyntax;   i++;
+                this._store.editorStore.theme  = values[i] !== undefined ? values[i] : Config.defaultTheme;    i++;
+
+                this._defaultSyntax = this._store.editorStore.syntax;
 
                 if (values[i] !== undefined) {
                     AppPresenter._updateFont(values[i]);

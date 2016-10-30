@@ -3,6 +3,10 @@
 import TextEditorStore from './TextEditorStore';
 import Database from '../../data/Database';
 import Record from '../../data/Record';
+import PubSub from 'pubsub-js';
+import is from 'electron-is';
+
+if (is.dev()) PubSub.immediateExceptions = true;
 
 export default class TextEditorPresenter {
     /**
@@ -30,10 +34,14 @@ export default class TextEditorPresenter {
                     .then(doc => {
                         this._store.record = Record.fromDoc(doc);
 
+                        PubSub.publish('TextEditor.refresh');
+
                         resolve();
                     }).catch(error => reject(error));
             } else {
                 this._store.record = undefined;
+
+                PubSub.publish('TextEditor.refresh');
 
                 resolve();
             }

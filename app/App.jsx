@@ -25,12 +25,11 @@ import ListViewDialog from './components/dialogs/ListViewDialog.jsx';
 import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
 import Settings from './utils/Settings';
-import Path from 'path';
-import PubSub from 'pubsub-js';
 import SyntaxCodes from './definitions/syntax-codes.json';
 import ThemeCodes from './definitions/theme-codes.json';
-import Package from '../package.json';
 import Constants from './utils/Constants';
+import Path from 'path';
+import PubSub from 'pubsub-js';
 import is from 'electron-is';
 import _ from 'lodash';
 
@@ -324,7 +323,7 @@ export default class App extends React.Component {
                                 textSize="large">
                                 {app.getName()}
                             </Text>
-                            <Text>{'Version ' + Package.version}</Text>
+                            <Text>{'Version ' + app.getVersion()}</Text>
                             <Text
                                 fontWeight={300}
                                 textSize="small">
