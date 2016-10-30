@@ -8,6 +8,8 @@ export default class AppStore {
         extendObservable(this, {
             theme                     : 'light',
             drawerOpened              : false,
+            snackbarOpened            : false,
+            snackbarMessage           : undefined,
             aboutDialogStore          : undefined,
             editorSettingsDialogStore : undefined,
             currentSyntaxDialogStore  : undefined,

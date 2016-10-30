@@ -478,12 +478,12 @@ export default class AppPresenter {
         }));
 
         menu.append(new MenuItem({
-            label : 'Last updated ▲',
+            label : 'Updated ▲',
             click : () => this._updateNotesSorting(2)
         }));
 
         menu.append(new MenuItem({
-            label : 'Last updated ▼',
+            label : 'Updated ▼',
             click : () => this._updateNotesSorting(3)
         }));
 

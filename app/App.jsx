@@ -8,6 +8,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Divider from 'material-ui/Divider';
 import Dialog from 'material-ui/Dialog';
 import Drawer from 'material-ui/Drawer';
+import Snackbar from 'material-ui/Snackbar';
 import FontIcon from 'material-ui/FontIcon';
 import { List, ListItem } from 'material-ui/List';
 import Subheader from 'material-ui/Subheader';
@@ -35,7 +36,7 @@ import _ from 'lodash';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
-const { app, dialog } = require('electron').remote;
+const { app } = require('electron').remote;
 
 const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
 
@@ -83,7 +84,8 @@ export default class App extends React.Component {
         this._settings      = new Settings();
 
         this._handleError = message => {
-            dialog.showErrorBox('Error', message);
+            this.props.store.snackbarMessage = message;
+            this.props.store.snackbarOpened  = true;
         };
 
         this._handleFilterListWidthChange = size => {
@@ -151,6 +153,11 @@ export default class App extends React.Component {
         return (
             <MuiThemeProvider muiTheme={muiTheme}>
                 <div style={{ backgroundColor : muiTheme.palette.canvasColor }}>
+                    <Snackbar
+                        open={this.props.store.snackbarOpened}
+                        message={this.props.store.snackbarMessage}
+                        autoHideDuration={Constants.SNACKBAR_DURATION}
+                        onRequestClose={() => this.props.store.snackbarOpened = false} />
                     {/* Drawer */}
                     <Drawer
                         docked={false}
