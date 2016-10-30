@@ -379,6 +379,7 @@ export default class AppPresenter {
     }
 
     handleAddCategoryClick() {
+        this._store.addCategoryDialogStore.value        = '';
         this._store.addCategoryDialogStore.booleanValue = true;
     }
 
