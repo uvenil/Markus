@@ -6,6 +6,7 @@ import NoteListViewPresenter from './components/lists/NoteListViewPresenter';
 import TextEditorPresenter from './components/text/TextEditorPresenter';
 import AppStore from './AppStore';
 import BooleanStore from './components/BooleanStore';
+import BooleanDialogStore from './components/dialogs/BooleanDialogStore';
 import PromptDialogStore from './components/dialogs/PromptDialogStore';
 import ListViewDialogStore from './components/dialogs/ListViewDialogStore';
 import ListItemStore from './components/lists/ListItemStore';
@@ -49,6 +50,7 @@ export default class AppPresenter {
         this._notesPresenter      = new NoteListViewPresenter(this._filtersPresenter, this._categoriesPresenter, this._database);
         this._editorPresenter     = new TextEditorPresenter(this._database);
 
+        this._store.booleanDialogStore        = new BooleanDialogStore();
         this._store.aboutDialogStore          = new BooleanStore();
         this._store.editorSettingsDialogStore = new BooleanStore();
         this._store.currentSyntaxDialogStore  = new ListViewDialogStore();
@@ -125,8 +127,8 @@ export default class AppPresenter {
         this._initSettings()
             .then(() => this._initDatabase()
                 .then(() => this._initAutoSave())
-                .catch(error => console.error(error)))
-            .catch(error => console.error(error));
+                .catch(error => PubSub.publish('Event.error', error.toString())))
+            .catch(error => PubSub.publish('Event.error', error.toString()));
 
         AppPresenter._clearCache();
     }
@@ -197,7 +199,7 @@ export default class AppPresenter {
                     menu.append(new MenuItem({
                         label : 'Restore notes',
                         click : () => {
-                            this._database.unarchiveAll().catch(error => console.error(error));
+                            this._database.unarchiveAll().catch(error => PubSub.publish('Event.error', error.toString()));
                         }
                     }));
                 }
@@ -207,40 +209,38 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : action + ' all notes…',
                     click : () => {
-                        dialog.showMessageBox(remote.getCurrentWindow(), {
-                            type      : 'question',
-                            title     : action + ' notes',
-                            message   : 'Are you sure you want to ' + action.toLowerCase() + ' the notes?',
-                            buttons   : [ 'Yes', 'No' ],
-                            defaultId : 0,
-                            cancelId  : 1
-                        }, response => {
-                            if (response === 0) {
-                                let updatePromise;
+                        this._store.booleanDialogStore.title          = action + ' notes';
+                        this._store.booleanDialogStore.message        = 'Are you sure you want to ' + action.toLowerCase() + ' the notes?';
+                        this._store.booleanDialogStore.trueLabel      = 'Yes';
+                        this._store.booleanDialogStore.falseLabel     = 'No';
+                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
+                        this._store.booleanDialogStore.booleanValue   = true;
 
-                                if (index === 0) {
-                                    updatePromise = this._database.archiveByEverything();
-                                } else if (index === 1) {
-                                    updatePromise = this._database.archiveByStarred();
-                                } else if (index === 2) {
-                                    updatePromise = this._database.removeByArchived();
-                                }
+                        this._store.booleanDialogStore.trueAction = () => {
+                            let updatePromise;
 
-                                if (updatePromise) {
-                                    updatePromise.then(() => {
-                                        this._filtersPresenter.refresh();
-                                        this._categoriesPresenter.refresh();
-
-                                        this._notesPresenter.refresh();
-                                    }).catch(error => console.error(error));
-                                }
+                            if (index === 0) {
+                                updatePromise = this._database.archiveByEverything();
+                            } else if (index === 1) {
+                                updatePromise = this._database.archiveByStarred();
+                            } else if (index === 2) {
+                                updatePromise = this._database.removeByArchived();
                             }
-                        });
+
+                            if (updatePromise) {
+                                updatePromise.then(() => {
+                                    this._filtersPresenter.refresh();
+                                    this._categoriesPresenter.refresh();
+
+                                    this._notesPresenter.refresh();
+                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                            }
+                        };
                     }
                 }));
 
                 menu.popup(remote.getCurrentWindow());
-            }).catch(error => console.error(error));
+            }).catch(error => PubSub.publish('Event.error', error.toString()));
         }
     }
 
@@ -309,80 +309,74 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : 'Delete ' + category + '…',
                     click : () => {
-                        dialog.showMessageBox(remote.getCurrentWindow(), {
-                            type      : 'question',
-                            title     : 'Delete category',
-                            message   : 'Are you sure you want to delete category "' + category + '"?',
-                            buttons   : [ 'Yes', 'No' ],
-                            defaultId : 0,
-                            cancelId  : 1
-                        }, response => {
-                            if (response === 0) {
-                                this._database.removeCategory(category)
-                                    .then(() => {
-                                        this._categoriesPresenter.notifyDataSetChanged();
+                        this._store.booleanDialogStore.title          = 'Delete category';
+                        this._store.booleanDialogStore.message        = 'Are you sure you want to delete category "' + category + '"?';
+                        this._store.booleanDialogStore.trueLabel      = 'Yes';
+                        this._store.booleanDialogStore.falseLabel     = 'No';
+                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
+                        this._store.booleanDialogStore.booleanValue   = true;
 
-                                        if (this._store.categoriesStore.selectedIndex < 0) {
-                                            this._notesPresenter.refresh();
-                                        }
-                                    }).catch(error => console.error(error));
-                            }
-                        });
+                        this._store.booleanDialogStore.trueAction = () => {
+                            this._database.removeCategory(category)
+                                .then(() => {
+                                    this._categoriesPresenter.notifyDataSetChanged();
+
+                                    if (this._store.categoriesStore.selectedIndex < 0) {
+                                        this._notesPresenter.refresh();
+                                    }
+                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                        };
                     }
                 }));
 
                 menu.append(new MenuItem({
                     label : 'Delete ' + category + ' and notes…',
                     click : () => {
-                        dialog.showMessageBox(remote.getCurrentWindow(), {
-                            type      : 'question',
-                            title     : 'Delete category and archive notes',
-                            message   : 'Are you sure you want to delete category "' + category + '" and archive its notes?',
-                            buttons   : [ 'Yes', 'No' ],
-                            defaultId : 0,
-                            cancelId  : 1
-                        }, response => {
-                            if (response === 0) {
-                                this._database.removeCategory(category, true)
-                                    .then(() => {
-                                        this._filtersPresenter.refresh();
-                                        this._categoriesPresenter.notifyDataSetChanged();
+                        this._store.booleanDialogStore.title          = 'Delete category and archive notes';
+                        this._store.booleanDialogStore.message        = 'Are you sure you want to delete category "' + category + '" and archive its notes?';
+                        this._store.booleanDialogStore.trueLabel      = 'Yes';
+                        this._store.booleanDialogStore.falseLabel     = 'No';
+                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
+                        this._store.booleanDialogStore.booleanValue   = true;
 
-                                        if (this._store.categoriesStore.selectedIndex < 0) {
-                                            this._notesPresenter.refresh();
-                                        }
-                                    }).catch(error => console.error(error));
-                            }
-                        });
+                        this._store.booleanDialogStore.trueAction = () => {
+                            this._database.removeCategory(category, true)
+                                .then(() => {
+                                    this._filtersPresenter.refresh();
+                                    this._categoriesPresenter.notifyDataSetChanged();
+
+                                    if (this._store.categoriesStore.selectedIndex < 0) {
+                                        this._notesPresenter.refresh();
+                                    }
+                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                        };
                     }
                 }));
 
                 menu.append(new MenuItem({
                     label : 'Archive all notes…',
                     click : () => {
-                        dialog.showMessageBox(remote.getCurrentWindow(), {
-                            type      : 'question',
-                            title     : 'Archive notes',
-                            message   : 'Are you sure you want to archive all notes of category "' + category + '"?',
-                            buttons   : [ 'Yes', 'No' ],
-                            defaultId : 0,
-                            cancelId  : 1
-                        }, response => {
-                            if (response === 0) {
-                                this._database.archiveByCategory(category)
-                                    .then(() => {
-                                        this._filtersPresenter.refresh();
-                                        this._categoriesPresenter.refresh();
+                        this._store.booleanDialogStore.title          = 'Archive notes';
+                        this._store.booleanDialogStore.message        = 'Are you sure you want to archive all notes of category "' + category + '"?';
+                        this._store.booleanDialogStore.trueLabel      = 'Yes';
+                        this._store.booleanDialogStore.falseLabel     = 'No';
+                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
+                        this._store.booleanDialogStore.booleanValue   = true;
 
-                                        this._notesPresenter.refresh();
-                                    }).catch(error => console.error(error));
-                            }
-                        });
+                        this._store.booleanDialogStore.trueAction = () => {
+                            this._database.archiveByCategory(category)
+                                .then(() => {
+                                    this._filtersPresenter.refresh();
+                                    this._categoriesPresenter.refresh();
+
+                                    this._notesPresenter.refresh();
+                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                        };
                     }
                 }));
 
                 menu.popup(remote.getCurrentWindow());
-            }).catch(error => console.error(error));
+            }).catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     handleAddCategoryClick() {
@@ -429,7 +423,7 @@ export default class AppPresenter {
                             this._notesPresenter.refresh();
                             this._filtersPresenter.refresh();
                             this._categoriesPresenter.notifyDataSetChanged();
-                        }).catch(error => console.error(error));
+                        }).catch(error => PubSub.publish('Event.error', error.toString()));
                 }
             }));
         }
@@ -439,25 +433,23 @@ export default class AppPresenter {
         menu.append(new MenuItem({
             label : action + '…',
             click : () => {
-                dialog.showMessageBox(remote.getCurrentWindow(), {
-                    type      : 'question',
-                    title     : action + ' note',
-                    message   : 'Are you sure you want to ' + action.toLowerCase() + ' this note?',
-                    buttons   : [ 'Yes', 'No' ],
-                    defaultId : 0,
-                    cancelId  : 1
-                }, response => {
-                    if (response === 0) {
-                        (this._store.filtersStore.selectedIndex === 2 ? this._database.removeById(this._store.notesStore.selectedItem.itemId) : this._database.archiveById(this._store.notesStore.selectedItem.itemId))
-                            .then(() => {
-                                this._notesPresenter.refresh();
-                                this._filtersPresenter.refresh();
-                                this._categoriesPresenter.notifyDataSetChanged();
+                this._store.booleanDialogStore.title          = action + ' note';
+                this._store.booleanDialogStore.message        = 'Are you sure you want to ' + action.toLowerCase() + ' this note?';
+                this._store.booleanDialogStore.trueLabel      = 'Yes';
+                this._store.booleanDialogStore.falseLabel     = 'No';
+                this._store.booleanDialogStore.trueLabelColor = 'secondary';
+                this._store.booleanDialogStore.booleanValue   = true;
 
-                                this.refreshEditor();
-                            }).catch(error => console.error(error));
-                    }
-                });
+                this._store.booleanDialogStore.trueAction = () => {
+                    (this._store.filtersStore.selectedIndex === 2 ? this._database.removeById(this._store.notesStore.selectedItem.itemId) : this._database.archiveById(this._store.notesStore.selectedItem.itemId))
+                        .then(() => {
+                            this._notesPresenter.refresh();
+                            this._filtersPresenter.refresh();
+                            this._categoriesPresenter.notifyDataSetChanged();
+
+                            this.refreshEditor();
+                        }).catch(error => PubSub.publish('Event.error', error.toString()));
+                };
             }
         }));
 
@@ -506,7 +498,7 @@ export default class AppPresenter {
                 this._store.notesStore.selectedIndex = 0;
 
                 this._noteSelection.onNext(0);
-            }).catch(error => console.error(error));
+            }).catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     handleImportNotes() {
@@ -530,12 +522,12 @@ export default class AppPresenter {
                             flag     : 'r'
                         }, (error, fullText) => {
                             if (error) {
-                                console.error(error);
+                                PubSub.publish('Event.error', error.toString());
                             } else {
                                 this._database.addOrUpdate(Record.fromText(syntax, fullText))
                                     .then(doc => {
                                         this._store.notesStore.items.unshift(Record.fromDoc(doc).toListItemStore());
-                                    }).catch(error => console.error(error));
+                                    }).catch(error => PubSub.publish('Event.error', error.toString()));
                             }
                         });
                     });
@@ -628,7 +620,7 @@ export default class AppPresenter {
                         });
                     }
                 }
-            }).catch(error => console.error(error));
+            }).catch(error => PubSub.publish('Event.error', error.toString()));
         }
     }
 
@@ -641,7 +633,7 @@ export default class AppPresenter {
 
         this._database.addOrUpdate(this._store.editorStore.record.toDoc())
             .then(() => this._filtersPresenter.refresh())
-            .catch(error => console.error(error));
+            .catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     handleArchiveClick() {
@@ -649,7 +641,7 @@ export default class AppPresenter {
 
         this._database.addOrUpdate(this._store.editorStore.record.toDoc())
             .then(() => this._filtersPresenter.refresh())
-            .catch(error => console.error(error));
+            .catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     handleSelectCategoryClick() {
@@ -668,7 +660,7 @@ export default class AppPresenter {
                 });
 
                 this._store.selectCategoryDialogStore.booleanValue = true;
-            }).catch(error => console.error(error));
+            }).catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     /**
@@ -732,7 +724,7 @@ export default class AppPresenter {
                 if (this._store.notesStore.selectedItemId) {
                     this._store.currentSyntaxDialogStore.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.editorStore.record.syntax);
                 }
-            }).catch(error => console.error(error));
+            }).catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     //endregion
@@ -753,7 +745,7 @@ export default class AppPresenter {
 
                     this._categoriesPresenter.notifyDataSetChanged();
                 }).catch(error => {
-                    console.error(error);
+                    PubSub.publish('Event.error', error.toString());
 
                     PubSub.publish(EVENT_ERROR, error.message);
                 });
@@ -772,7 +764,7 @@ export default class AppPresenter {
 
                 this._categoriesPresenter.notifyDataSetChanged();
             }).catch(error => {
-                console.error(error);
+                PubSub.publish('Event.error', error.toString());
 
                 PubSub.publish(EVENT_ERROR, error.message);
             });
@@ -829,7 +821,7 @@ export default class AppPresenter {
      * @param {String} syntax
      */
     changeDefaultSyntax(syntax) {
-        this._settings.set('defaultSyntax', syntax).catch(error => console.error(error));
+        this._settings.set('defaultSyntax', syntax).catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     /**
@@ -841,7 +833,7 @@ export default class AppPresenter {
         this._updateTheme();
 
         this._settings.set('theme', theme)
-            .catch(error => console.error(error));
+            .catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     /**
@@ -851,7 +843,7 @@ export default class AppPresenter {
         AppPresenter._updateFont(font);
 
         this._settings.set('font', font)
-            .catch(error => console.error(error));
+            .catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     changeSettings(data) {
@@ -883,7 +875,7 @@ export default class AppPresenter {
             console.warn('Unrecognized setting ' + data.name + ' = ' + data.value);
         }
 
-        this._settings.set(data.name, data.value).catch(error => console.error(error));
+        this._settings.set(data.name, data.value).catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     //endregion
@@ -896,7 +888,7 @@ export default class AppPresenter {
 
     resetSettings() {
         this._settings.clear()
-            .catch(error => console.error(error));
+            .catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     //endregion
@@ -1029,8 +1021,8 @@ export default class AppPresenter {
                     this._database.addOrUpdate(record.toDoc())
                         .then(doc => {
                             this._store.notesStore.selectedItem.update(Record.fromDoc(doc));
-                        }).catch(error => console.error(error));
-                }).catch(error => console.error(error));
+                        }).catch(error => PubSub.publish('Event.error', error.toString()));
+                }).catch(error => PubSub.publish('Event.error', error.toString()));
         });
     }
 
@@ -1061,7 +1053,7 @@ export default class AppPresenter {
         this._store.notesSorting     = sorting;
         this._notesPresenter.sorting = sorting;
 
-        this._settings.set('notesSorting', sorting).catch(error => console.error(error));
+        this._settings.set('notesSorting', sorting).catch(error => PubSub.publish('Event.error', error.toString()));
     }
 
     /**

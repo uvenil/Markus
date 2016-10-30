@@ -20,6 +20,7 @@ import TextEditor from './components/text/TextEditor.jsx';
 import ListView from './components/lists/ListView.jsx';
 import FilterListView from './components/lists/FilterListView.jsx';
 import NoteListView from './components/lists/NoteListView.jsx';
+import BooleanDialog from './components/dialogs/BooleanDialog.jsx';
 import PromptDialog from './components/dialogs/PromptDialog.jsx';
 import EditorSettingsDialog from './components/dialogs/EditorSettingsDialog.jsx';
 import ListViewDialog from './components/dialogs/ListViewDialog.jsx';
@@ -153,11 +154,13 @@ export default class App extends React.Component {
         return (
             <MuiThemeProvider muiTheme={muiTheme}>
                 <div style={{ backgroundColor : muiTheme.palette.canvasColor }}>
+                    {/* Error or information message */}
                     <Snackbar
                         open={this.props.store.snackbarOpened}
                         message={this.props.store.snackbarMessage}
                         autoHideDuration={Constants.SNACKBAR_DURATION}
                         onRequestClose={() => this.props.store.snackbarOpened = false} />
+                    <BooleanDialog store={this.props.store.booleanDialogStore} />
                     {/* Drawer */}
                     <Drawer
                         docked={false}
