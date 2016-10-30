@@ -1,6 +1,6 @@
 'use strict';
 
-import { createPreferencesMenu, createViewMenu, createDeveloperMenu } from './MenuUtils.common';
+import { createPreferencesMenu, createEditMenu, createViewMenu, createDeveloperMenu } from './MenuUtils.common';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
@@ -45,14 +45,7 @@ export default function createWindowMenu() {
         ]
     });
 
-    const editMenu = [];
-
-    editMenu.push(createPreferencesMenu());
-
-    template.push({
-        label   : 'Edit',
-        submenu : editMenu
-    });
+    template.push(createEditMenu());
 
     template.push(createViewMenu());
 
