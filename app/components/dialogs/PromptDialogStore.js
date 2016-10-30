@@ -1,9 +1,9 @@
 'use strict';
 
-import DialogStore from './DialogStore';
 import { extendObservable } from 'mobx';
+import BooleanStore from '../BooleanStore';
 
-export default class PromptDialogStore extends DialogStore {
+export default class PromptDialogStore extends BooleanStore {
     constructor() {
         super();
 

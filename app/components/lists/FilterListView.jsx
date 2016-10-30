@@ -1,41 +1,46 @@
 'use strict';
 
 import React from 'react';
-import { ListView } from './ListView.jsx';
-import ListViewStore from './ListViewStore';
-import { Text } from '../text/Text.jsx';
 import { observer } from 'mobx-react';
+import Label from '../text/Label.jsx';
+import ListView from './ListView.jsx';
+import ListViewStore from './ListViewStore';
 import Unique from '../../utils/Unique';
-import Config from '../../../config.json';
+import Constants from '../../utils/Constants';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
 @observer
-export default class FilterListView extends React.Component {
+class FilterListView extends React.Component {
     constructor(props) {
         super(props);
     }
 
     render() {
         return (
-            <div style={{ paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
+            <div style={{ paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0 }}>
                 <ListView
                     header={this.props.store.headerText}
                     selectedIndex={this.props.store.selectedIndex}
-                    backgroundColor={this.props.backgroundColor}
-                    theme={this.props.theme}
                     onItemClick={this.props.onItemClick}
                     onItemRightClick={this.props.onItemRightClick}>
                     {this.props.store.items.map(item => {
+                        const icon = item.icon ?
+                            <i
+                                className={'fa fa-fw fa-' + item.icon}
+                                style={{ color : this.props.muiTheme.palette.textColor }} /> : '';
+
                         return (
                             <div
-                                key={Unique.elementId() + '-' + item.itemId}
-                                style={{ display : 'flex', flexFlow : 'row', paddingLeft : Config.paddingX2 + 'px', paddingRight : Config.paddingX1 + 'px', paddingTop : Config.paddingX0 + 'px', paddingBottom : Config.paddingX0 + 'px' }}>
+                                key={Unique.elementId()}
+                                style={{ display : 'flex', flexFlow : 'row', paddingLeft : Constants.PADDING_X2, paddingRight : Constants.PADDING_X1, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1 }}>
                                 <div style={{ flex : '1 1 0' }}>
-                                    <Text theme={this.props.theme}>{item.primaryText}</Text>
+                                    {icon}&nbsp;<Label>{item.primaryText}</Label>
                                 </div>
-                                <Text
+                                <Label
                                     fontWeight={300}
-                                    theme={this.props.theme}
-                                    className="Text monospace">{item.secondaryText}</Text>
+                                    theme={this.props.theme}>
+                                    {item.secondaryText}
+                                </Label>
                             </div>
                         );
                     })}
@@ -47,14 +52,8 @@ export default class FilterListView extends React.Component {
 
 FilterListView.propTypes = {
     store            : React.PropTypes.instanceOf(ListViewStore).isRequired,
-    backgroundColor  : React.PropTypes.string,
-    theme            : React.PropTypes.oneOf([ 'light', 'dark' ]),
     onItemClick      : React.PropTypes.func,
     onItemRightClick : React.PropTypes.func
 };
 
-FilterListView.defaultProps = {
-    theme : 'light'
-};
-
-module.exports = FilterListView;
+export default muiThemeable()(FilterListView);

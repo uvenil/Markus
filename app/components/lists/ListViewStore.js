@@ -108,3 +108,5 @@ export default class ListViewStore {
         return undefined;
     }
 }
+
+module.exports = ListViewStore;

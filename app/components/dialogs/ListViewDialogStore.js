@@ -1,18 +1,16 @@
 'use strict';
 
 import { extendObservable } from 'mobx';
-import DialogStore from './DialogStore';
+import BooleanStore from '../BooleanStore';
 import ListViewStore from '../lists/ListViewStore';
 
-export default class ListViewDialogStore extends DialogStore {
+export default class ListViewDialogStore extends BooleanStore {
     constructor() {
         super();
 
         extendObservable(this, {
-            list : undefined
+            list : new ListViewStore()
         });
-
-        this.list = new ListViewStore();
     }
 }
 

@@ -1,60 +1,76 @@
 'use strict';
 
 import React from 'react';
-import Config from '../../../config.json';
+import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
+import FontIcon from 'material-ui/FontIcon';
+import Constants from '../../utils/Constants';
 
 const Button = props => {
-    const theme = props.theme === 'dark' ? require('../../theme.dark.json') : require('../../theme.light.json');
+    const icon = props.icon ?
+        <FontIcon
+            className={'fa fa-fw fa-' + props.icon}
+            style={{ marginLeft : props.labelPosition === 'before' || !props.label ? 0 : Constants.PADDING_X1, marginRight : props.labelPosition === 'after' || !props.label ? 0 : Constants.PADDING_X1, fontSize : Constants.TEXT_FONT_SIZE }} /> : undefined;
 
-    let textColor       = props.textColor ? props.textColor : theme.primaryTextColor;
-    let backgroundColor = theme.buttonDefaultColor;
+    const style = props.style ? props.style : {};
 
-    if (props.backgroundColor === 'primary') {
-        textColor       = theme.primaryTextColorInverted;
-        backgroundColor = theme.buttonPrimaryColor;
-    } else if (props.backgroundColor === 'success') {
-        textColor       = theme.primaryTextColorInverted;
-        backgroundColor = theme.buttonSuccessColor;
-    } else if (props.backgroundColor === 'error') {
-        textColor       = theme.primaryTextColorInverted;
-        backgroundColor = theme.buttonErrorColor;
-    } else if (props.backgroundColor === 'warning') {
-        textColor       = theme.primaryTextColorInverted;
-        backgroundColor = theme.buttonWarningColor;
-    } else if (props.backgroundColor === 'none') {
-        backgroundColor = 'transparent';
+    style.minWidth   = props.width;
+    style.height     = props.height;
+    style.lineHeight = props.height + 'px';
+    style.textAlign  = props.align;
+
+    if (props.borderless) {
+        return (
+            <FlatButton
+                label={props.label}
+                labelPosition={props.labelPosition}
+                labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : Constants.TEXT_FONT_SIZE, fontWeight : props.labelWeight === 'light' ? 300 : props.labelWeight === 'bold' ? 500 : 400, textTransform : 'none' } : {}}
+                icon={icon}
+                primary={props.color === 'primary'}
+                secondary={props.color === 'secondary'}
+                disabled={props.disabled}
+                style={style}
+                onTouchTap={props.onTouchTap} />
+        );
     }
 
     return (
-        <button
-            type="button"
-            className={props.className}
-            style={{ WebkitUserSelect : 'none', cursor : 'default', width : props.width, fontFamily : props.fontFamily, fontSize : props.textSize, color : textColor, backgroundColor : backgroundColor, outline : 'none', borderWidth : '1px', borderStyle : 'solid', borderRadius : Config.paddingX0 + 'px', borderColor : backgroundColor, padding : Config.paddingX0 + 'px ' + Config.paddingX0 + 'px', pointerEvents : props.disabled ? 'none' : 'auto' }}
-            onClick={() => {
-                if (props.onClick) props.onClick();
-            }}>
-            {props.children}
-        </button>
+        <RaisedButton
+            label={props.label}
+            labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : Constants.TEXT_FONT_SIZE, textTransform : 'none' } : {}}
+            icon={icon}
+            primary={props.color === 'primary'}
+            secondary={props.color === 'secondary'}
+            disabled={props.disabled}
+            style={style}
+            onTouchTap={props.onTouchTap} />
     );
 };
 
 Button.propTypes = {
-    className       : React.PropTypes.string,
-    width           : React.PropTypes.string,
-    fontFamily      : React.PropTypes.string,
-    textSize        : React.PropTypes.string,
-    textColor       : React.PropTypes.string,
-    backgroundColor : React.PropTypes.oneOf([ 'default', 'primary', 'success', 'error', 'warning', 'none' ]),
-    theme           : React.PropTypes.oneOf([ 'light', 'dark' ]),
-    disabled        : React.PropTypes.bool,
-    onClick         : React.PropTypes.func
+    label         : React.PropTypes.string,
+    labelPosition : React.PropTypes.oneOf([ 'before', 'after' ]),
+    labelWeight   : React.PropTypes.oneOf([ 'light', 'normal', 'bold' ]),
+    icon          : React.PropTypes.string,
+    borderless    : React.PropTypes.bool,
+    color         : React.PropTypes.oneOf([ 'default', 'primary', 'secondary' ]),
+    width         : React.PropTypes.oneOfType([ React.PropTypes.number, React.PropTypes.string ]),
+    height        : React.PropTypes.oneOfType([ React.PropTypes.number, React.PropTypes.string ]),
+    align         : React.PropTypes.oneOf([ 'left', 'center', 'right' ]),
+    disabled      : React.PropTypes.bool,
+    style         : React.PropTypes.object,
+    onTouchTap    : React.PropTypes.func
 };
 
 Button.defaultProps = {
-    className       : 'Button',
-    backgroundColor : 'default',
-    theme           : 'light',
-    disabled        : false
+    labelPosition : 'after',
+    labelWeight   : 'bold',
+    width         : Constants.BUTTON_MIN_WIDTH,
+    height        : Constants.BUTTON_MIN_HEIGHT,
+    borderless    : true,
+    color         : 'default',
+    align         : 'center',
+    disabled      : false
 };
 
-module.exports = { Button };
+export default Button;

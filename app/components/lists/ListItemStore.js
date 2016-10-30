@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { extendObservable } from 'mobx';
-import Record from '../../data/Record';
+import Record from '../../data/Record.jsx';
 import moment from 'moment';
 import Unique from '../../utils/Unique';
 import Config from '../../../config.json';
@@ -12,6 +12,7 @@ export default class ListItemStore {
     constructor() {
         extendObservable(this, {
             itemId        : undefined,
+            icon          : 'tag',
             primaryText   : '',
             secondaryText : '',
             tertiaryText  : '',
@@ -37,3 +38,5 @@ export default class ListItemStore {
         return this;
     }
 }
+
+module.exports = ListItemStore;

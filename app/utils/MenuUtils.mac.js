@@ -1,6 +1,6 @@
 'use strict';
 
-import { createPreferencesMenu, createViewMenu, createDeveloperMenu } from './MenuUtils.common';
+import { createEditMenu, createViewMenu, createDeveloperMenu } from './MenuUtils.common';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
@@ -23,10 +23,6 @@ export default function createWindowMenu() {
             {
                 type : 'separator'
             },
-            createPreferencesMenu(),
-            {
-                type : 'separator'
-            },
             {
                 role    : 'services',
                 submenu : []
@@ -37,6 +33,9 @@ export default function createWindowMenu() {
             {
                 label : 'Hide ' + app.getName(),
                 role  : 'hide'
+            },
+            {
+                role : 'hideothers'
             },
             {
                 role : 'unhide'
@@ -77,6 +76,8 @@ export default function createWindowMenu() {
             }
         ]
     });
+
+    template.push(createEditMenu());
 
     template.push(createViewMenu());
 

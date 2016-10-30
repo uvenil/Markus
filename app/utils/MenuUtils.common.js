@@ -5,6 +5,8 @@ import is from 'electron-is';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
+const { remote } = require('electron');
+
 const setMenuItemEnabled = (items, enabled) => {
     items.forEach(item => {
         if (item.submenu) {
@@ -15,12 +17,45 @@ const setMenuItemEnabled = (items, enabled) => {
     });
 };
 
-const createPreferencesMenu = () => {
+const createEditMenu = () => {
     return {
-        label   : 'Preferences…',
-        click   : (item, win) => {
-            if (win) PubSub.publish('SettingsDialog.visible');
-        }
+        label   : 'Edit',
+        submenu : [
+            {
+                role        : 'undo',
+                accelerator : 'CmdOrCtrl+Z'
+            },
+            {
+                role        : 'redo',
+                accelerator : 'CmdOrCtrl+Y'
+            },
+            {
+                type : 'separator'
+            },
+            {
+                role        : 'cut',
+                accelerator : 'CmdOrCtrl+X'
+            },
+            {
+                role        : 'copy',
+                accelerator : 'CmdOrCtrl+C'
+            },
+            {
+                role        : 'paste',
+                accelerator : 'CmdOrCtrl+V'
+            },
+            {
+                role        : 'delete',
+                accelerator : 'Delete'
+            },
+            {
+                type : 'separator'
+            },
+            {
+                role        : 'selectall',
+                accelerator : 'CmdOrCtrl+A'
+            }
+        ]
     };
 };
 
@@ -41,6 +76,43 @@ const createViewMenu = () => {
                 click : (item, win) => {
                     if (win) PubSub.publish('View.showNoteList', item.checked);
                 }
+            },
+            {
+                type : 'separator'
+            },
+            {
+                role  : 'zoomin',
+                click : (item, win) => {
+                    if (win) {
+                        remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => {
+                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + 0.1);
+                        });
+                    }
+                }
+            },
+            {
+                role  : 'zoomout',
+                click : (item, win) => {
+                    if (win) {
+                        remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => {
+                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - 0.1);
+                        });
+                    }
+                }
+            },
+            {
+                role  : 'resetzoom',
+                click : (item, win) => {
+                    if (win) {
+                        remote.getCurrentWindow().webContents.setZoomFactor(1);
+                    }
+                }
+            },
+            {
+                type : 'separator'
+            },
+            {
+                role : 'togglefullscreen'
             }
         ]
     };
@@ -83,4 +155,4 @@ const createDeveloperMenu = () => {
     };
 };
 
-module.exports = { setMenuItemEnabled, createPreferencesMenu, createViewMenu, createDeveloperMenu };
+module.exports = { setMenuItemEnabled, createEditMenu, createViewMenu, createDeveloperMenu };
