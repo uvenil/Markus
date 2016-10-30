@@ -365,7 +365,6 @@ export default class App extends React.Component {
                         ]}
                         onRequestClose={() => this.props.store.selectCategoryDialogStore.booleanValue = false}>
                         <ListView
-                            backgroundColor={muiTheme.canvasColor}
                             selectedIndex={this.props.store.selectCategoryDialogStore.list.selectedIndex}
                             onItemClick={index => this.props.presenter.handleSelectCategoryItemClick(index)}>
                             {this.props.store.selectCategoryDialogStore.list.items.map(item => {

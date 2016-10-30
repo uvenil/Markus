@@ -654,14 +654,12 @@ export default class AppPresenter {
             .then(categories => {
                 this._store.selectCategoryDialogStore.list.items = [];
 
-                const selectedCategory = this._store.categoriesStore.selectedItem;
-
                 categories.forEach(category => {
                     const item = new ListItemStore();
 
                     item.itemId      = category;
                     item.primaryText = category;
-                    item.selected    = selectedCategory ? selectedCategory.primaryText === category : false;
+                    item.selected    = this._store.editorStore.record.category ? this._store.editorStore.record.category === category : false;
 
                     this._store.selectCategoryDialogStore.list.items.push(item);
                 });
