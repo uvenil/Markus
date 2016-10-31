@@ -8,7 +8,7 @@ import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import Label from '../text/Label.jsx';
 import Button from '../buttons/Button.jsx';
 import BooleanStore from '../BooleanStore';
-import SettingsStore from '../../SettingsStore';
+import SettingsStore from './SettingsStore';
 import Constants from '../../utils/Constants';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';

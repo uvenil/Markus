@@ -3,7 +3,6 @@
     "windowHeight"               : 544,
     "windowMinWidth"             : 725,
     "windowMinHeight"            : 544,
-    "buttonWidth"                : "72px",
     "databaseName"               : "notes.db",
     "defaultSyntax"              : "markdown",
     "defaultTheme"               : "github",

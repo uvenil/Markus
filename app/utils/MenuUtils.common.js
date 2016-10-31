@@ -1,5 +1,6 @@
 'use strict';
 
+import Constants from './Constants';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
@@ -85,7 +86,7 @@ const createViewMenu = () => {
                 click : (item, win) => {
                     if (win) {
                         remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => {
-                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + 0.1);
+                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + Constants.ZOOM_FACTOR_STEP);
                         });
                     }
                 }
@@ -95,7 +96,7 @@ const createViewMenu = () => {
                 click : (item, win) => {
                     if (win) {
                         remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => {
-                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - 0.1);
+                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - Constants.ZOOM_FACTOR_STEP);
                         });
                     }
                 }

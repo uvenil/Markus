@@ -41,8 +41,8 @@ const { app } = require('electron').remote;
 
 const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
 
-const LIGHT_THEME = require('./theme.light.json');
-const DARK_THEME  = require('./theme.dark.json');
+const LIGHT_THEME = require('./definitions/theme.light.json');
+const DARK_THEME  = require('./definitions/theme.dark.json');
 
 const MUI_LIGHT_THEME = getMuiTheme({
     palette : {
