@@ -1,24 +1,24 @@
 # Artisan
-A note-taking app for programmers, hand crafted with ♥
+A note-taking app for programmers, hand crafted with ❤
 
 <img src="https://github.com/ayltai/artisan/blob/master/screenshots/screenshot_light.png?raw=true" width="824" height="581" />
 <img src="https://github.com/ayltai/artisan/blob/master/screenshots/screenshot_dark.png?raw=true" width="824" height="581" />
 
 ## Features
 
-### ♥ Code Editing
+### ❤ Code Editing
 Artisan is powered by the [Ace](https://ace.c9.io) code editor, support syntax highlighting for more than 120 languages, with over 20 themes, code folding, automatic indent, highlight matching parentheses, and many more!
 
-### ♥ Themes
+### ❤ Themes
 Artisan comes with over 20 themes for its code editor.
 
-### ♥ Auto-Save
+### ❤ Auto-Save
 Artisan automatically and instantly saves your notes when they are modified. There is no "save" button in the app. Never worried about losing any changes.
 
-### ♥ Categories
+### ❤ Categories
 You can assign categories to your notes to better manage them.
 
-### ♥ Cloud Support
+### ❤ Cloud Support
 Coming soon
 
 ## Installation
