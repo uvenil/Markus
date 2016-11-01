@@ -8,16 +8,6 @@ if (is.dev()) PubSub.immediateExceptions = true;
 
 const { remote } = require('electron');
 
-const setMenuItemEnabled = (items, enabled) => {
-    items.forEach(item => {
-        if (item.submenu) {
-            setMenuItemEnabled(item.submenu.items, enabled);
-        } else {
-            item.enabled = enabled;
-        }
-    });
-};
-
 const createEditMenu = () => {
     return {
         label   : 'Edit',
@@ -156,4 +146,4 @@ const createDeveloperMenu = () => {
     };
 };
 
-module.exports = { setMenuItemEnabled, createEditMenu, createViewMenu, createDeveloperMenu };
+module.exports = { createEditMenu, createViewMenu, createDeveloperMenu };

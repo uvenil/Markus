@@ -81,9 +81,7 @@ export default function createWindowMenu() {
 
     template.push(createViewMenu());
 
-    if (is.dev()) {
-        template.push(createDeveloperMenu());
-    }
+    if (is.dev()) template.push(createDeveloperMenu());
 
     template.push({
         label   : 'Window',
