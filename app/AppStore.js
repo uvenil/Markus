@@ -1,7 +1,7 @@
 'use strict';
 
 import { extendObservable } from 'mobx';
-import Config from '../config.json';
+import Constants from './utils/Constants';
 
 export default class AppStore {
     constructor() {
@@ -20,8 +20,8 @@ export default class AppStore {
             settingsStore             : undefined,
             showFilterList            : true,
             showNoteList              : true,
-            filterListWidth           : Config.filterListWidth,
-            noteListWidth             : Config.noteListWidth,
+            filterListWidth           : Constants.FILTER_LIST_MIN_WIDTH,
+            noteListWidth             : Constants.NOTE_LIST_MIN_WIDTH,
             filtersStore              : undefined,
             categoriesStore           : undefined,
             notesStore                : undefined,

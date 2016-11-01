@@ -19,6 +19,11 @@ const SUB_HEADING_FONT_SIZE = '14px';
 
 const SNACKBAR_DURATION = 4000;
 
+const TAB_SIZES            = [ 2, 4, 8 ];
+const PRINT_MARGIN_COLUMNS = [ 72, 80, 100, 120 ];
+
+const ZOOM_FACTOR_STEP = 0.1;
+
 module.exports = {
     FILTER_LIST_MIN_WIDTH,
     NOTE_LIST_MIN_WIDTH,
@@ -35,5 +40,8 @@ module.exports = {
     TEXT_FONT_SIZE,
     HEADING_FONT_SIZE,
     SUB_HEADING_FONT_SIZE,
-    SNACKBAR_DURATION
+    SNACKBAR_DURATION,
+    TAB_SIZES,
+    PRINT_MARGIN_COLUMNS,
+    ZOOM_FACTOR_STEP
 };

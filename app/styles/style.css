@@ -6,25 +6,12 @@ body {
     font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
 }
 
-.full-width {
-    width : calc(100% - 12px);
-}
-
-.monospace {
-    font-family : Menlo, Monaco, 'Andale Mono', 'Lucida Console', Consolas, 'Courier New', monospace !important;
-}
-
 .Label {
     font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
     font-size   : 13px;
 }
 
 .Text {
-    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
-    font-size   : 13px;
-}
-
-.TextBox {
     font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
     font-size   : 13px;
 }
@@ -38,39 +25,6 @@ body {
     font-size   : 15px;
 }
 
-.CheckBox {
-    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
-    font-size   : 13px;
-}
-
-.CheckBox input[type="checkbox"] {
-    display : none;
-}
-
-.CheckBox input[type="checkbox"] + label {
-    line-height : 13px;
-}
-
-.CheckBox input[type="checkbox"] + label:before {
-    content       : "\00a0";
-    display       : inline-block;
-    position      : relative;
-    width         : 14px;
-    height        : 14px;
-    margin-right  : 8px;
-    text-align    : center;
-    border        : 1px solid #888;
-    border-radius : 4px;
-}
-
-.CheckBox input[type="checkbox"]:checked + label:before {
-    content          : "\f00c";
-    font-family      : FontAwesome;
-    background-color : #00acee;
-    color            : #fff;
-    border-color     : #00acee;
-}
-
 .ListView {
     font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
     font-size   : 13px;
@@ -80,38 +34,4 @@ body {
     font-weight : bold;
     font-size   : 11px;
     color       : #7a7b7c !important;
-}
-
-.PopUp {
-    display  : inline-block;
-    position : relative;
-}
-
-.PopUp .PopUpContent {
-    display       : none;
-    position      : absolute;
-    border        : 1px solid #808080;
-    border-radius : 4px;
-    box-shadow    : 4px 8px 16px 4px rgba(0, 0, 0, 0.25);
-}
-
-.DialogOverlay {
-    position : absolute;
-    left     : 0;
-    right    : 0;
-    top      : 0;
-    bottom   : 0;
-    z-index  : 5;
-}
-
-.DialogContent {
-    position   : absolute;
-    left       : 0;
-    right      : 0;
-    top        : 0;
-    bottom     : 0;
-    margin     : auto;
-    overflow   : hidden;
-    z-index    : 6;
-    box-shadow : 0 10px 24px 4px rgba(0, 0, 0, 0.25);
 }

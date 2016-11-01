@@ -1,21 +1,12 @@
 'use strict';
 
+import Constants from './Constants';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
 
 if (is.dev()) PubSub.immediateExceptions = true;
 
 const { remote } = require('electron');
-
-const setMenuItemEnabled = (items, enabled) => {
-    items.forEach(item => {
-        if (item.submenu) {
-            setMenuItemEnabled(item.submenu.items, enabled);
-        } else {
-            item.enabled = enabled;
-        }
-    });
-};
 
 const createEditMenu = () => {
     return {
@@ -85,7 +76,7 @@ const createViewMenu = () => {
                 click : (item, win) => {
                     if (win) {
                         remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => {
-                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + 0.1);
+                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + Constants.ZOOM_FACTOR_STEP);
                         });
                     }
                 }
@@ -95,7 +86,7 @@ const createViewMenu = () => {
                 click : (item, win) => {
                     if (win) {
                         remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => {
-                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - 0.1);
+                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - Constants.ZOOM_FACTOR_STEP);
                         });
                     }
                 }
@@ -155,4 +146,4 @@ const createDeveloperMenu = () => {
     };
 };
 
-module.exports = { setMenuItemEnabled, createEditMenu, createViewMenu, createDeveloperMenu };
+module.exports = { createEditMenu, createViewMenu, createDeveloperMenu };
