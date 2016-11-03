@@ -3,9 +3,13 @@
 import RandomString from 'randomstring';
 
 export default class Unique {
-    static elementId() {
+    /**
+     * Returns a random string of length specified optionally.
+     * @param {number} [length=4]
+     */
+    static nextString(length) {
         return RandomString.generate({
-            length  : 4,
+            length  : length !== undefined ? length : 4,
             charset : 'alphabetic'
         });
     }

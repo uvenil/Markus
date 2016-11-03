@@ -5,33 +5,3 @@ html, body {
 body {
     font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
 }
-
-.Label {
-    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
-    font-size   : 13px;
-}
-
-.Text {
-    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
-    font-size   : 13px;
-}
-
-.SearchBox {
-    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
-    font-size   : 13px;
-}
-
-.SearchBox i {
-    font-size   : 15px;
-}
-
-.ListView {
-    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
-    font-size   : 13px;
-}
-
-.ListView .ListViewHeader {
-    font-weight : bold;
-    font-size   : 11px;
-    color       : #7a7b7c !important;
-}

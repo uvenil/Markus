@@ -46,7 +46,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 checked={this.props.settingsStore.highlightCurrentLine.booleanValue}
                                 onCheck={(event, checked) => {
                                     this.props.settingsStore.highlightCurrentLine.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'highlightActiveLine', value : checked });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'highlightActiveLine', value : checked });
                                 }} />
                         </div>
                     </div>
@@ -60,7 +60,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 checked={this.props.settingsStore.showLineNumbers.booleanValue}
                                 onCheck={(event, checked) => {
                                     this.props.settingsStore.showLineNumbers.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'showLineNumbers', value : checked });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'showLineNumbers', value : checked });
                                 }} />
                         </div>
                     </div>
@@ -78,7 +78,7 @@ export default class EditorSettingsDialog extends React.Component {
                                     this.props.settingsStore.tabSize4.booleanValue = value === 4;
                                     this.props.settingsStore.tabSize8.booleanValue = value === 8;
 
-                                    PubSub.publish('TextEditor.settings', { name : 'tabSize', value : value });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'tabSize', value : value });
                                 }}>
                                 <RadioButton
                                     label="2 spaces"
@@ -105,7 +105,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 checked={this.props.settingsStore.useSoftTabs.booleanValue}
                                 onCheck={(event, checked) => {
                                     this.props.settingsStore.useSoftTabs.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'useSoftTabs', value : checked });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'useSoftTabs', value : checked });
                                 }} />
                         </div>
                     </div>
@@ -119,7 +119,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 checked={this.props.settingsStore.wordWrap.booleanValue}
                                 onCheck={(event, checked) => {
                                     this.props.settingsStore.wordWrap.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'wordWrap', value : checked });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'wordWrap', value : checked });
                                 }} />
                         </div>
                     </div>
@@ -133,7 +133,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 checked={this.props.settingsStore.showPrintMargin.booleanValue}
                                 onCheck={(event, checked) => {
                                     this.props.settingsStore.showPrintMargin.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'showPrintMargin', value : checked });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'showPrintMargin', value : checked });
                                 }} />
                         </div>
                     </div>
@@ -152,7 +152,7 @@ export default class EditorSettingsDialog extends React.Component {
                                     this.props.settingsStore.printMarginColumn100.booleanValue = value === 100;
                                     this.props.settingsStore.printMarginColumn120.booleanValue = value === 120;
 
-                                    PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : value });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'printMarginColumn', value : value });
                                 }}>
                                 <RadioButton
                                     label="72"
@@ -183,7 +183,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 checked={this.props.settingsStore.showInvisibles.booleanValue}
                                 onCheck={(event, checked) => {
                                     this.props.settingsStore.showInvisibles.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'showInvisibles', value : checked });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'showInvisibles', value : checked });
                                 }} />
                         </div>
                     </div>
@@ -197,7 +197,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 checked={this.props.settingsStore.showFoldWidgets.booleanValue}
                                 onCheck={(event, checked) => {
                                     this.props.settingsStore.showFoldWidgets.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'showFoldWidgets', value : checked });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'showFoldWidgets', value : checked });
                                 }} />
                         </div>
                     </div>
@@ -211,7 +211,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 checked={this.props.settingsStore.showGutter.booleanValue}
                                 onCheck={(event, checked) => {
                                     this.props.settingsStore.showGutter.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'showGutter', value : checked });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'showGutter', value : checked });
                                 }} />
                         </div>
                     </div>
@@ -225,7 +225,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 checked={this.props.settingsStore.showIndentGuides.booleanValue}
                                 onCheck={(event, checked) => {
                                     this.props.settingsStore.showIndentGuides.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'displayIndentGuides', value : checked });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'displayIndentGuides', value : checked });
                                 }} />
                         </div>
                     </div>
@@ -239,7 +239,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 checked={this.props.settingsStore.scrollPastLastLine.booleanValue}
                                 onCheck={(event, checked) => {
                                     this.props.settingsStore.scrollPastLastLine.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'scrollPastEnd', value : checked });
+                                    PubSub.publish('TextEditor.settings.change', { name : 'scrollPastEnd', value : checked });
                                 }} />
                         </div>
                     </div>

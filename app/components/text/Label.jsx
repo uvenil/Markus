@@ -2,27 +2,39 @@
 
 import React from 'react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
+import _ from 'lodash';
 
 const Label = props => {
+    const style = { WebkitUserSelect : 'none', cursor : 'default', color : props.muiTheme.palette.textColor, pointerEvents : props.disabled ? 'none' : 'auto' };
+
+    const handleClick = event => {
+        if (event.nativeEvent.button === 2) {
+            if (props.onRightClick) props.onRightClick();
+        } else {
+            if (props.onClick) props.onClick();
+        }
+    };
+
     return (
         <span
             className={props.className}
-            style={{ WebkitUserSelect : 'none', cursor : 'default', fontWeight : props.fontWeight, fontSize : props.textSize, color : props.muiTheme.palette.textColor, pointerEvents : props.disabled ? 'none' : 'auto' }}>
+            style={_.assign(style, props.style)}
+            onMouseDown={event => handleClick(event)}>
             {props.children}
         </span>
     );
 };
 
 Label.propTypes = {
-    className  : React.PropTypes.string,
-    fontWeight : React.PropTypes.oneOfType([ React.PropTypes.string, React.PropTypes.number ]),
-    textSize   : React.PropTypes.string,
-    disabled   : React.PropTypes.bool
+    className    : React.PropTypes.string,
+    style        : React.PropTypes.object,
+    disabled     : React.PropTypes.bool,
+    onClick      : React.PropTypes.func,
+    onRightClick : React.PropTypes.func
 };
 
 Label.defaultProps = {
-    className : 'Label',
-    disabled  : false
+    disabled : false
 };
 
 export default muiThemeable()(Label);

@@ -2,27 +2,33 @@
 
 import React from 'react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
+import Label from './Label.jsx';
+import _ from 'lodash';
 
 const Text = props => {
+    const style = { display : 'block' };
+
     return (
-        <span
+        <Label
             className={props.className}
-            style={{ display : 'block', WebkitUserSelect : 'none', cursor : 'default', fontWeight : props.fontWeight, fontSize : props.textSize, color : props.muiTheme.palette.textColor, pointerEvents : props.disabled ? 'none' : 'auto' }}>
+            style={_.assign(style, props.style)}
+            onClick={props.onClick}
+            onRightClick={props.onRightClick}>
             {props.children}
-        </span>
+        </Label>
     );
 };
 
 Text.propTypes = {
-    className  : React.PropTypes.string,
-    fontWeight : React.PropTypes.oneOfType([ React.PropTypes.string, React.PropTypes.number ]),
-    textSize   : React.PropTypes.string,
-    disabled   : React.PropTypes.bool
+    className    : React.PropTypes.string,
+    style        : React.PropTypes.object,
+    disabled     : React.PropTypes.bool,
+    onClick      : React.PropTypes.func,
+    onRightClick : React.PropTypes.func
 };
 
 Text.defaultProps = {
-    className : 'Text',
-    disabled  : false
+    disabled : false
 };
 
 export default muiThemeable()(Text);

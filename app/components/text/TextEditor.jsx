@@ -2,16 +2,17 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import Brace from 'brace';
 import AceEditor from 'react-ace';
 import TextEditorStore from './TextEditorStore';
 import Record from '../../data/Record';
-import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
 import Unique from '../../utils/Unique';
 import Constants from '../../utils/Constants';
+import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
 import PubSub from 'pubsub-js';
 import is from 'electron-is';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import _ from 'lodash';
 
 require('brace/ext/searchbox');
 require('brace/ext/spellcheck');
@@ -24,8 +25,8 @@ class TextEditor extends React.Component {
     constructor(props) {
         super(props);
 
-        this._editorId      = Unique.elementId();
-        this._placeHolderId = Unique.elementId();
+        this._editorId      = Unique.nextString();
+        this._placeHolderId = Unique.nextString();
         this._subscriptions = [];
 
         this._handleChange = value => {
@@ -129,8 +130,10 @@ class TextEditor extends React.Component {
         require('brace/mode/' + syntax);
         require('brace/theme/' + this.props.store.theme);
 
+        const style = { width : '100%', height : 'calc(100vh - ' + (Constants.BOTTOM_BAR_HEIGHT + 1) + 'px)' };
+
         return (
-            <div style={{ width : '100%', height : 'calc(100vh - ' + (Constants.BOTTOM_BAR_HEIGHT + 1) + 'px)' }}>
+            <div style={_.assign(style, this.props.style)}>
                 <AceEditor
                     id={this._editorId}
                     ref="editor"
@@ -156,7 +159,8 @@ class TextEditor extends React.Component {
 }
 
 TextEditor.propTypes = {
-    store : React.PropTypes.instanceOf(TextEditorStore).isRequired
+    store : React.PropTypes.instanceOf(TextEditorStore).isRequired,
+    style : React.PropTypes.object
 };
 
 export default muiThemeable()(TextEditor);

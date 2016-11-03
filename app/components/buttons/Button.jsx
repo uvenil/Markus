@@ -5,6 +5,7 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import FontIcon from 'material-ui/FontIcon';
 import Constants from '../../utils/Constants';
+import _ from 'lodash';
 
 const Button = props => {
     const icon = props.icon ?
@@ -12,12 +13,7 @@ const Button = props => {
             className={'fa fa-fw fa-' + props.icon}
             style={{ marginLeft : props.labelPosition === 'before' || !props.label ? 0 : Constants.PADDING_X1, marginRight : props.labelPosition === 'after' || !props.label ? 0 : Constants.PADDING_X1, fontSize : Constants.TEXT_FONT_SIZE }} /> : undefined;
 
-    const style = props.style ? props.style : {};
-
-    style.minWidth   = props.width;
-    style.height     = props.height;
-    style.lineHeight = props.height + 'px';
-    style.textAlign  = props.align;
+    const style = { minWidth : props.width, height : props.height, lineHeight : props.height + 'px', textAlign : props.align };
 
     if (props.borderless) {
         return (
@@ -29,7 +25,7 @@ const Button = props => {
                 primary={props.color === 'primary'}
                 secondary={props.color === 'secondary'}
                 disabled={props.disabled}
-                style={style}
+                style={_.assign(style, props.style)}
                 onTouchTap={props.onTouchTap} />
         );
     }
@@ -42,7 +38,7 @@ const Button = props => {
             primary={props.color === 'primary'}
             secondary={props.color === 'secondary'}
             disabled={props.disabled}
-            style={style}
+            style={_.assign(style, props.style)}
             onTouchTap={props.onTouchTap} />
     );
 };

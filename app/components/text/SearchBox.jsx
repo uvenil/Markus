@@ -1,15 +1,15 @@
 'use strict';
 
 import React from 'react';
-import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import Unique from '../../utils/Unique';
 import Constants from '../../utils/Constants';
+import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
 import _ from 'lodash';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 
 const SearchBox = props => {
-    const textBoxId     = Unique.elementId();
-    const clearButtonId = Unique.elementId();
+    const textBoxId     = Unique.nextString();
+    const clearButtonId = Unique.nextString();
 
     const handleChange = value => {
         document.getElementById(clearButtonId).style.display = _.isEmpty(value) ? 'none' : 'block';
@@ -28,18 +28,20 @@ const SearchBox = props => {
         handleChange('');
     };
 
+    const style = { width : '100%', position : 'relative', pointerEvents : props.disabled ? 'none' : 'auto' };
+
     return (
         <div
             className={props.className}
-            style={{ width : '100%', position : 'relative', pointerEvents : props.disabled ? 'none' : 'auto' }}>
+            style={_.assign(style, props.style)}>
             <i
                 className="fa fa-fw fa-search"
-                style={{ position : 'absolute', left : Constants.PADDING_X1 + 'px', top : Constants.PADDING_X0 + 'px', fontSize : props.textSize, color : props.muiTheme.palette.disabledColor, cursor : 'default' }} />
+                style={{ position : 'absolute', left : Constants.PADDING_X1, top : Constants.PADDING_X1, fontSize : 15, color : props.muiTheme.palette.disabledColor, cursor : 'default' }} />
             <input
                 id={textBoxId}
                 type="text"
                 placeholder={props.hintText}
-                style={{ width : 'calc(100% - 4 * ' + Constants.PADDING_X2 + 'px)', WebkitUserSelect : 'none', color : props.muiTheme.palette.textColor, backgroundColor : props.muiTheme.palette.primary2Color, outline : 'none', borderWidth : '1px', borderStyle : 'solid', borderRadius : Constants.PADDING_X2 + 'px', borderColor : props.muiTheme.palette.borderColor, paddingLeft : 'calc(2 * ' + Constants.PADDING_X2 + 'px)', paddingRight : 'calc(2 * ' + Constants.PADDING_X2 + 'px)', paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0 }}
+                style={{ width : 'calc(100% - ' + Constants.PADDING_X2 * 4 + 'px)', WebkitUserSelect : 'none', color : props.muiTheme.palette.textColor, backgroundColor : props.muiTheme.palette.primary2Color, outline : 'none', borderWidth : 1, borderStyle : 'solid', borderRadius : Constants.PADDING_X2 , borderColor : props.muiTheme.palette.borderColor, paddingLeft : Constants.PADDING_X2 * 2, paddingRight : Constants.PADDING_X2 * 2, paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0 }}
                 onChange={event => handleChange(event.target.value)}
                 onMouseDown={event => {
                     if (event.nativeEvent.button === 2) {
@@ -49,7 +51,7 @@ const SearchBox = props => {
             <i
                 id={clearButtonId}
                 className="fa fa-fw fa-times-circle"
-                style={{ display : 'none', position : 'absolute', right : Constants.PADDING_X1 + 'px', top : Constants.PADDING_X0 + 'px', color : props.muiTheme.palette.disabledColor, cursor : 'pointer' }}
+                style={{ display : 'none', position : 'absolute', right : Constants.PADDING_X1, top : Constants.PADDING_X1, fontSize : 15, color : props.muiTheme.palette.disabledColor, cursor : 'pointer' }}
                 onClick={handleClear} />
         </div>
     );
@@ -58,14 +60,14 @@ const SearchBox = props => {
 SearchBox.propTypes = {
     hintText  : React.PropTypes.string,
     className : React.PropTypes.string,
+    style     : React.PropTypes.object,
     disabled  : React.PropTypes.bool,
     onChange  : React.PropTypes.func
 };
 
 SearchBox.defaultProps = {
-    hintText  : 'Search',
-    className : 'SearchBox',
-    disabled  : false
+    hintText : 'Search',
+    disabled : false
 };
 
 export default muiThemeable()(SearchBox);

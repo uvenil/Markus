@@ -143,7 +143,7 @@ export default class App extends React.Component {
                             className={'fa fa-fw fa-' + icon}
                             style={{ top : 0, margin : Constants.PADDING_X1, fontSize : Constants.HEADING_FONT_SIZE, color : muiTheme.palette.textColor }} />
                     }
-                    innerDivStyle={{ paddingLeft : '48px', paddingRight : Constants.PADDING_X1, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1, fontSize : Constants.HEADING_FONT_SIZE }}
+                    innerDivStyle={{ paddingLeft : 48, paddingRight : Constants.PADDING_X1, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1, fontSize : Constants.HEADING_FONT_SIZE }}
                     onTouchTap={() => {
                         this.props.store.drawerOpened = false;
                         dialogStore.booleanValue      = true;
@@ -160,6 +160,7 @@ export default class App extends React.Component {
                         message={this.props.store.snackbarMessage}
                         autoHideDuration={Constants.SNACKBAR_DURATION}
                         onRequestClose={() => this.props.store.snackbarOpened = false} />
+                    {/* Confirmation dialog */}
                     <BooleanDialog store={this.props.store.booleanDialogStore} />
                     {/* Drawer */}
                     <Drawer
@@ -238,11 +239,10 @@ export default class App extends React.Component {
                                 allowResize={false}
                                 style={{ backgroundColor : muiTheme.palette.canvasColor }}>
                                 {/* Search notes */}
-                                <div style={{ width : '100%', display : 'flex', flexFlow : 'row', padding : Constants.PADDING_X0, paddingRight : Constants.PADDING_X1 }}>
-                                    <SearchBox
-                                        hintText="Search notes"
-                                        onChange={value => this.props.presenter.filterNoteList(value)} />
-                                </div>
+                                <SearchBox
+                                    hintText="Search notes"
+                                    style={{ display : 'flex', flexFlow : 'row', padding : Constants.PADDING_X0, paddingRight : Constants.PADDING_X1 }}
+                                    onChange={value => this.props.presenter.filterNoteList(value)} />
                                 <SplitPane
                                     split="horizontal"
                                     defaultSize={Constants.BOTTOM_BAR_HEIGHT}
@@ -278,9 +278,9 @@ export default class App extends React.Component {
                             </SplitPane>
                             <div style={{ height : '100vh', display : 'flex', flexFlow : 'column', backgroundColor : muiTheme.palette.canvasColor }}>
                                 {/* Note editor */}
-                                <div style={{ flex : '1 1 0' }}>
-                                    <TextEditor store={this.props.store.editorStore} />
-                                </div>
+                                <TextEditor
+                                    store={this.props.store.editorStore}
+                                    style={{ flex : '1 1 0' }} />
                                 {/* Note editor tools */}
                                 <div style={{ width : '100%', height : Constants.BOTTOM_BAR_HEIGHT, display : 'flex', flexFlow : 'row' }}>
                                     {/* Star note */}
@@ -297,7 +297,7 @@ export default class App extends React.Component {
                                         height={Constants.BOTTOM_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.editorStore.record)}
                                         onTouchTap={() => this.props.presenter.handleArchiveClick()} />
-                                    <span style={{ marginRight : Constants.PADDING_X1 + 'px' }}></span>
+                                    <span style={{ marginRight : Constants.PADDING_X1 }}></span>
                                     {/* Select category */}
                                     <Button
                                         label={this.props.store.editorStore.record ? this.props.store.editorStore.record.category ? this.props.store.editorStore.record.category : 'Uncategorized' : ''}
@@ -305,10 +305,10 @@ export default class App extends React.Component {
                                         height={Constants.BOTTOM_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.editorStore.record)}
                                         onTouchTap={() => this.props.presenter.handleSelectCategoryClick()} />
-                                    <div style={{ margin : 'auto', paddingLeft : Constants.PADDING_X0 + 'px', paddingRight : Constants.PADDING_X0 + 'px', flex : '1 1 0', textAlign : 'right' }}>
+                                    <div style={{ margin : 'auto', paddingLeft : Constants.PADDING_X0, paddingRight : Constants.PADDING_X0, flex : '1 1 0', textAlign : 'right' }}>
                                         {/* Overwrite status */}
                                         <Label>{this.props.store.editorStore.isOverwriteEnabled ? 'OVR' : ''}</Label>
-                                        <span style={{ marginRight : Constants.PADDING_X1 + 'px' }}></span>
+                                        <span style={{ marginRight : Constants.PADDING_X1 }}></span>
                                         {/* Row/column position */}
                                         <Label>{this.props.store.editorStore.record && this.props.store.editorStore.cursorPosition ? (this.props.store.editorStore.cursorPosition.row + 1) + ' : ' + this.props.store.editorStore.cursorPosition.column : ''}</Label>
                                     </div>

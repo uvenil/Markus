@@ -17,35 +17,34 @@ class FilterListView extends React.Component {
 
     render() {
         return (
-            <div style={{ paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0 }}>
-                <ListView
-                    header={this.props.store.headerText}
-                    selectedIndex={this.props.store.selectedIndex}
-                    onItemClick={this.props.onItemClick}
-                    onItemRightClick={this.props.onItemRightClick}>
-                    {this.props.store.items.map(item => {
-                        const icon = item.icon ?
-                            <i
-                                className={'fa fa-fw fa-' + item.icon}
-                                style={{ color : this.props.muiTheme.palette.textColor }} /> : '';
+            <ListView
+                header={this.props.store.headerText}
+                selectedIndex={this.props.store.selectedIndex}
+                style={{ paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0 }}
+                onItemClick={this.props.onItemClick}
+                onItemRightClick={this.props.onItemRightClick}>
+                {this.props.store.items.map(item => {
+                    const icon = item.icon ?
+                        <i
+                            className={'fa fa-fw fa-' + item.icon}
+                            style={{ color : this.props.muiTheme.palette.textColor }} /> : '';
 
-                        return (
-                            <div
-                                key={Unique.elementId()}
-                                style={{ display : 'flex', flexFlow : 'row', paddingLeft : Constants.PADDING_X2, paddingRight : Constants.PADDING_X1, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1 }}>
-                                <div style={{ flex : '1 1 0' }}>
-                                    {icon}&nbsp;<Label>{item.primaryText}</Label>
-                                </div>
-                                <Label
-                                    fontWeight={300}
-                                    theme={this.props.theme}>
-                                    {item.secondaryText}
-                                </Label>
+                    return (
+                        <div
+                            key={Unique.nextString()}
+                            style={{ display : 'flex', flexFlow : 'row', paddingLeft : Constants.PADDING_X2, paddingRight : Constants.PADDING_X1, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1 }}>
+                            <div style={{ flex : '1 1 0', overflow : 'hidden', textOverflow : 'ellipsis', whiteSpace : 'nowrap' }}>
+                                {icon} <Label>{item.primaryText}</Label>
                             </div>
-                        );
-                    })}
-                </ListView>
-            </div>
+                            <Label
+                                fontWeight={300}
+                                theme={this.props.theme}>
+                                {item.secondaryText}
+                            </Label>
+                        </div>
+                    );
+                })}
+            </ListView>
         );
     }
 }
