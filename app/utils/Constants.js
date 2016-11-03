@@ -1,5 +1,8 @@
 'use strict';
 
+const WINDOW_MIN_WIDTH  = 725;
+const WINDOW_MIN_HEIGHT = 544;
+
 const FILTER_LIST_MIN_WIDTH = 150;
 const NOTE_LIST_MIN_WIDTH   = 210;
 const TOP_BAR_HEIGHT        = 32;
@@ -12,6 +15,7 @@ const BUTTON_MIN_HEIGHT     = 28;
 const DIALOG_MAX_WIDTH      = 480;
 const DRAWER_WIDTH          = 220;
 
+const DEFAULT_FONT_SIZE     = 13;
 const ICON_FONT_SIZE        = '14px';
 const TEXT_FONT_SIZE        = '13px';
 const HEADING_FONT_SIZE     = '16px';
@@ -25,6 +29,8 @@ const PRINT_MARGIN_COLUMNS = [ 72, 80, 100, 120 ];
 const ZOOM_FACTOR_STEP = 0.1;
 
 module.exports = {
+    WINDOW_MIN_WIDTH,
+    WINDOW_MIN_HEIGHT,
     FILTER_LIST_MIN_WIDTH,
     NOTE_LIST_MIN_WIDTH,
     TOP_BAR_HEIGHT,
@@ -36,6 +42,7 @@ module.exports = {
     BUTTON_MIN_HEIGHT,
     DIALOG_MAX_WIDTH,
     DRAWER_WIDTH,
+    DEFAULT_FONT_SIZE,
     ICON_FONT_SIZE,
     TEXT_FONT_SIZE,
     HEADING_FONT_SIZE,
