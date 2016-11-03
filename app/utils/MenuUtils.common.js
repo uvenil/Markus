@@ -58,14 +58,14 @@ const createViewMenu = () => {
                 label : 'Show filter list',
                 type  : 'checkbox',
                 click : (item, win) => {
-                    if (win) PubSub.publish('View.showFilterList', item.checked);
+                    if (win) PubSub.publish('ui.filterList.visibility', item.checked);
                 }
             },
             {
                 label : 'Show note list',
                 type  : 'checkbox',
                 click : (item, win) => {
-                    if (win) PubSub.publish('View.showNoteList', item.checked);
+                    if (win) PubSub.publish('ui.categoryList.visibility', item.checked);
                 }
             },
             {
@@ -133,13 +133,13 @@ const createDeveloperMenu = () => {
             {
                 label : 'Reset settings',
                 click : (item, win) => {
-                    if (win) PubSub.publish('Settings.reset');
+                    if (win) PubSub.publish('dev.settings.reset');
                 }
             },
             {
                 label : 'Reset database',
                 click : (item, win) => {
-                    if (win) PubSub.publish('Database.reset');
+                    if (win) PubSub.publish('dev.database.reset');
                 }
             }
         ]

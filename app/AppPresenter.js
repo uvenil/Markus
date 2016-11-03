@@ -34,7 +34,7 @@ const { dialog, Menu, MenuItem } = remote;
 
 const CLEAR_CACHE_INTERVAL = 5 * 60 * 1000;
 
-const EVENT_ERROR = 'Event.error';
+const EVENT_ERROR = 'global.error';
 const DARK_THEMES = [ 'ambiance', 'chaos', 'clouds_midnight', 'cobalt', 'idle_fingers', 'iplastic', 'kr_theme', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monokai', 'pastel_on_dark', 'solarized_dark', 'terminal', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink' ];
 
 const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
@@ -128,8 +128,8 @@ export default class AppPresenter {
         this._initSettings()
             .then(() => this._initDatabase()
                 .then(() => this._initAutoSave())
-                .catch(error => PubSub.publish('Event.error', error.toString())))
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+                .catch(error => PubSub.publish('global.error', error.toString())))
+            .catch(error => PubSub.publish('global.error', error.toString()));
 
         AppPresenter._clearCache();
     }
@@ -200,7 +200,7 @@ export default class AppPresenter {
                     menu.append(new MenuItem({
                         label : 'Restore notes',
                         click : () => {
-                            this._database.unarchiveAll().catch(error => PubSub.publish('Event.error', error.toString()));
+                            this._database.unarchiveAll().catch(error => PubSub.publish('global.error', error.toString()));
                         }
                     }));
                 }
@@ -234,14 +234,14 @@ export default class AppPresenter {
                                     this._categoriesPresenter.refresh();
 
                                     this._notesPresenter.refresh();
-                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                                }).catch(error => PubSub.publish('global.error', error.toString()));
                             }
                         };
                     }
                 }));
 
                 menu.popup(remote.getCurrentWindow());
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+            }).catch(error => PubSub.publish('global.error', error.toString()));
         }
     }
 
@@ -325,7 +325,7 @@ export default class AppPresenter {
                                     if (this._store.categoriesStore.selectedIndex < 0) {
                                         this._notesPresenter.refresh();
                                     }
-                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                                }).catch(error => PubSub.publish('global.error', error.toString()));
                         };
                     }
                 }));
@@ -349,7 +349,7 @@ export default class AppPresenter {
                                     if (this._store.categoriesStore.selectedIndex < 0) {
                                         this._notesPresenter.refresh();
                                     }
-                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                                }).catch(error => PubSub.publish('global.error', error.toString()));
                         };
                     }
                 }));
@@ -371,13 +371,13 @@ export default class AppPresenter {
                                     this._categoriesPresenter.refresh();
 
                                     this._notesPresenter.refresh();
-                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                                }).catch(error => PubSub.publish('global.error', error.toString()));
                         };
                     }
                 }));
 
                 menu.popup(remote.getCurrentWindow());
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+            }).catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     handleAddCategoryClick() {
@@ -424,7 +424,7 @@ export default class AppPresenter {
                             this._notesPresenter.refresh();
                             this._filtersPresenter.refresh();
                             this._categoriesPresenter.notifyDataSetChanged();
-                        }).catch(error => PubSub.publish('Event.error', error.toString()));
+                        }).catch(error => PubSub.publish('global.error', error.toString()));
                 }
             }));
         }
@@ -449,7 +449,7 @@ export default class AppPresenter {
                             this._categoriesPresenter.notifyDataSetChanged();
 
                             this.refreshEditor();
-                        }).catch(error => PubSub.publish('Event.error', error.toString()));
+                        }).catch(error => PubSub.publish('global.error', error.toString()));
                 };
             }
         }));
@@ -499,7 +499,7 @@ export default class AppPresenter {
                 this._store.notesStore.selectedIndex = 0;
 
                 this._noteSelection.onNext(0);
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+            }).catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     handleImportNotes() {
@@ -523,12 +523,12 @@ export default class AppPresenter {
                             flag     : 'r'
                         }, (error, fullText) => {
                             if (error) {
-                                PubSub.publish('Event.error', error.toString());
+                                PubSub.publish('global.error', error.toString());
                             } else {
                                 this._database.addOrUpdate(Record.fromText(syntax, fullText))
                                     .then(doc => {
                                         this._store.notesStore.items.unshift(Record.fromDoc(doc).toListItemStore());
-                                    }).catch(error => PubSub.publish('Event.error', error.toString()));
+                                    }).catch(error => PubSub.publish('global.error', error.toString()));
                             }
                         });
                     });
@@ -621,7 +621,7 @@ export default class AppPresenter {
                         });
                     }
                 }
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+            }).catch(error => PubSub.publish('global.error', error.toString()));
         }
     }
 
@@ -634,7 +634,7 @@ export default class AppPresenter {
 
         this._database.addOrUpdate(this._store.editorStore.record.toDoc())
             .then(() => this._filtersPresenter.refresh())
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+            .catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     handleArchiveClick() {
@@ -642,7 +642,7 @@ export default class AppPresenter {
 
         this._database.addOrUpdate(this._store.editorStore.record.toDoc())
             .then(() => this._filtersPresenter.refresh())
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+            .catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     handleSelectCategoryClick() {
@@ -661,7 +661,7 @@ export default class AppPresenter {
                 });
 
                 this._store.selectCategoryDialogStore.booleanValue = true;
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+            }).catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     /**
@@ -725,7 +725,7 @@ export default class AppPresenter {
                 if (this._store.notesStore.selectedItemId) {
                     this._store.currentSyntaxDialogStore.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.editorStore.record.syntax);
                 }
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+            }).catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     //endregion
@@ -746,7 +746,7 @@ export default class AppPresenter {
 
                     this._categoriesPresenter.notifyDataSetChanged();
                 }).catch(error => {
-                    PubSub.publish('Event.error', error.toString());
+                    PubSub.publish('global.error', error.toString());
 
                     PubSub.publish(EVENT_ERROR, error.message);
                 });
@@ -765,7 +765,7 @@ export default class AppPresenter {
 
                 this._categoriesPresenter.notifyDataSetChanged();
             }).catch(error => {
-                PubSub.publish('Event.error', error.toString());
+                PubSub.publish('global.error', error.toString());
 
                 PubSub.publish(EVENT_ERROR, error.message);
             });
@@ -822,7 +822,7 @@ export default class AppPresenter {
      * @param {String} syntax
      */
     changeDefaultSyntax(syntax) {
-        this._settings.set('defaultSyntax', syntax).catch(error => PubSub.publish('Event.error', error.toString()));
+        this._settings.set('defaultSyntax', syntax).catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     /**
@@ -834,7 +834,7 @@ export default class AppPresenter {
         this._updateTheme();
 
         this._settings.set('theme', theme)
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+            .catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     /**
@@ -844,7 +844,7 @@ export default class AppPresenter {
         AppPresenter._updateFont(font);
 
         this._settings.set('font', font)
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+            .catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     changeSettings(data) {
@@ -876,7 +876,7 @@ export default class AppPresenter {
             console.warn('Unrecognized setting ' + data.name + ' = ' + data.value);
         }
 
-        this._settings.set(data.name, data.value).catch(error => PubSub.publish('Event.error', error.toString()));
+        this._settings.set(data.name, data.value).catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     //endregion
@@ -889,7 +889,7 @@ export default class AppPresenter {
 
     resetSettings() {
         this._settings.clear()
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+            .catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     //endregion
@@ -1022,8 +1022,8 @@ export default class AppPresenter {
                     this._database.addOrUpdate(record.toDoc())
                         .then(doc => {
                             this._store.notesStore.selectedItem.update(Record.fromDoc(doc));
-                        }).catch(error => PubSub.publish('Event.error', error.toString()));
-                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                        }).catch(error => PubSub.publish('global.error', error.toString()));
+                }).catch(error => PubSub.publish('global.error', error.toString()));
         });
     }
 
@@ -1054,7 +1054,7 @@ export default class AppPresenter {
         this._store.notesSorting     = sorting;
         this._notesPresenter.sorting = sorting;
 
-        this._settings.set('notesSorting', sorting).catch(error => PubSub.publish('Event.error', error.toString()));
+        this._settings.set('notesSorting', sorting).catch(error => PubSub.publish('global.error', error.toString()));
     }
 
     /**

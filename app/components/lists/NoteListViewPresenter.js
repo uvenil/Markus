@@ -127,7 +127,7 @@ export default class NoteListViewPresenter {
                 docs.forEach(doc => {
                     this._store.items.push(Record.fromDoc(doc).toListItemStore());
                 });
-            }).catch(error => PubSub.publish('Event.error', error));
+            }).catch(error => PubSub.publish('global.error', error));
         }
     }
 

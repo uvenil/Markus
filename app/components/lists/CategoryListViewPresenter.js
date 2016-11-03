@@ -103,9 +103,9 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                 this.store.items.forEach(item => {
                     this.database.countByCategory(item.primaryText)
                         .then(count => item.secondaryText = count)
-                        .catch(error => PubSub.publish('Event.error', error));
+                        .catch(error => PubSub.publish('global.error', error));
                 });
-            }).catch(error => PubSub.publish('Event.error', error));
+            }).catch(error => PubSub.publish('global.error', error));
     }
 
     initStore() {

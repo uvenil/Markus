@@ -92,13 +92,13 @@ export default class App extends React.Component {
         this._handleFilterListWidthChange = size => {
             this.props.store.filterListWidth = size;
 
-            this._settings.set('filterListWidth', this.props.store.filterListWidth).catch(error => PubSub.publish('Event.error', error));
+            this._settings.set('filterListWidth', this.props.store.filterListWidth).catch(error => PubSub.publish('global.error', error));
         };
 
         this._handleNoteListWidthChange = size => {
             this.props.store.noteListWidth = size;
 
-            this._settings.set('noteListWidth', this.props.store.noteListWidth).catch(error => PubSub.publish('Event.error', error));
+            this._settings.set('noteListWidth', this.props.store.noteListWidth).catch(error => PubSub.publish('global.error', error));
         };
 
         this._handleNewNote = () => {
@@ -109,18 +109,18 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-        this._subscriptions.push(PubSub.subscribe('Event.error', (eventName, message) => this._handleError(message)));
-        this._subscriptions.push(PubSub.subscribe('Database.reset', () => this.props.presenter.resetDatabase()));
-        this._subscriptions.push(PubSub.subscribe('Settings.reset', () => this.props.presenter.resetSettings()));
-        this._subscriptions.push(PubSub.subscribe('AboutDialog.visible', () => this.props.store.aboutDialogStore.booleanValue = true));
-        this._subscriptions.push(PubSub.subscribe('View.showFilterList', (eventName, show) => this.props.presenter.showFilterList(show)));
-        this._subscriptions.push(PubSub.subscribe('View.showNoteList', (eventName, show) => this.props.presenter.showNoteList(show)));
-        this._subscriptions.push(PubSub.subscribe('Syntax.change', (eventName, syntax) => this.props.presenter.changeCurrentSyntax(syntax)));
-        this._subscriptions.push(PubSub.subscribe('Theme.change', (eventName, theme) => this.props.presenter.changeTheme(theme)));
-        this._subscriptions.push(PubSub.subscribe('TextEditor.settings', (eventName, data) => this.props.presenter.changeSettings(data)));
-        this._subscriptions.push(PubSub.subscribe('Application.newNote', () => this._handleNewNote()));
-        this._subscriptions.push(PubSub.subscribe('Application.importNotes', () => this.props.presenter.handleImportNotes()));
-        this._subscriptions.push(PubSub.subscribe('Application.exportNotes', () => this.props.presenter.handleExportNotes()));
+        this._subscriptions.push(PubSub.subscribe('global.error', (eventName, message) => this._handleError(message)));
+        this._subscriptions.push(PubSub.subscribe('dev.database.reset', () => this.props.presenter.resetDatabase()));
+        this._subscriptions.push(PubSub.subscribe('dev.settings.reset', () => this.props.presenter.resetSettings()));
+        this._subscriptions.push(PubSub.subscribe('ui.filterList.visibility', (eventName, show) => this.props.presenter.showFilterList(show)));
+        this._subscriptions.push(PubSub.subscribe('ui.categoryList.visibility', (eventName, show) => this.props.presenter.showNoteList(show)));
+        this._subscriptions.push(PubSub.subscribe('ui.theme.change', (eventName, theme) => this.props.presenter.changeTheme(theme)));
+        this._subscriptions.push(PubSub.subscribe('app.aboutDialog.visibility', () => this.props.store.aboutDialogStore.booleanValue = true));
+        this._subscriptions.push(PubSub.subscribe('app.note.new', () => this._handleNewNote()));
+        this._subscriptions.push(PubSub.subscribe('app.note.import', () => this.props.presenter.handleImportNotes()));
+        this._subscriptions.push(PubSub.subscribe('app.note.export', () => this.props.presenter.handleExportNotes()));
+        this._subscriptions.push(PubSub.subscribe('TextEditor.syntax.change', (eventName, syntax) => this.props.presenter.changeCurrentSyntax(syntax)));
+        this._subscriptions.push(PubSub.subscribe('TextEditor.settings.change', (eventName, data) => this.props.presenter.changeSettings(data)));
 
         this.props.presenter.init();
     }

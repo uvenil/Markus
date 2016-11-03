@@ -17,7 +17,7 @@ export default function createWindowMenu() {
             {
                 label : 'About ' + app.getName(),
                 click : (item, win) => {
-                    if (win) PubSub.publish('AboutDialog.visible');
+                    if (win) PubSub.publish('app.aboutDialog.visibility');
                 }
             },
             {
@@ -56,7 +56,7 @@ export default function createWindowMenu() {
             {
                 label : 'New note',
                 click : (item, win) => {
-                    if (win) PubSub.publish('Application.newNote');
+                    if (win) PubSub.publish('app.note.new');
                 }
             },
             {
@@ -65,13 +65,13 @@ export default function createWindowMenu() {
             {
                 label : 'Import notes…',
                 click : (item, win) => {
-                    if (win) PubSub.publish('Application.importNotes');
+                    if (win) PubSub.publish('app.note.import');
                 }
             },
             {
                 label : 'Export notes…',
                 click : (item, win) => {
-                    if (win) PubSub.publish('Application.exportNotes');
+                    if (win) PubSub.publish('app.note.export');
                 }
             }
         ]

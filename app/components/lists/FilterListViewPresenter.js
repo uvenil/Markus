@@ -24,15 +24,15 @@ export default class FilterListViewPresenter extends ListViewPresenter {
     refresh() {
         this.database.countAll()
             .then(count => this.store.items[FILTER_EVERYTHING_INDEX].secondaryText = count)
-            .catch(error => PubSub.publish('Event.error', error));
+            .catch(error => PubSub.publish('global.error', error));
 
         this.database.countByStarred()
             .then(count => this.store.items[FILTER_STARRED_INDEX].secondaryText = count)
-            .catch(error => PubSub.publish('Event.error', error));
+            .catch(error => PubSub.publish('global.error', error));
 
         this.database.countByArchived()
             .then(count => this.store.items[FILTER_ARCHIVED_INDEX].secondaryText = count)
-            .catch(error => PubSub.publish('Event.error', error));
+            .catch(error => PubSub.publish('global.error', error));
     }
 
     initStore() {
