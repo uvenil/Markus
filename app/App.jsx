@@ -27,15 +27,14 @@ import ListViewDialog from './components/dialogs/ListViewDialog.jsx';
 import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
 import Settings from './utils/Settings';
+import EventUtils from './utils/EventUtils';
+import Constants from './utils/Constants';
 import SyntaxCodes from './definitions/syntax-codes.json';
 import ThemeCodes from './definitions/theme-codes.json';
-import Constants from './utils/Constants';
-import Path from 'path';
-import PubSub from 'pubsub-js';
 import is from 'electron-is';
-import _ from 'lodash';
 
-if (is.dev()) PubSub.immediateExceptions = true;
+import Path from 'path';
+import _ from 'lodash';
 
 const { app } = require('electron').remote;
 
@@ -81,8 +80,8 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);
 
-        this._subscriptions = [];
-        this._settings      = new Settings();
+        this._events   = [];
+        this._settings = new Settings();
 
         this._handleError = message => {
             this.props.store.snackbarMessage = message;
@@ -109,24 +108,24 @@ export default class App extends React.Component {
     }
 
     componentDidMount() {
-        this._subscriptions.push(PubSub.subscribe('global.error', (eventName, message) => this._handleError(message)));
-        this._subscriptions.push(PubSub.subscribe('dev.database.reset', () => this.props.presenter.resetDatabase()));
-        this._subscriptions.push(PubSub.subscribe('dev.settings.reset', () => this.props.presenter.resetSettings()));
-        this._subscriptions.push(PubSub.subscribe('ui.filterList.visibility', (eventName, show) => this.props.presenter.showFilterList(show)));
-        this._subscriptions.push(PubSub.subscribe('ui.categoryList.visibility', (eventName, show) => this.props.presenter.showNoteList(show)));
-        this._subscriptions.push(PubSub.subscribe('ui.theme.change', (eventName, theme) => this.props.presenter.changeTheme(theme)));
-        this._subscriptions.push(PubSub.subscribe('app.aboutDialog.visibility', () => this.props.store.aboutDialogStore.booleanValue = true));
-        this._subscriptions.push(PubSub.subscribe('app.note.new', () => this._handleNewNote()));
-        this._subscriptions.push(PubSub.subscribe('app.note.import', () => this.props.presenter.handleImportNotes()));
-        this._subscriptions.push(PubSub.subscribe('app.note.export', () => this.props.presenter.handleExportNotes()));
-        this._subscriptions.push(PubSub.subscribe('TextEditor.syntax.change', (eventName, syntax) => this.props.presenter.changeCurrentSyntax(syntax)));
-        this._subscriptions.push(PubSub.subscribe('TextEditor.settings.change', (eventName, data) => this.props.presenter.changeSettings(data)));
+        this._events.push(EventUtils.register('global.error', message => this._handleError(message)));
+        this._events.push(EventUtils.register('dev.database.reset', () => this.props.presenter.resetDatabase()));
+        this._events.push(EventUtils.register('dev.settings.reset', () => this.props.presenter.resetSettings()));
+        this._events.push(EventUtils.register('ui.filterList.visibility', show => this.props.presenter.showFilterList(show)));
+        this._events.push(EventUtils.register('ui.categoryList.visibility', show => this.props.presenter.showNoteList(show)));
+        this._events.push(EventUtils.register('ui.theme.change', theme => this.props.presenter.changeTheme(theme)));
+        this._events.push(EventUtils.register('app.aboutDialog.visibility', () => this.props.store.aboutDialog.booleanValue = true));
+        this._events.push(EventUtils.register('app.note.new', () => this._handleNewNote()));
+        this._events.push(EventUtils.register('app.note.import', () => this.props.presenter.handleImportNotes()));
+        this._events.push(EventUtils.register('app.note.export', () => this.props.presenter.handleExportNotes()));
+        this._events.push(EventUtils.register('TextEditor.syntax.change', syntax => this.props.presenter.changeCurrentSyntax(syntax)));
+        this._events.push(EventUtils.register('TextEditor.settings.change', data => this.props.presenter.changeSettings(data)));
 
         this.props.presenter.init();
     }
 
     componentWillUnmount() {
-        this._subscriptions.forEach(subscription => subscription.unsubscribe());
+        this._events.forEach(subscription => EventUtils.unregister(subscription));
     }
 
     render() {
@@ -161,7 +160,7 @@ export default class App extends React.Component {
                         autoHideDuration={Constants.SNACKBAR_DURATION}
                         onRequestClose={() => this.props.store.snackbarOpened = false} />
                     {/* Confirmation dialog */}
-                    <BooleanDialog store={this.props.store.booleanDialogStore} />
+                    <BooleanDialog store={this.props.store.booleanDialog} />
                     {/* Drawer */}
                     <Drawer
                         docked={false}
@@ -171,15 +170,15 @@ export default class App extends React.Component {
                         <List>
                             <Subheader style={{ lineHeight : '32px', fontSize : Constants.SUB_HEADING_FONT_SIZE }}>Settings</Subheader>
                             <Divider />
-                            {renderListItem('Editor', undefined, 'pencil-square-o', this.props.store.editorSettingsDialogStore)}
+                            {renderListItem('Editor', undefined, 'pencil-square-o', this.props.store.editorSettingsDialog)}
                             <Divider />
-                            {renderListItem('Syntax', 'For current note', 'code', this.props.store.currentSyntaxDialogStore)}
+                            {renderListItem('Syntax', 'For current note', 'code', this.props.store.currentSyntaxDialog)}
                             <Divider />
-                            {renderListItem('Syntax', 'For default notes', 'code', this.props.store.defaultSyntaxDialogStore)}
+                            {renderListItem('Syntax', 'For default notes', 'code', this.props.store.defaultSyntaxDialog)}
                             <Divider />
-                            {renderListItem('Theme', undefined, 'eye', this.props.store.themeDialogStore)}
+                            {renderListItem('Theme', undefined, 'eye', this.props.store.themeDialog)}
                             <Divider />
-                            {renderListItem('Font', undefined, 'font', this.props.store.fontDialogStore)}
+                            {renderListItem('Font', undefined, 'font', this.props.store.fontDialog)}
                             <Divider />
                         </List>
                     </Drawer>
@@ -318,14 +317,14 @@ export default class App extends React.Component {
                     </SplitPane>
                     {/* About dialog */}
                     <Dialog
-                        open={this.props.store.aboutDialogStore.booleanValue}
+                        open={this.props.store.aboutDialog.booleanValue}
                         actions={[
                             <Button
                                 label="Close"
                                 color="primary"
-                                onTouchTap={() => this.props.store.aboutDialogStore.booleanValue = false} />
+                                onTouchTap={() => this.props.store.aboutDialog.booleanValue = false} />
                         ]}
-                        onRequestClose={() => this.props.store.aboutDialogStore.booleanValue = false}>
+                        onRequestClose={() => this.props.store.aboutDialog.booleanValue = false}>
                         <div style={{ width : '100%', textAlign : 'center' }}>
                             <img src={Path.join(__dirname, './images/artisan.png')} /><br />
                             <Text
@@ -343,26 +342,26 @@ export default class App extends React.Component {
                     </Dialog>
                     {/* Add category dialog */}
                     <PromptDialog
-                        store={this.props.store.addCategoryDialogStore}
+                        store={this.props.store.addCategoryDialog}
                         title="Add category"
                         label="New category name"
                         onEnter={value => this.props.presenter.addCategory(value)} />
                     {/* Rename category dialog */}
                     <PromptDialog
-                        store={this.props.store.updateCategoryDialogStore}
+                        store={this.props.store.updateCategoryDialog}
                         title="Rename category"
                         label="Update category name"
-                        onEnter={value => this.props.presenter.updateCategory(this.props.store.updateCategoryDialogStore.value, value)} />
+                        onEnter={value => this.props.presenter.updateCategory(this.props.store.updateCategoryDialog.value, value)} />
                     {/* Select category dialog */}
                     <Dialog
                         title="Category"
-                        open={this.props.store.selectCategoryDialogStore.booleanValue}
+                        open={this.props.store.selectCategoryDialog.booleanValue}
                         autoScrollBodyContent={true}
                         bodyStyle={{ padding : 0, overflowX : 'hidden' }}
                         actions={[
                             <Button
                                 label="Cancel"
-                                onTouchTap={() => this.props.store.selectCategoryDialogStore.booleanValue = false} />,
+                                onTouchTap={() => this.props.store.selectCategoryDialog.booleanValue = false} />,
                             <Button
                                 label="None"
                                 color="secondary"
@@ -372,11 +371,11 @@ export default class App extends React.Component {
                                 color="primary"
                                 onTouchTap={() => this.props.presenter.handleSelectCategoryOkClick()} />
                         ]}
-                        onRequestClose={() => this.props.store.selectCategoryDialogStore.booleanValue = false}>
+                        onRequestClose={() => this.props.store.selectCategoryDialog.booleanValue = false}>
                         <ListView
-                            selectedIndex={this.props.store.selectCategoryDialogStore.list.selectedIndex}
+                            selectedIndex={this.props.store.selectCategoryDialog.list.selectedIndex}
                             onItemClick={index => this.props.presenter.handleSelectCategoryItemClick(index)}>
-                            {this.props.store.selectCategoryDialogStore.list.items.map(item => {
+                            {this.props.store.selectCategoryDialog.list.items.map(item => {
                                 return (
                                     <div
                                         key={item.itemId}
@@ -388,15 +387,13 @@ export default class App extends React.Component {
                         </ListView>
                     </Dialog>
                     {/* Editor settings dialog */}
-                    <EditorSettingsDialog
-                        store={this.props.store.editorSettingsDialogStore}
-                        settingsStore={this.props.store.settingsStore} />
+                    <EditorSettingsDialog store={this.props.store.editorSettingsDialog} />
                     {/* Syntax dialog for current note */}
                     <ListViewDialog
-                        store={this.props.store.currentSyntaxDialogStore}
+                        store={this.props.store.currentSyntaxDialog}
                         title="Syntax for current note"
                         onItemClick={index => {
-                            this.props.store.currentSyntaxDialogStore.list.selectedIndex = index;
+                            this.props.store.currentSyntaxDialog.list.selectedIndex = index;
 
                             if (this.props.store.editorStore.record) {
                                 this.props.presenter.changeCurrentSyntax(SyntaxCodes.items[index]);
@@ -404,28 +401,28 @@ export default class App extends React.Component {
                         }} />
                     {/* Syntax dialog for default notes */}
                     <ListViewDialog
-                        store={this.props.store.defaultSyntaxDialogStore}
+                        store={this.props.store.defaultSyntaxDialog}
                         title="Syntax for default notes"
                         onItemClick={index => {
-                            this.props.store.defaultSyntaxDialogStore.list.selectedIndex = index;
+                            this.props.store.defaultSyntaxDialog.list.selectedIndex = index;
 
                             this.props.presenter.changeDefaultSyntax(SyntaxCodes.items[index]);
                         }} />
                     {/* Theme dialog */}
                     <ListViewDialog
-                        store={this.props.store.themeDialogStore}
+                        store={this.props.store.themeDialog}
                         title="Theme"
                         onItemClick={index => {
-                            this.props.store.themeDialogStore.list.selectedIndex = index;
+                            this.props.store.themeDialog.list.selectedIndex = index;
 
                             this.props.presenter.changeTheme(ThemeCodes.items[index]);
                         }} />
                     {/* Font dialog */}
                     <ListViewDialog
-                        store={this.props.store.fontDialogStore}
+                        store={this.props.store.fontDialog}
                         title="Font"
                         onItemClick={index => {
-                            this.props.store.fontDialogStore.list.selectedIndex = index;
+                            this.props.store.fontDialog.list.selectedIndex = index;
 
                             this.props.presenter.changeFont(FONTS.items[index]);
                         }} />

@@ -18,7 +18,7 @@ export default class ListViewPresenter {
      * @returns {number}
      */
     get selectedItemCount() {
-        const selectedItem = this.store.getSelectedItem();
+        const selectedItem = this.store.selectedItem;
 
         if (selectedItem) {
             return parseInt(selectedItem.secondaryText);

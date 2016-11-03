@@ -36,11 +36,7 @@ class FilterListView extends React.Component {
                             <div style={{ flex : '1 1 0', overflow : 'hidden', textOverflow : 'ellipsis', whiteSpace : 'nowrap' }}>
                                 {icon} <Label>{item.primaryText}</Label>
                             </div>
-                            <Label
-                                fontWeight={300}
-                                theme={this.props.theme}>
-                                {item.secondaryText}
-                            </Label>
+                            <Label style={{ fontWeight : 300 }}>{item.secondaryText}</Label>
                         </div>
                     );
                 })}

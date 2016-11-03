@@ -5,14 +5,12 @@ import CategoryListViewPresenter from './CategoryListViewPresenter';
 import ListViewStore from './ListViewStore';
 import Database from '../../data/Database';
 import Record from '../../data/Record';
+import EventUtils from '../../utils/EventUtils';
+import Constants from '../../utils/Constants';
 import Config from '../../../config.json';
 import Rx from 'rx-lite';
 import moment from 'moment';
-import PubSub from 'pubsub-js';
-import is from 'electron-is';
 import _ from 'lodash';
-
-if (is.dev()) PubSub.immediateExceptions = true;
 
 export default class NoteListViewPresenter {
     /**
@@ -29,11 +27,9 @@ export default class NoteListViewPresenter {
         this._sorting             = NoteListViewPresenter.DEFAULT_SORTING;
         this._keyword             = undefined;
 
-        Rx.Observable.interval(1000).subscribe(() => {
+        Rx.Observable.interval(Constants.NOTE_TIMESTAMP_REFRESH_INTERVAL).subscribe(() => {
             this._store.items.forEach(item => {
-                if (item.record) {
-                    item.tertiaryText = moment(item.record.lastUpdatedAt).fromNow();
-                }
+                if (item.record) item.tertiaryText = moment(item.record.lastUpdatedAt).fromNow();
             });
         });
     }
@@ -122,13 +118,7 @@ export default class NoteListViewPresenter {
 
         this._store.items = [];
 
-        if (promise) {
-            promise.then(docs => {
-                docs.forEach(doc => {
-                    this._store.items.push(Record.fromDoc(doc).toListItemStore());
-                });
-            }).catch(error => PubSub.publish('global.error', error));
-        }
+        if (promise) promise.then(docs => docs.forEach(doc => this._store.items.push(Record.fromDoc(doc).toListItemStore()))).catch(error => EventUtils.broadcast('global.error', error));
     }
 
     /**
@@ -190,6 +180,6 @@ export default class NoteListViewPresenter {
     }
 }
 
-NoteListViewPresenter.DEFAULT_SORTING = 3;
+NoteListViewPresenter.DEFAULT_SORTING = Config.defaultNotesSorting;
 
 module.exports = NoteListViewPresenter;

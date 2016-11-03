@@ -1,10 +1,8 @@
 'use strict';
 
+import EventUtils from './EventUtils';
 import { createEditMenu, createViewMenu, createDeveloperMenu } from './MenuUtils.common';
-import PubSub from 'pubsub-js';
 import is from 'electron-is';
-
-if (is.dev()) PubSub.immediateExceptions = true;
 
 const { app, Menu } = require('electron').remote;
 
@@ -17,7 +15,7 @@ export default function createWindowMenu() {
             {
                 label : 'New note',
                 click : (item, win) => {
-                    if (win) PubSub.publish('app.note.new');
+                    if (win) EventUtils.broadcast('app.note.new');
                 }
             },
             {
@@ -26,13 +24,13 @@ export default function createWindowMenu() {
             {
                 label : 'Import notes…',
                 click : (item, win) => {
-                    if (win) PubSub.publish('app.note.import');
+                    if (win) EventUtils.broadcast('app.note.import');
                 }
             },
             {
                 label : 'Export notes…',
                 click : (item, win) => {
-                    if (win) PubSub.publish('app.note.export');
+                    if (win) EventUtils.broadcast('app.note.export');
                 }
             },
             {
@@ -57,7 +55,7 @@ export default function createWindowMenu() {
             {
                 label : 'About ' + app.getName(),
                 click : (item, win) => {
-                    if (win) PubSub.publish('app.aboutDialog.visibility');
+                    if (win) EventUtils.broadcast('app.aboutDialog.visibility');
                 }
             }
         ]

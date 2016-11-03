@@ -14,20 +14,18 @@ import SettingsStore from './components/dialogs/SettingsStore';
 import Settings from './utils/Settings';
 import Database from './data/Database';
 import Record from './data/Record.jsx';
-import Rx from 'rx-lite';
+import EventUtils from './utils/EventUtils';
+import Constants from './utils/Constants';
+import Config from '../config.json';
 import SyntaxNames from './definitions/syntax-names.json';
 import SyntaxCodes from './definitions/syntax-codes.json';
 import ThemeNames from './definitions/theme-names.json';
 import ThemeCodes from './definitions/theme-codes.json';
-import Constants from './utils/Constants';
-import Config from '../config.json';
+import Rx from 'rx-lite';
 import Path from 'path';
-import PubSub from 'pubsub-js';
 import is from 'electron-is';
 import fs from 'fs';
 import _ from 'lodash';
-
-if (is.dev()) PubSub.immediateExceptions = true;
 
 const { remote } = require('electron');
 const { dialog, Menu, MenuItem } = remote;
@@ -51,21 +49,21 @@ export default class AppPresenter {
         this._notesPresenter      = new NoteListViewPresenter(this._filtersPresenter, this._categoriesPresenter, this._database);
         this._editorPresenter     = new TextEditorPresenter(this._database);
 
-        this._store.booleanDialogStore        = new BooleanDialogStore();
-        this._store.aboutDialogStore          = new BooleanStore();
-        this._store.editorSettingsDialogStore = new BooleanStore();
-        this._store.currentSyntaxDialogStore  = new ListViewDialogStore();
-        this._store.defaultSyntaxDialogStore  = new ListViewDialogStore();
-        this._store.themeDialogStore          = new ListViewDialogStore();
-        this._store.fontDialogStore           = new ListViewDialogStore();
-        this._store.settingsStore             = new SettingsStore();
-        this._store.filtersStore              = this._filtersPresenter.store;
-        this._store.categoriesStore           = this._categoriesPresenter.store;
-        this._store.notesStore                = this._notesPresenter.store;
-        this._store.editorStore               = this._editorPresenter.store;
-        this._store.addCategoryDialogStore    = new PromptDialogStore();
-        this._store.updateCategoryDialogStore = new PromptDialogStore();
-        this._store.selectCategoryDialogStore = new ListViewDialogStore();
+        this._store.booleanDialog                 = new BooleanDialogStore();
+        this._store.aboutDialog                   = new BooleanStore();
+        this._store.editorSettingsDialog          = new BooleanStore();
+        this._store.currentSyntaxDialog           = new ListViewDialogStore();
+        this._store.defaultSyntaxDialog           = new ListViewDialogStore();
+        this._store.themeDialog                   = new ListViewDialogStore();
+        this._store.fontDialog                    = new ListViewDialogStore();
+        this._store.editorSettingsDialog.settings = new SettingsStore();
+        this._store.filtersStore                  = this._filtersPresenter.store;
+        this._store.categoriesStore               = this._categoriesPresenter.store;
+        this._store.notesStore                    = this._notesPresenter.store;
+        this._store.editorStore                   = this._editorPresenter.store;
+        this._store.addCategoryDialog             = new PromptDialogStore();
+        this._store.updateCategoryDialog          = new PromptDialogStore();
+        this._store.selectCategoryDialog          = new ListViewDialogStore();
 
         this._filterSelection   = new Rx.Subject();
         this._categorySelection = new Rx.Subject();
@@ -95,8 +93,8 @@ export default class AppPresenter {
             currentItem.primaryText = syntaxName;
             defaultItem.primaryText = syntaxName;
 
-            this._store.currentSyntaxDialogStore.list.items.push(currentItem);
-            this._store.defaultSyntaxDialogStore.list.items.push(defaultItem);
+            this._store.currentSyntaxDialog.list.items.push(currentItem);
+            this._store.defaultSyntaxDialog.list.items.push(defaultItem);
         });
 
         ThemeNames.items.forEach((themeName, i) => {
@@ -105,7 +103,7 @@ export default class AppPresenter {
             item.itemId      = 'setting-theme-' + ThemeCodes[i];
             item.primaryText = themeName;
 
-            this._store.themeDialogStore.list.items.push(item);
+            this._store.themeDialog.list.items.push(item);
         });
 
         FONTS.items.forEach((font, i) => {
@@ -114,7 +112,7 @@ export default class AppPresenter {
             item.itemId      = 'setting-font-' + i;
             item.primaryText = font;
 
-            this._store.fontDialogStore.list.items.push(item);
+            this._store.fontDialog.list.items.push(item);
         });
 
         //endregion
@@ -128,8 +126,8 @@ export default class AppPresenter {
         this._initSettings()
             .then(() => this._initDatabase()
                 .then(() => this._initAutoSave())
-                .catch(error => PubSub.publish('global.error', error.toString())))
-            .catch(error => PubSub.publish('global.error', error.toString()));
+                .catch(error => EventUtils.broadcast('global.error', error.toString())))
+            .catch(error => EventUtils.broadcast('global.error', error.toString()));
 
         AppPresenter._clearCache();
     }
@@ -200,7 +198,7 @@ export default class AppPresenter {
                     menu.append(new MenuItem({
                         label : 'Restore notes',
                         click : () => {
-                            this._database.unarchiveAll().catch(error => PubSub.publish('global.error', error.toString()));
+                            this._database.unarchiveAll().catch(error => EventUtils.broadcast('global.error', error.toString()));
                         }
                     }));
                 }
@@ -210,14 +208,14 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : action + ' all notes…',
                     click : () => {
-                        this._store.booleanDialogStore.title          = action + ' notes';
-                        this._store.booleanDialogStore.message        = 'Are you sure you want to ' + action.toLowerCase() + ' the notes?';
-                        this._store.booleanDialogStore.trueLabel      = 'Yes';
-                        this._store.booleanDialogStore.falseLabel     = 'No';
-                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
-                        this._store.booleanDialogStore.booleanValue   = true;
+                        this._store.booleanDialog.title          = action + ' notes';
+                        this._store.booleanDialog.message        = 'Are you sure you want to ' + action.toLowerCase() + ' the notes?';
+                        this._store.booleanDialog.trueLabel      = 'Yes';
+                        this._store.booleanDialog.falseLabel     = 'No';
+                        this._store.booleanDialog.trueLabelColor = 'secondary';
+                        this._store.booleanDialog.booleanValue   = true;
 
-                        this._store.booleanDialogStore.trueAction = () => {
+                        this._store.booleanDialog.trueAction = () => {
                             let updatePromise;
 
                             if (index === 0) {
@@ -234,14 +232,14 @@ export default class AppPresenter {
                                     this._categoriesPresenter.refresh();
 
                                     this._notesPresenter.refresh();
-                                }).catch(error => PubSub.publish('global.error', error.toString()));
+                                }).catch(error => EventUtils.broadcast('global.error', error.toString()));
                             }
                         };
                     }
                 }));
 
                 menu.popup(remote.getCurrentWindow());
-            }).catch(error => PubSub.publish('global.error', error.toString()));
+            }).catch(error => EventUtils.broadcast('global.error', error.toString()));
         }
     }
 
@@ -298,8 +296,8 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : 'Rename ' + category + '…',
                     click : () => {
-                        this._store.updateCategoryDialogStore.value        = category;
-                        this._store.updateCategoryDialogStore.booleanValue = true;
+                        this._store.updateCategoryDialog.value        = category;
+                        this._store.updateCategoryDialog.booleanValue = true;
                     }
                 }));
 
@@ -310,14 +308,14 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : 'Delete ' + category + '…',
                     click : () => {
-                        this._store.booleanDialogStore.title          = 'Delete category';
-                        this._store.booleanDialogStore.message        = 'Are you sure you want to delete category "' + category + '"?';
-                        this._store.booleanDialogStore.trueLabel      = 'Yes';
-                        this._store.booleanDialogStore.falseLabel     = 'No';
-                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
-                        this._store.booleanDialogStore.booleanValue   = true;
+                        this._store.booleanDialog.title          = 'Delete category';
+                        this._store.booleanDialog.message        = 'Are you sure you want to delete category "' + category + '"?';
+                        this._store.booleanDialog.trueLabel      = 'Yes';
+                        this._store.booleanDialog.falseLabel     = 'No';
+                        this._store.booleanDialog.trueLabelColor = 'secondary';
+                        this._store.booleanDialog.booleanValue   = true;
 
-                        this._store.booleanDialogStore.trueAction = () => {
+                        this._store.booleanDialog.trueAction = () => {
                             this._database.removeCategory(category)
                                 .then(() => {
                                     this._categoriesPresenter.notifyDataSetChanged();
@@ -325,7 +323,7 @@ export default class AppPresenter {
                                     if (this._store.categoriesStore.selectedIndex < 0) {
                                         this._notesPresenter.refresh();
                                     }
-                                }).catch(error => PubSub.publish('global.error', error.toString()));
+                                }).catch(error => EventUtils.broadcast('global.error', error.toString()));
                         };
                     }
                 }));
@@ -333,14 +331,14 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : 'Delete ' + category + ' and notes…',
                     click : () => {
-                        this._store.booleanDialogStore.title          = 'Delete category and archive notes';
-                        this._store.booleanDialogStore.message        = 'Are you sure you want to delete category "' + category + '" and archive its notes?';
-                        this._store.booleanDialogStore.trueLabel      = 'Yes';
-                        this._store.booleanDialogStore.falseLabel     = 'No';
-                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
-                        this._store.booleanDialogStore.booleanValue   = true;
+                        this._store.booleanDialog.title          = 'Delete category and archive notes';
+                        this._store.booleanDialog.message        = 'Are you sure you want to delete category "' + category + '" and archive its notes?';
+                        this._store.booleanDialog.trueLabel      = 'Yes';
+                        this._store.booleanDialog.falseLabel     = 'No';
+                        this._store.booleanDialog.trueLabelColor = 'secondary';
+                        this._store.booleanDialog.booleanValue   = true;
 
-                        this._store.booleanDialogStore.trueAction = () => {
+                        this._store.booleanDialog.trueAction = () => {
                             this._database.removeCategory(category, true)
                                 .then(() => {
                                     this._filtersPresenter.refresh();
@@ -349,7 +347,7 @@ export default class AppPresenter {
                                     if (this._store.categoriesStore.selectedIndex < 0) {
                                         this._notesPresenter.refresh();
                                     }
-                                }).catch(error => PubSub.publish('global.error', error.toString()));
+                                }).catch(error => EventUtils.broadcast('global.error', error.toString()));
                         };
                     }
                 }));
@@ -357,32 +355,32 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : 'Archive all notes…',
                     click : () => {
-                        this._store.booleanDialogStore.title          = 'Archive notes';
-                        this._store.booleanDialogStore.message        = 'Are you sure you want to archive all notes of category "' + category + '"?';
-                        this._store.booleanDialogStore.trueLabel      = 'Yes';
-                        this._store.booleanDialogStore.falseLabel     = 'No';
-                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
-                        this._store.booleanDialogStore.booleanValue   = true;
+                        this._store.booleanDialog.title          = 'Archive notes';
+                        this._store.booleanDialog.message        = 'Are you sure you want to archive all notes of category "' + category + '"?';
+                        this._store.booleanDialog.trueLabel      = 'Yes';
+                        this._store.booleanDialog.falseLabel     = 'No';
+                        this._store.booleanDialog.trueLabelColor = 'secondary';
+                        this._store.booleanDialog.booleanValue   = true;
 
-                        this._store.booleanDialogStore.trueAction = () => {
+                        this._store.booleanDialog.trueAction = () => {
                             this._database.archiveByCategory(category)
                                 .then(() => {
                                     this._filtersPresenter.refresh();
                                     this._categoriesPresenter.refresh();
 
                                     this._notesPresenter.refresh();
-                                }).catch(error => PubSub.publish('global.error', error.toString()));
+                                }).catch(error => EventUtils.broadcast('global.error', error.toString()));
                         };
                     }
                 }));
 
                 menu.popup(remote.getCurrentWindow());
-            }).catch(error => PubSub.publish('global.error', error.toString()));
+            }).catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     handleAddCategoryClick() {
-        this._store.addCategoryDialogStore.value        = '';
-        this._store.addCategoryDialogStore.booleanValue = true;
+        this._store.addCategoryDialog.value        = '';
+        this._store.addCategoryDialog.booleanValue = true;
     }
 
     //endregion
@@ -424,7 +422,7 @@ export default class AppPresenter {
                             this._notesPresenter.refresh();
                             this._filtersPresenter.refresh();
                             this._categoriesPresenter.notifyDataSetChanged();
-                        }).catch(error => PubSub.publish('global.error', error.toString()));
+                        }).catch(error => EventUtils.broadcast('global.error', error.toString()));
                 }
             }));
         }
@@ -434,14 +432,14 @@ export default class AppPresenter {
         menu.append(new MenuItem({
             label : action + '…',
             click : () => {
-                this._store.booleanDialogStore.title          = action + ' note';
-                this._store.booleanDialogStore.message        = 'Are you sure you want to ' + action.toLowerCase() + ' this note?';
-                this._store.booleanDialogStore.trueLabel      = 'Yes';
-                this._store.booleanDialogStore.falseLabel     = 'No';
-                this._store.booleanDialogStore.trueLabelColor = 'secondary';
-                this._store.booleanDialogStore.booleanValue   = true;
+                this._store.booleanDialog.title          = action + ' note';
+                this._store.booleanDialog.message        = 'Are you sure you want to ' + action.toLowerCase() + ' this note?';
+                this._store.booleanDialog.trueLabel      = 'Yes';
+                this._store.booleanDialog.falseLabel     = 'No';
+                this._store.booleanDialog.trueLabelColor = 'secondary';
+                this._store.booleanDialog.booleanValue   = true;
 
-                this._store.booleanDialogStore.trueAction = () => {
+                this._store.booleanDialog.trueAction = () => {
                     (this._store.filtersStore.selectedIndex === 2 ? this._database.removeById(this._store.notesStore.selectedItem.itemId) : this._database.archiveById(this._store.notesStore.selectedItem.itemId))
                         .then(() => {
                             this._notesPresenter.refresh();
@@ -449,7 +447,7 @@ export default class AppPresenter {
                             this._categoriesPresenter.notifyDataSetChanged();
 
                             this.refreshEditor();
-                        }).catch(error => PubSub.publish('global.error', error.toString()));
+                        }).catch(error => EventUtils.broadcast('global.error', error.toString()));
                 };
             }
         }));
@@ -499,7 +497,7 @@ export default class AppPresenter {
                 this._store.notesStore.selectedIndex = 0;
 
                 this._noteSelection.onNext(0);
-            }).catch(error => PubSub.publish('global.error', error.toString()));
+            }).catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     handleImportNotes() {
@@ -515,7 +513,7 @@ export default class AppPresenter {
                 properties : [ 'openFile', 'multiSelections' ]
             }, filenames => {
                 if (filenames) {
-                    const syntax = this._store.defaultSyntaxDialogStore.list.selectedIndex > -1 ? SyntaxCodes[this._store.defaultSyntaxDialogStore.list.selectedIndex] : Config.defaultSyntax;
+                    const syntax = this._store.defaultSyntaxDialog.list.selectedIndex > -1 ? SyntaxCodes[this._store.defaultSyntaxDialog.list.selectedIndex] : Config.defaultSyntax;
 
                     filenames.forEach(filename => {
                         fs.readFile(filename, {
@@ -523,12 +521,12 @@ export default class AppPresenter {
                             flag     : 'r'
                         }, (error, fullText) => {
                             if (error) {
-                                PubSub.publish('global.error', error.toString());
+                                EventUtils.broadcast('global.error', error.toString());
                             } else {
                                 this._database.addOrUpdate(Record.fromText(syntax, fullText))
                                     .then(doc => {
                                         this._store.notesStore.items.unshift(Record.fromDoc(doc).toListItemStore());
-                                    }).catch(error => PubSub.publish('global.error', error.toString()));
+                                    }).catch(error => EventUtils.broadcast('global.error', error.toString()));
                             }
                         });
                     });
@@ -621,7 +619,7 @@ export default class AppPresenter {
                         });
                     }
                 }
-            }).catch(error => PubSub.publish('global.error', error.toString()));
+            }).catch(error => EventUtils.broadcast('global.error', error.toString()));
         }
     }
 
@@ -634,7 +632,7 @@ export default class AppPresenter {
 
         this._database.addOrUpdate(this._store.editorStore.record.toDoc())
             .then(() => this._filtersPresenter.refresh())
-            .catch(error => PubSub.publish('global.error', error.toString()));
+            .catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     handleArchiveClick() {
@@ -642,13 +640,13 @@ export default class AppPresenter {
 
         this._database.addOrUpdate(this._store.editorStore.record.toDoc())
             .then(() => this._filtersPresenter.refresh())
-            .catch(error => PubSub.publish('global.error', error.toString()));
+            .catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     handleSelectCategoryClick() {
         this._database.findCategories()
             .then(categories => {
-                this._store.selectCategoryDialogStore.list.items = [];
+                this._store.selectCategoryDialog.list.items = [];
 
                 categories.forEach(category => {
                     const item = new ListItemStore();
@@ -657,30 +655,30 @@ export default class AppPresenter {
                     item.primaryText = category;
                     item.selected    = this._store.editorStore.record.category ? this._store.editorStore.record.category === category : false;
 
-                    this._store.selectCategoryDialogStore.list.items.push(item);
+                    this._store.selectCategoryDialog.list.items.push(item);
                 });
 
-                this._store.selectCategoryDialogStore.booleanValue = true;
-            }).catch(error => PubSub.publish('global.error', error.toString()));
+                this._store.selectCategoryDialog.booleanValue = true;
+            }).catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     /**
      * @param {number} index The category item index the user selects.
      */
     handleSelectCategoryItemClick(index) {
-        if (this._store.selectCategoryDialogStore.list.selectedIndex !== index) {
-            this._store.selectCategoryDialogStore.list.selectedIndex = index;
+        if (this._store.selectCategoryDialog.list.selectedIndex !== index) {
+            this._store.selectCategoryDialog.list.selectedIndex = index;
         }
     }
 
     handleSelectCategoryOkClick() {
-        if (this._store.selectCategoryDialogStore.list.selectedIndex > -1) {
-            this._store.editorStore.record.category = this._store.selectCategoryDialogStore.list.selectedItem.primaryText;
+        if (this._store.selectCategoryDialog.list.selectedIndex > -1) {
+            this._store.editorStore.record.category = this._store.selectCategoryDialog.list.selectedItem.primaryText;
             this._store.editorStore.changes.onNext(this._store.editorStore.record);
 
             this._categoriesPresenter.notifyDataSetChanged();
 
-            this._store.selectCategoryDialogStore.booleanValue = false;
+            this._store.selectCategoryDialog.booleanValue = false;
         }
     }
 
@@ -690,7 +688,7 @@ export default class AppPresenter {
 
         this._categoriesPresenter.notifyDataSetChanged();
 
-        this._store.selectCategoryDialogStore.booleanValue = false;
+        this._store.selectCategoryDialog.booleanValue = false;
     }
 
     //endregion
@@ -723,9 +721,9 @@ export default class AppPresenter {
         this._editorPresenter.load(this._store.notesStore.selectedItemId)
             .then(() => {
                 if (this._store.notesStore.selectedItemId) {
-                    this._store.currentSyntaxDialogStore.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.editorStore.record.syntax);
+                    this._store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.editorStore.record.syntax);
                 }
-            }).catch(error => PubSub.publish('global.error', error.toString()));
+            }).catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     //endregion
@@ -738,17 +736,17 @@ export default class AppPresenter {
      */
     addCategory(category) {
         if (_.isEmpty(category)) {
-            PubSub.publish(EVENT_ERROR, 'Please enter the name of the new category');
+            EventUtils.broadcast(EVENT_ERROR, 'Please enter the name of the new category');
         } else {
             this._database.addCategory(category)
                 .then(() => {
-                    this._store.addCategoryDialogStore.booleanValue = false;
+                    this._store.addCategoryDialog.booleanValue = false;
 
                     this._categoriesPresenter.notifyDataSetChanged();
                 }).catch(error => {
-                    PubSub.publish('global.error', error.toString());
+                    EventUtils.broadcast('global.error', error.toString());
 
-                    PubSub.publish(EVENT_ERROR, error.message);
+                    EventUtils.broadcast(EVENT_ERROR, error.message);
                 });
         }
     }
@@ -761,13 +759,13 @@ export default class AppPresenter {
     updateCategory(oldCategory, newCategory) {
         this._database.updateCategory(oldCategory, newCategory)
             .then(() => {
-                this._store.updateCategoryDialogStore.booleanValue = false;
+                this._store.updateCategoryDialog.booleanValue = false;
 
                 this._categoriesPresenter.notifyDataSetChanged();
             }).catch(error => {
-                PubSub.publish('global.error', error.toString());
+                EventUtils.broadcast('global.error', error.toString());
 
-                PubSub.publish(EVENT_ERROR, error.message);
+                EventUtils.broadcast(EVENT_ERROR, error.message);
             });
     }
 
@@ -822,7 +820,7 @@ export default class AppPresenter {
      * @param {String} syntax
      */
     changeDefaultSyntax(syntax) {
-        this._settings.set('defaultSyntax', syntax).catch(error => PubSub.publish('global.error', error.toString()));
+        this._settings.set('defaultSyntax', syntax).catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     /**
@@ -834,7 +832,7 @@ export default class AppPresenter {
         this._updateTheme();
 
         this._settings.set('theme', theme)
-            .catch(error => PubSub.publish('global.error', error.toString()));
+            .catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     /**
@@ -844,7 +842,7 @@ export default class AppPresenter {
         AppPresenter._updateFont(font);
 
         this._settings.set('font', font)
-            .catch(error => PubSub.publish('global.error', error.toString()));
+            .catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     changeSettings(data) {
@@ -876,7 +874,7 @@ export default class AppPresenter {
             console.warn('Unrecognized setting ' + data.name + ' = ' + data.value);
         }
 
-        this._settings.set(data.name, data.value).catch(error => PubSub.publish('global.error', error.toString()));
+        this._settings.set(data.name, data.value).catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     //endregion
@@ -889,7 +887,7 @@ export default class AppPresenter {
 
     resetSettings() {
         this._settings.clear()
-            .catch(error => PubSub.publish('global.error', error.toString()));
+            .catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     //endregion
@@ -901,8 +899,8 @@ export default class AppPresenter {
             Promise.all([
                 this._settings.get('showFilterList',      true),
                 this._settings.get('showNoteList',        true),
-                this._settings.get('filterListWidth',     Config.filterListWidth),
-                this._settings.get('noteListWidth',       Config.noteListWidth),
+                this._settings.get('filterListWidth',     Constants.FILTER_LIST_MIN_WIDTH),
+                this._settings.get('noteListWidth',       Constants.NOTE_LIST_MIN_WIDTH),
                 this._settings.get('defaultSyntax',       Config.defaultSyntax),
                 this._settings.get('theme',               Config.defaultTheme),
                 this._settings.get('font',                undefined),
@@ -924,12 +922,12 @@ export default class AppPresenter {
             ]).then(values => {
                 let i = 0;
 
-                this._store.showFilterList     = values[i] !== undefined ? values[i] : true;                   i++;
-                this._store.showNoteList       = values[i] !== undefined ? values[i] : true;                   i++;
-                this._store.filterListWidth    = values[i] !== undefined ? values[i] : Config.filterListWidth; i++;
-                this._store.noteListWidth      = values[i] !== undefined ? values[i] : Config.noteListWidth;   i++;
-                this._store.editorStore.syntax = values[i] !== undefined ? values[i] : Config.defaultSyntax;   i++;
-                this._store.editorStore.theme  = values[i] !== undefined ? values[i] : Config.defaultTheme;    i++;
+                this._store.showFilterList     = values[i] !== undefined ? values[i] : true;                            i++;
+                this._store.showNoteList       = values[i] !== undefined ? values[i] : true;                            i++;
+                this._store.filterListWidth    = values[i] !== undefined ? values[i] : Constants.FILTER_LIST_MIN_WIDTH; i++;
+                this._store.noteListWidth      = values[i] !== undefined ? values[i] : Constants.NOTE_LIST_MIN_WIDTH;   i++;
+                this._store.editorStore.syntax = values[i] !== undefined ? values[i] : Config.defaultSyntax;            i++;
+                this._store.editorStore.theme  = values[i] !== undefined ? values[i] : Config.defaultTheme;             i++;
 
                 this._defaultSyntax = this._store.editorStore.syntax;
 
@@ -961,40 +959,41 @@ export default class AppPresenter {
 
                 this._notesPresenter.sorting = this._store.notesSorting;
 
-                this._store.defaultSyntaxDialogStore.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.editorStore.syntax);
-                this._store.themeDialogStore.list.selectedIndex         = _.indexOf(ThemeCodes.items,  this._store.editorStore.theme);
+                this._store.defaultSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.editorStore.syntax);
+                this._store.themeDialog.list.selectedIndex         = _.indexOf(ThemeCodes.items,  this._store.editorStore.theme);
 
-                this._store.settingsStore.highlightCurrentLine.booleanValue = data.highlightActiveLine;
-                this._store.settingsStore.tabSize2.booleanValue             = data.tabSize === Constants.TAB_SIZES[0];
-                this._store.settingsStore.tabSize4.booleanValue             = data.tabSize === Constants.TAB_SIZES[1];
-                this._store.settingsStore.tabSize8.booleanValue             = data.tabSize === Constants.TAB_SIZES[2];
-                this._store.settingsStore.useSoftTabs.booleanValue          = data.useSoftTabs;
-                this._store.settingsStore.wordWrap.booleanValue             = data.wordWrap;
-                this._store.settingsStore.showLineNumbers.booleanValue      = data.showLineNumebrs;
-                this._store.settingsStore.showPrintMargin.booleanValue      = data.showPrintMargin;
-                this._store.settingsStore.printMarginColumn72.booleanValue  = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[0];
-                this._store.settingsStore.printMarginColumn80.booleanValue  = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[1];
-                this._store.settingsStore.printMarginColumn100.booleanValue = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[2];
-                this._store.settingsStore.printMarginColumn120.booleanValue = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[3];
-                this._store.settingsStore.showInvisibles.booleanValue       = data.showInvisibles;
-                this._store.settingsStore.showFoldWidgets.booleanValue      = data.showFoldWidgets;
-                this._store.settingsStore.showGutter.booleanValue           = data.showGutter;
-                this._store.settingsStore.showIndentGuides.booleanValue     = data.displayIndentGuides;
-                this._store.settingsStore.scrollPastLastLine.booleanValue   = data.scrollPastEnd;
-                this._store.editorStore.highlightActiveLine                 = data.highlightActiveLine;
-                this._store.editorStore.tabSize                             = data.tabSize;
-                this._store.editorStore.useSoftTabs                         = data.useSoftTabs;
-                this._store.editorStore.wordWrap                            = data.wordWrap;
-                this._store.editorStore.showLineNumbers                     = data.showLineNumebrs;
-                this._store.editorStore.showPrintMargin                     = data.showPrintMargin;
-                this._store.editorStore.printMarginColumn                   = data.printMarginColumn;
-                this._store.editorStore.showInvisibles                      = data.showInvisibles;
-                this._store.editorStore.showFoldWidgets                     = data.showFoldWidgets;
-                this._store.editorStore.showGutter                          = data.showGutter;
-                this._store.editorStore.displayIndentGuides                 = data.displayIndentGuides;
-                this._store.editorStore.scrollPastEnd                       = data.scrollPastEnd;
+                this._store.editorSettingsDialog.settings.highlightCurrentLine.booleanValue = data.highlightActiveLine;
+                this._store.editorSettingsDialog.settings.tabSize2.booleanValue             = data.tabSize === Constants.TAB_SIZES[0];
+                this._store.editorSettingsDialog.settings.tabSize4.booleanValue             = data.tabSize === Constants.TAB_SIZES[1];
+                this._store.editorSettingsDialog.settings.tabSize8.booleanValue             = data.tabSize === Constants.TAB_SIZES[2];
+                this._store.editorSettingsDialog.settings.useSoftTabs.booleanValue          = data.useSoftTabs;
+                this._store.editorSettingsDialog.settings.wordWrap.booleanValue             = data.wordWrap;
+                this._store.editorSettingsDialog.settings.showLineNumbers.booleanValue      = data.showLineNumebrs;
+                this._store.editorSettingsDialog.settings.showPrintMargin.booleanValue      = data.showPrintMargin;
+                this._store.editorSettingsDialog.settings.printMarginColumn72.booleanValue  = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[0];
+                this._store.editorSettingsDialog.settings.printMarginColumn80.booleanValue  = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[1];
+                this._store.editorSettingsDialog.settings.printMarginColumn100.booleanValue = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[2];
+                this._store.editorSettingsDialog.settings.printMarginColumn120.booleanValue = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[3];
+                this._store.editorSettingsDialog.settings.showInvisibles.booleanValue       = data.showInvisibles;
+                this._store.editorSettingsDialog.settings.showFoldWidgets.booleanValue      = data.showFoldWidgets;
+                this._store.editorSettingsDialog.settings.showGutter.booleanValue           = data.showGutter;
+                this._store.editorSettingsDialog.settings.showIndentGuides.booleanValue     = data.displayIndentGuides;
+                this._store.editorSettingsDialog.settings.scrollPastLastLine.booleanValue   = data.scrollPastEnd;
 
-                PubSub.publish('TextEditor.init', data);
+                this._store.editorStore.highlightActiveLine = data.highlightActiveLine;
+                this._store.editorStore.tabSize             = data.tabSize;
+                this._store.editorStore.useSoftTabs         = data.useSoftTabs;
+                this._store.editorStore.wordWrap            = data.wordWrap;
+                this._store.editorStore.showLineNumbers     = data.showLineNumebrs;
+                this._store.editorStore.showPrintMargin     = data.showPrintMargin;
+                this._store.editorStore.printMarginColumn   = data.printMarginColumn;
+                this._store.editorStore.showInvisibles      = data.showInvisibles;
+                this._store.editorStore.showFoldWidgets     = data.showFoldWidgets;
+                this._store.editorStore.showGutter          = data.showGutter;
+                this._store.editorStore.displayIndentGuides = data.displayIndentGuides;
+                this._store.editorStore.scrollPastEnd       = data.scrollPastEnd;
+
+                EventUtils.broadcast('TextEditor.init', data);
 
                 this._updateMenu();
                 this._updateTheme();
@@ -1022,8 +1021,8 @@ export default class AppPresenter {
                     this._database.addOrUpdate(record.toDoc())
                         .then(doc => {
                             this._store.notesStore.selectedItem.update(Record.fromDoc(doc));
-                        }).catch(error => PubSub.publish('global.error', error.toString()));
-                }).catch(error => PubSub.publish('global.error', error.toString()));
+                        }).catch(error => EventUtils.broadcast('global.error', error.toString()));
+                }).catch(error => EventUtils.broadcast('global.error', error.toString()));
         });
     }
 
@@ -1043,7 +1042,7 @@ export default class AppPresenter {
     }
 
     static _updateFont(font) {
-        PubSub.publish('TextEditor.changeFont', font);
+        EventUtils.broadcast('TextEditor.font.change', font);
     }
 
     /**
@@ -1054,7 +1053,7 @@ export default class AppPresenter {
         this._store.notesSorting     = sorting;
         this._notesPresenter.sorting = sorting;
 
-        this._settings.set('notesSorting', sorting).catch(error => PubSub.publish('global.error', error.toString()));
+        this._settings.set('notesSorting', sorting).catch(error => EventUtils.broadcast('global.error', error.toString()));
     }
 
     /**

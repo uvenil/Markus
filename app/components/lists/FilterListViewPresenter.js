@@ -3,10 +3,7 @@
 import ListViewPresenter from './ListViewPresenter';
 import ListItemStore from './ListItemStore';
 import Database from '../../data/Database';
-import PubSub from 'pubsub-js';
-import is from 'electron-is';
-
-if (is.dev()) PubSub.immediateExceptions = true;
+import EventUtils from '../../utils/EventUtils';
 
 const FILTER_EVERYTHING_INDEX = 0;
 const FILTER_STARRED_INDEX    = 1;
@@ -24,15 +21,15 @@ export default class FilterListViewPresenter extends ListViewPresenter {
     refresh() {
         this.database.countAll()
             .then(count => this.store.items[FILTER_EVERYTHING_INDEX].secondaryText = count)
-            .catch(error => PubSub.publish('global.error', error));
+            .catch(error => EventUtils.broadcast('global.error', error));
 
         this.database.countByStarred()
             .then(count => this.store.items[FILTER_STARRED_INDEX].secondaryText = count)
-            .catch(error => PubSub.publish('global.error', error));
+            .catch(error => EventUtils.broadcast('global.error', error));
 
         this.database.countByArchived()
             .then(count => this.store.items[FILTER_ARCHIVED_INDEX].secondaryText = count)
-            .catch(error => PubSub.publish('global.error', error));
+            .catch(error => EventUtils.broadcast('global.error', error));
     }
 
     initStore() {

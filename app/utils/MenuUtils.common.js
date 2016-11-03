@@ -1,10 +1,8 @@
 'use strict';
 
+import EventUtils from './EventUtils';
 import Constants from './Constants';
-import PubSub from 'pubsub-js';
 import is from 'electron-is';
-
-if (is.dev()) PubSub.immediateExceptions = true;
 
 const { remote } = require('electron');
 
@@ -58,14 +56,14 @@ const createViewMenu = () => {
                 label : 'Show filter list',
                 type  : 'checkbox',
                 click : (item, win) => {
-                    if (win) PubSub.publish('ui.filterList.visibility', item.checked);
+                    if (win) EventUtils.broadcast('ui.filterList.visibility', item.checked);
                 }
             },
             {
                 label : 'Show note list',
                 type  : 'checkbox',
                 click : (item, win) => {
-                    if (win) PubSub.publish('ui.categoryList.visibility', item.checked);
+                    if (win) EventUtils.broadcast('ui.categoryList.visibility', item.checked);
                 }
             },
             {
@@ -133,13 +131,13 @@ const createDeveloperMenu = () => {
             {
                 label : 'Reset settings',
                 click : (item, win) => {
-                    if (win) PubSub.publish('dev.settings.reset');
+                    if (win) EventUtils.broadcast('dev.settings.reset');
                 }
             },
             {
                 label : 'Reset database',
                 click : (item, win) => {
-                    if (win) PubSub.publish('dev.database.reset');
+                    if (win) EventUtils.broadcast('dev.database.reset');
                 }
             }
         ]

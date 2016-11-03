@@ -29,21 +29,9 @@ class NoteListView extends React.Component {
                             key={Unique.nextString()}
                             title={item.tooltip}
                             style={{ width : 'calc(100% - ' + Constants.PADDING_X2 + 'px)', padding : Constants.PADDING_X1, borderBottom : '1px solid ' + this.props.muiTheme.palette.borderColor, cursor : 'default' }}>
-                            <Text>
-                                <div style={{ lineHeight : '1.5em', whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'bolder', fontSize : '105%' }}>
-                                    {item.primaryText}
-                                </div>
-                            </Text>
-                            <Text>
-                                <div style={{ lineHeight : '1.2em', height : '2.4em', display : '-webkit-box', WebkitLineClamp : 2, WebkitBoxOrient : 'vertical', overflow : 'hidden', textOverflow : 'ellipsis' }}>
-                                    {item.secondaryText}
-                                </div>
-                            </Text>
-                            <Text>
-                                <div style={{ whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'lighter', fontSize : '95%' }}>
-                                    {item.tertiaryText}
-                                </div>
-                            </Text>
+                            <Text style={{ lineHeight : '1.5em', whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'bolder', fontSize : '105%' }}>{item.primaryText}</Text>
+                            <Text style={{ lineHeight : '1.2em', height : '2.4em', display : '-webkit-box', WebkitLineClamp : 2, WebkitBoxOrient : 'vertical', overflow : 'hidden', textOverflow : 'ellipsis' }}>{item.secondaryText}</Text>
+                            <Text style={{ whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'lighter', fontSize : '95%' }}>{item.tertiaryText}</Text>
                         </div>
                     );
                 })}

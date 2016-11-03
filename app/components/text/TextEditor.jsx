@@ -7,18 +7,15 @@ import Brace from 'brace';
 import AceEditor from 'react-ace';
 import TextEditorStore from './TextEditorStore';
 import Record from '../../data/Record';
+import EventUtils from '../../utils/EventUtils';
 import Unique from '../../utils/Unique';
 import Constants from '../../utils/Constants';
 import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
-import PubSub from 'pubsub-js';
-import is from 'electron-is';
 import _ from 'lodash';
 
 require('brace/ext/searchbox');
 require('brace/ext/spellcheck');
 require('brace/ext/whitespace');
-
-if (is.dev()) PubSub.immediateExceptions = true;
 
 @observer
 class TextEditor extends React.Component {
@@ -27,7 +24,7 @@ class TextEditor extends React.Component {
 
         this._editorId      = Unique.nextString();
         this._placeHolderId = Unique.nextString();
-        this._subscriptions = [];
+        this._events        = [];
 
         this._handleChange = value => {
             if (this.props.store.record) {
@@ -114,14 +111,14 @@ class TextEditor extends React.Component {
     }
 
     componentDidMount() {
-        this._subscriptions.push(PubSub.subscribe('TextEditor.init', (eventName, data) => this._init(data)));
-        this._subscriptions.push(PubSub.subscribe('TextEditor.settings.change', (eventName, data) => this._changeSettings(data)));
-        this._subscriptions.push(PubSub.subscribe('TextEditor.changeFont', (eventName, font) => this._changeFont(font)));
-        this._subscriptions.push(PubSub.subscribe('TextEditor.refresh', () => this._handleRefresh()));
+        this._events.push(EventUtils.register('TextEditor.init', data => this._init(data)));
+        this._events.push(EventUtils.register('TextEditor.settings.change', data => this._changeSettings(data)));
+        this._events.push(EventUtils.register('TextEditor.font.change', font => this._changeFont(font)));
+        this._events.push(EventUtils.register('TextEditor.refresh', () => this._handleRefresh()));
     }
 
     componentWillUnmount() {
-        this._subscriptions.forEach(subscription => subscription.unsubscribe());
+        this._events.forEach(event => EventUtils.unregister(event));
     }
 
     render() {
