@@ -1,8 +1,8 @@
 'use strict';
 
 import Nedb from 'nedb';
-import Path from 'path';
 import Settings from '../utils/Settings';
+import Path from 'path';
 import _ from 'lodash';
 
 const { app } = require('electron').remote;
@@ -103,8 +103,8 @@ export default class Database {
     findAll(sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
-                fullText : new RegExp(keyword),
-                archived : false
+                searchableText : new RegExp(keyword.toLowerCase()),
+                archived       : false
             } : { archived : false }).sort(SORTINGS[sorting]).exec((error, docs) => {
                 if (error) {
                     reject(error);
@@ -140,9 +140,9 @@ export default class Database {
     findByStarred(sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
-                fullText : new RegExp(keyword),
-                starred  : true,
-                archived : false
+                searchableText : new RegExp(keyword.toLowerCase()),
+                starred        : true,
+                archived       : false
             } : {
                 starred  : true,
                 archived : false
@@ -184,8 +184,8 @@ export default class Database {
     findByArchived(sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
-                fullText : new RegExp(keyword),
-                archived : true
+                searchableText : new RegExp(keyword.toLowerCase()),
+                archived       : true
             } : { archived : true }).sort(SORTINGS[sorting]).exec((error, docs) => {
                 if (error) {
                     reject(error);
@@ -222,9 +222,9 @@ export default class Database {
     findByCategory(category, sorting, keyword) {
         return new Promise((resolve, reject) => {
             this._db.find(keyword ? {
-                fullText : new RegExp(keyword),
-                category : category,
-                archived : false
+                searchableText : new RegExp(keyword.toLowerCase()),
+                category       : category,
+                archived       : false
             } : {
                 category : category,
                 archived : false

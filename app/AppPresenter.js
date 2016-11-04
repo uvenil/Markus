@@ -1,40 +1,38 @@
 'use strict';
 
-import FilterListViewPresenter from './components/lists/FilterListViewPresenter';
-import CategoryListViewPresenter from './components/lists/CategoryListViewPresenter';
-import NoteListViewPresenter from './components/lists/NoteListViewPresenter';
-import TextEditorPresenter from './components/text/TextEditorPresenter';
+import FilterListPresenter from './components/lists/FilterListPresenter';
+import CategoryListPresenter from './components/lists/CategoryListPresenter';
+import NoteListPresenter from './components/lists/NoteListPresenter';
+import NoteEditorPresenter from './components/text/NoteEditorPresenter';
 import AppStore from './AppStore';
 import BooleanStore from './components/BooleanStore';
 import BooleanDialogStore from './components/dialogs/BooleanDialogStore';
 import PromptDialogStore from './components/dialogs/PromptDialogStore';
-import ListViewDialogStore from './components/dialogs/ListViewDialogStore';
+import ListDialogStore from './components/dialogs/ListDialogStore';
 import ListItemStore from './components/lists/ListItemStore';
 import SettingsStore from './components/dialogs/SettingsStore';
 import Settings from './utils/Settings';
 import Database from './data/Database';
-import Record from './data/Record.jsx';
-import Rx from 'rx-lite';
+import Record from './data/Record.js';
+import EventUtils from './utils/EventUtils';
+import Constants from './utils/Constants';
+import Config from './definitions/config.json';
 import SyntaxNames from './definitions/syntax-names.json';
 import SyntaxCodes from './definitions/syntax-codes.json';
 import ThemeNames from './definitions/theme-names.json';
 import ThemeCodes from './definitions/theme-codes.json';
-import Constants from './utils/Constants';
-import Config from '../config.json';
+import Rx from 'rx-lite';
 import Path from 'path';
-import PubSub from 'pubsub-js';
 import is from 'electron-is';
 import fs from 'fs';
 import _ from 'lodash';
-
-if (is.dev()) PubSub.immediateExceptions = true;
 
 const { remote } = require('electron');
 const { dialog, Menu, MenuItem } = remote;
 
 const CLEAR_CACHE_INTERVAL = 5 * 60 * 1000;
 
-const EVENT_ERROR = 'Event.error';
+const EVENT_ERROR = 'global.error';
 const DARK_THEMES = [ 'ambiance', 'chaos', 'clouds_midnight', 'cobalt', 'idle_fingers', 'iplastic', 'kr_theme', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monokai', 'pastel_on_dark', 'solarized_dark', 'terminal', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink' ];
 
 const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
@@ -46,26 +44,26 @@ export default class AppPresenter {
         this._database      = new Database();
         this._defaultSyntax = Config.defaultSyntax;
 
-        this._filtersPresenter    = new FilterListViewPresenter(this._database);
-        this._categoriesPresenter = new CategoryListViewPresenter(this._database);
-        this._notesPresenter      = new NoteListViewPresenter(this._filtersPresenter, this._categoriesPresenter, this._database);
-        this._editorPresenter     = new TextEditorPresenter(this._database);
+        this._filterListPresenter   = new FilterListPresenter(this._database);
+        this._categoryListPresenter = new CategoryListPresenter(this._database);
+        this._noteListPresenter     = new NoteListPresenter(this._filterListPresenter, this._categoryListPresenter, this._database);
+        this._noteEditorPresenter   = new NoteEditorPresenter(this._database);
 
-        this._store.booleanDialogStore        = new BooleanDialogStore();
-        this._store.aboutDialogStore          = new BooleanStore();
-        this._store.editorSettingsDialogStore = new BooleanStore();
-        this._store.currentSyntaxDialogStore  = new ListViewDialogStore();
-        this._store.defaultSyntaxDialogStore  = new ListViewDialogStore();
-        this._store.themeDialogStore          = new ListViewDialogStore();
-        this._store.fontDialogStore           = new ListViewDialogStore();
-        this._store.settingsStore             = new SettingsStore();
-        this._store.filtersStore              = this._filtersPresenter.store;
-        this._store.categoriesStore           = this._categoriesPresenter.store;
-        this._store.notesStore                = this._notesPresenter.store;
-        this._store.editorStore               = this._editorPresenter.store;
-        this._store.addCategoryDialogStore    = new PromptDialogStore();
-        this._store.updateCategoryDialogStore = new PromptDialogStore();
-        this._store.selectCategoryDialogStore = new ListViewDialogStore();
+        this._store.booleanDialog                 = new BooleanDialogStore();
+        this._store.aboutDialog                   = new BooleanStore();
+        this._store.editorSettingsDialog          = new BooleanStore();
+        this._store.currentSyntaxDialog           = new ListDialogStore();
+        this._store.defaultSyntaxDialog           = new ListDialogStore();
+        this._store.themeDialog                   = new ListDialogStore();
+        this._store.fontDialog                    = new ListDialogStore();
+        this._store.editorSettingsDialog.settings = new SettingsStore();
+        this._store.filterList                    = this._filterListPresenter.store;
+        this._store.categoryList                  = this._categoryListPresenter.store;
+        this._store.noteList                      = this._noteListPresenter.store;
+        this._store.noteEditor                    = this._noteEditorPresenter.store;
+        this._store.addCategoryDialog             = new PromptDialogStore();
+        this._store.updateCategoryDialog          = new PromptDialogStore();
+        this._store.selectCategoryDialog          = new ListDialogStore();
 
         this._filterSelection   = new Rx.Subject();
         this._categorySelection = new Rx.Subject();
@@ -75,13 +73,13 @@ export default class AppPresenter {
             .subscribe(hasSelection => {
                 this._store.addNoteEnabled = hasSelection;
 
-                this.refreshNotes();
+                this.refreshNoteList();
             });
 
         this._noteSelection.subscribe(index => {
-            this._store.notesStore.selectedIndex = index;
+            this._store.noteList.selectedIndex = index;
 
-            this.refreshEditor();
+            this.refreshNoteEditor();
         });
 
         //region Setting dialogs
@@ -95,8 +93,8 @@ export default class AppPresenter {
             currentItem.primaryText = syntaxName;
             defaultItem.primaryText = syntaxName;
 
-            this._store.currentSyntaxDialogStore.list.items.push(currentItem);
-            this._store.defaultSyntaxDialogStore.list.items.push(defaultItem);
+            this._store.currentSyntaxDialog.list.items.push(currentItem);
+            this._store.defaultSyntaxDialog.list.items.push(defaultItem);
         });
 
         ThemeNames.items.forEach((themeName, i) => {
@@ -105,7 +103,7 @@ export default class AppPresenter {
             item.itemId      = 'setting-theme-' + ThemeCodes[i];
             item.primaryText = themeName;
 
-            this._store.themeDialogStore.list.items.push(item);
+            this._store.themeDialog.list.items.push(item);
         });
 
         FONTS.items.forEach((font, i) => {
@@ -114,7 +112,7 @@ export default class AppPresenter {
             item.itemId      = 'setting-font-' + i;
             item.primaryText = font;
 
-            this._store.fontDialogStore.list.items.push(item);
+            this._store.fontDialog.list.items.push(item);
         });
 
         //endregion
@@ -126,10 +124,9 @@ export default class AppPresenter {
 
     init() {
         this._initSettings()
-            .then(() => this._initDatabase()
-                .then(() => this._initAutoSave())
-                .catch(error => PubSub.publish('Event.error', error.toString())))
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+            .then(() => this._initDatabase())
+            .then(() => this._initAutoSave())
+            .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
 
         AppPresenter._clearCache();
     }
@@ -139,9 +136,9 @@ export default class AppPresenter {
     //region Filter operations
 
     handleFilterItemClick(index) {
-        if (this._store.filtersStore.selectedIndex !== index) {
-            this._store.filtersStore.selectedIndex    = index;
-            this._store.categoriesStore.selectedIndex = -1;
+        if (this._store.filterList.selectedIndex !== index) {
+            this._store.filterList.selectedIndex   = index;
+            this._store.categoryList.selectedIndex = -1;
 
             this._filterSelection.onNext(index);
             this._categorySelection.onNext(-1);
@@ -149,11 +146,11 @@ export default class AppPresenter {
     }
 
     handleFilterItemRightClick(index) {
-        if (this._store.filtersStore.selectedIndex !== index) {
-            this._store.filtersStore.selectedIndex    = index;
-            this._store.categoriesStore.selectedIndex = -1;
+        if (this._store.filterList.selectedIndex !== index) {
+            this._store.filterList.selectedIndex   = index;
+            this._store.categoryList.selectedIndex = -1;
 
-            this._notesPresenter.refresh();
+            this._noteListPresenter.refresh();
         }
 
         let countPromise;
@@ -173,8 +170,8 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : 'Import notes…',
                     click : () => {
-                        this._store.filtersStore.selectedIndex    = index;
-                        this._store.categoriesStore.selectedIndex = -1;
+                        this._store.filterList.selectedIndex   = index;
+                        this._store.categoryList.selectedIndex = -1;
 
                         this.handleImportNotes();
                     }
@@ -184,8 +181,8 @@ export default class AppPresenter {
                     menu.append(new MenuItem({
                         label : 'Export all notes…',
                         click : () => {
-                            this._store.filtersStore.selectedIndex    = index;
-                            this._store.categoriesStore.selectedIndex = -1;
+                            this._store.filterList.selectedIndex   = index;
+                            this._store.categoryList.selectedIndex = -1;
 
                             this.handleExportNotes();
                         }
@@ -199,9 +196,7 @@ export default class AppPresenter {
                 if (index === 2) {
                     menu.append(new MenuItem({
                         label : 'Restore notes',
-                        click : () => {
-                            this._database.unarchiveAll().catch(error => PubSub.publish('Event.error', error.toString()));
-                        }
+                        click : () => this._database.unarchiveAll().catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()))
                     }));
                 }
 
@@ -210,14 +205,14 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : action + ' all notes…',
                     click : () => {
-                        this._store.booleanDialogStore.title          = action + ' notes';
-                        this._store.booleanDialogStore.message        = 'Are you sure you want to ' + action.toLowerCase() + ' the notes?';
-                        this._store.booleanDialogStore.trueLabel      = 'Yes';
-                        this._store.booleanDialogStore.falseLabel     = 'No';
-                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
-                        this._store.booleanDialogStore.booleanValue   = true;
+                        this._store.booleanDialog.title          = action + ' notes';
+                        this._store.booleanDialog.message        = 'Are you sure you want to ' + action.toLowerCase() + ' the notes?';
+                        this._store.booleanDialog.trueLabel      = 'Yes';
+                        this._store.booleanDialog.falseLabel     = 'No';
+                        this._store.booleanDialog.trueLabelColor = 'secondary';
+                        this._store.booleanDialog.booleanValue   = true;
 
-                        this._store.booleanDialogStore.trueAction = () => {
+                        this._store.booleanDialog.trueAction = () => {
                             let updatePromise;
 
                             if (index === 0) {
@@ -230,18 +225,17 @@ export default class AppPresenter {
 
                             if (updatePromise) {
                                 updatePromise.then(() => {
-                                    this._filtersPresenter.refresh();
-                                    this._categoriesPresenter.refresh();
-
-                                    this._notesPresenter.refresh();
-                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                                    this._filterListPresenter.refresh();
+                                    this._categoryListPresenter.refresh();
+                                    this._noteListPresenter.refresh();
+                                }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
                             }
                         };
                     }
                 }));
 
                 menu.popup(remote.getCurrentWindow());
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
         }
     }
 
@@ -250,9 +244,9 @@ export default class AppPresenter {
     //region Category operations
 
     handleCategoryItemClick(index) {
-        if (this._store.categoriesStore.selectedIndex !== index) {
-            this._store.filtersStore.selectedIndex    = -1;
-            this._store.categoriesStore.selectedIndex = index;
+        if (this._store.categoryList.selectedIndex !== index) {
+            this._store.filterList.selectedIndex   = -1;
+            this._store.categoryList.selectedIndex = index;
 
             this._filterSelection.onNext(-1);
             this._categorySelection.onNext(index);
@@ -260,14 +254,14 @@ export default class AppPresenter {
     }
 
     handleCategoryItemRightClick(index) {
-        if (this._store.categoriesStore.selectedIndex !== index) {
-            this._store.filtersStore.selectedIndex    = -1;
-            this._store.categoriesStore.selectedIndex = index;
+        if (this._store.categoryList.selectedIndex !== index) {
+            this._store.filterList.selectedIndex   = -1;
+            this._store.categoryList.selectedIndex = index;
 
-            this._notesPresenter.refresh();
+            this._noteListPresenter.refresh();
         }
 
-        const category = this._store.categoriesStore.items[index].primaryText;
+        const category = this._store.categoryList.items[index].primaryText;
 
         this._database.countByCategory(category)
             .then(count => {
@@ -276,8 +270,8 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : 'Import notes…',
                     click : () => {
-                        this._store.filtersStore.selectedIndex    = -1;
-                        this._store.categoriesStore.selectedIndex = index;
+                        this._store.filterList.selectedIndex   = -1;
+                        this._store.categoryList.selectedIndex = index;
 
                         this.handleImportNotes();
                     }
@@ -287,8 +281,8 @@ export default class AppPresenter {
                     menu.append(new MenuItem({
                         label : 'Export all notes…',
                         click : () => {
-                            this._store.filtersStore.selectedIndex    = -1;
-                            this._store.categoriesStore.selectedIndex = index;
+                            this._store.filterList.selectedIndex   = -1;
+                            this._store.categoryList.selectedIndex = index;
 
                             this.handleExportNotes();
                         }
@@ -298,8 +292,8 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : 'Rename ' + category + '…',
                     click : () => {
-                        this._store.updateCategoryDialogStore.value        = category;
-                        this._store.updateCategoryDialogStore.booleanValue = true;
+                        this._store.updateCategoryDialog.value        = category;
+                        this._store.updateCategoryDialog.booleanValue = true;
                     }
                 }));
 
@@ -310,22 +304,22 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : 'Delete ' + category + '…',
                     click : () => {
-                        this._store.booleanDialogStore.title          = 'Delete category';
-                        this._store.booleanDialogStore.message        = 'Are you sure you want to delete category "' + category + '"?';
-                        this._store.booleanDialogStore.trueLabel      = 'Yes';
-                        this._store.booleanDialogStore.falseLabel     = 'No';
-                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
-                        this._store.booleanDialogStore.booleanValue   = true;
+                        this._store.booleanDialog.title          = 'Delete category';
+                        this._store.booleanDialog.message        = 'Are you sure you want to delete category "' + category + '"?';
+                        this._store.booleanDialog.trueLabel      = 'Yes';
+                        this._store.booleanDialog.falseLabel     = 'No';
+                        this._store.booleanDialog.trueLabelColor = 'secondary';
+                        this._store.booleanDialog.booleanValue   = true;
 
-                        this._store.booleanDialogStore.trueAction = () => {
+                        this._store.booleanDialog.trueAction = () => {
                             this._database.removeCategory(category)
                                 .then(() => {
-                                    this._categoriesPresenter.notifyDataSetChanged();
+                                    this._categoryListPresenter.notifyDataSetChanged();
 
-                                    if (this._store.categoriesStore.selectedIndex < 0) {
-                                        this._notesPresenter.refresh();
+                                    if (this._store.categoryList.selectedIndex < 0) {
+                                        this._noteListPresenter.refresh();
                                     }
-                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                                }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
                         };
                     }
                 }));
@@ -333,23 +327,23 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : 'Delete ' + category + ' and notes…',
                     click : () => {
-                        this._store.booleanDialogStore.title          = 'Delete category and archive notes';
-                        this._store.booleanDialogStore.message        = 'Are you sure you want to delete category "' + category + '" and archive its notes?';
-                        this._store.booleanDialogStore.trueLabel      = 'Yes';
-                        this._store.booleanDialogStore.falseLabel     = 'No';
-                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
-                        this._store.booleanDialogStore.booleanValue   = true;
+                        this._store.booleanDialog.title          = 'Delete category and archive notes';
+                        this._store.booleanDialog.message        = 'Are you sure you want to delete category "' + category + '" and archive its notes?';
+                        this._store.booleanDialog.trueLabel      = 'Yes';
+                        this._store.booleanDialog.falseLabel     = 'No';
+                        this._store.booleanDialog.trueLabelColor = 'secondary';
+                        this._store.booleanDialog.booleanValue   = true;
 
-                        this._store.booleanDialogStore.trueAction = () => {
+                        this._store.booleanDialog.trueAction = () => {
                             this._database.removeCategory(category, true)
                                 .then(() => {
-                                    this._filtersPresenter.refresh();
-                                    this._categoriesPresenter.notifyDataSetChanged();
+                                    this._filterListPresenter.refresh();
+                                    this._categoryListPresenter.notifyDataSetChanged();
 
-                                    if (this._store.categoriesStore.selectedIndex < 0) {
-                                        this._notesPresenter.refresh();
+                                    if (this._store.categoryList.selectedIndex < 0) {
+                                        this._noteListPresenter.refresh();
                                     }
-                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                                }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
                         };
                     }
                 }));
@@ -357,32 +351,31 @@ export default class AppPresenter {
                 menu.append(new MenuItem({
                     label : 'Archive all notes…',
                     click : () => {
-                        this._store.booleanDialogStore.title          = 'Archive notes';
-                        this._store.booleanDialogStore.message        = 'Are you sure you want to archive all notes of category "' + category + '"?';
-                        this._store.booleanDialogStore.trueLabel      = 'Yes';
-                        this._store.booleanDialogStore.falseLabel     = 'No';
-                        this._store.booleanDialogStore.trueLabelColor = 'secondary';
-                        this._store.booleanDialogStore.booleanValue   = true;
+                        this._store.booleanDialog.title          = 'Archive notes';
+                        this._store.booleanDialog.message        = 'Are you sure you want to archive all notes of category "' + category + '"?';
+                        this._store.booleanDialog.trueLabel      = 'Yes';
+                        this._store.booleanDialog.falseLabel     = 'No';
+                        this._store.booleanDialog.trueLabelColor = 'secondary';
+                        this._store.booleanDialog.booleanValue   = true;
 
-                        this._store.booleanDialogStore.trueAction = () => {
+                        this._store.booleanDialog.trueAction = () => {
                             this._database.archiveByCategory(category)
                                 .then(() => {
-                                    this._filtersPresenter.refresh();
-                                    this._categoriesPresenter.refresh();
-
-                                    this._notesPresenter.refresh();
-                                }).catch(error => PubSub.publish('Event.error', error.toString()));
+                                    this._filterListPresenter.refresh();
+                                    this._categoryListPresenter.refresh();
+                                    this._noteListPresenter.refresh();
+                                }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
                         };
                     }
                 }));
 
                 menu.popup(remote.getCurrentWindow());
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     handleAddCategoryClick() {
-        this._store.addCategoryDialogStore.value        = '';
-        this._store.addCategoryDialogStore.booleanValue = true;
+        this._store.addCategoryDialog.value        = '';
+        this._store.addCategoryDialog.booleanValue = true;
     }
 
     //endregion
@@ -390,14 +383,14 @@ export default class AppPresenter {
     //region Note operations
 
     handleNoteItemClick(index) {
-        if (this._store.notesStore.selectedIndex !== index) {
+        if (this._store.noteList.selectedIndex !== index) {
             this._noteSelection.onNext(index);
         }
     }
 
     handleNoteItemRightClick(index) {
-        if (this._store.notesStore.selectedIndex !== index) {
-            this._store.notesStore.selectedIndex = index;
+        if (this._store.noteList.selectedIndex !== index) {
+            this._store.noteList.selectedIndex = index;
         }
 
         const menu = new Menu();
@@ -405,51 +398,62 @@ export default class AppPresenter {
         menu.append(new MenuItem({
             label : 'Export…',
             click : () => {
-                this._store.notesStore.selectedIndex = index;
+                this._store.noteList.selectedIndex = index;
 
                 this.handleExportNote();
             }
         }));
 
-        menu.append(new MenuItem({
-            type : 'separator'
-        }));
-
-        if (this._store.filtersStore.selectedIndex === 2) {
+        if (this._store.filterList.selectedIndex !== 2) {
             menu.append(new MenuItem({
-                label : 'Restore',
+                label : 'Duplicate',
                 click : () => {
-                    this._database.unarchiveById(this._store.notesStore.selectedItem.itemId)
-                        .then(() => {
-                            this._notesPresenter.refresh();
-                            this._filtersPresenter.refresh();
-                            this._categoriesPresenter.notifyDataSetChanged();
-                        }).catch(error => PubSub.publish('Event.error', error.toString()));
+                    this._store.noteList.selectedIndex = index;
+
+                    this._duplicateNote();
                 }
             }));
         }
 
-        const action = this._store.filtersStore.selectedIndex === 2 ? 'Delete' : 'Archive';
+        menu.append(new MenuItem({
+            type : 'separator'
+        }));
+
+        if (this._store.filterList.selectedIndex === 2) {
+            menu.append(new MenuItem({
+                label : 'Restore',
+                click : () => {
+                    this._database.unarchiveById(this._store.noteList.selectedItem.itemId)
+                        .then(() => {
+                            this._noteListPresenter.refresh();
+                            this._filterListPresenter.refresh();
+                            this._categoryListPresenter.notifyDataSetChanged();
+                        }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+                }
+            }));
+        }
+
+        const action = this._store.filterList.selectedIndex === 2 ? 'Delete' : 'Archive';
 
         menu.append(new MenuItem({
             label : action + '…',
             click : () => {
-                this._store.booleanDialogStore.title          = action + ' note';
-                this._store.booleanDialogStore.message        = 'Are you sure you want to ' + action.toLowerCase() + ' this note?';
-                this._store.booleanDialogStore.trueLabel      = 'Yes';
-                this._store.booleanDialogStore.falseLabel     = 'No';
-                this._store.booleanDialogStore.trueLabelColor = 'secondary';
-                this._store.booleanDialogStore.booleanValue   = true;
+                this._store.booleanDialog.title          = action + ' note';
+                this._store.booleanDialog.message        = 'Are you sure you want to ' + action.toLowerCase() + ' this note?';
+                this._store.booleanDialog.trueLabel      = 'Yes';
+                this._store.booleanDialog.falseLabel     = 'No';
+                this._store.booleanDialog.trueLabelColor = 'secondary';
+                this._store.booleanDialog.booleanValue   = true;
 
-                this._store.booleanDialogStore.trueAction = () => {
-                    (this._store.filtersStore.selectedIndex === 2 ? this._database.removeById(this._store.notesStore.selectedItem.itemId) : this._database.archiveById(this._store.notesStore.selectedItem.itemId))
+                this._store.booleanDialog.trueAction = () => {
+                    (this._store.filterList.selectedIndex === 2 ? this._database.removeById(this._store.noteList.selectedItem.itemId) : this._database.archiveById(this._store.noteList.selectedItem.itemId))
                         .then(() => {
-                            this._notesPresenter.refresh();
-                            this._filtersPresenter.refresh();
-                            this._categoriesPresenter.notifyDataSetChanged();
+                            this._noteListPresenter.refresh();
+                            this._filterListPresenter.refresh();
+                            this._categoryListPresenter.notifyDataSetChanged();
 
-                            this.refreshEditor();
-                        }).catch(error => PubSub.publish('Event.error', error.toString()));
+                            this.refreshNoteEditor();
+                        }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
                 };
             }
         }));
@@ -460,50 +464,34 @@ export default class AppPresenter {
     handleNotesSortingClick() {
         const menu = new Menu();
 
-        menu.append(new MenuItem({
-            label : 'Name ▲',
-            click : () => this._updateNotesSorting(0)
-        }));
+        const appendMenuItem = (label, index) => {
+            menu.append(new MenuItem({
+                label : label,
+                click : () => this._updateNotesSorting(index)
+            }));
+        };
 
-        menu.append(new MenuItem({
-            label : 'Name ▼',
-            click : () => this._updateNotesSorting(1)
-        }));
-
-        menu.append(new MenuItem({
-            label : 'Updated ▲',
-            click : () => this._updateNotesSorting(2)
-        }));
-
-        menu.append(new MenuItem({
-            label : 'Updated ▼',
-            click : () => this._updateNotesSorting(3)
-        }));
-
-        menu.append(new MenuItem({
-            label : 'Created ▲',
-            click : () => this._updateNotesSorting(4)
-        }));
-
-        menu.append(new MenuItem({
-            label : 'Created ▼',
-            click : () => this._updateNotesSorting(5)
-        }));
+        appendMenuItem('Name ▲', 0);
+        appendMenuItem('Name ▼', 1);
+        appendMenuItem('Updated ▲', 2);
+        appendMenuItem('Updated ▼', 3);
+        appendMenuItem('Created ▲', 4);
+        appendMenuItem('Created ▼', 5);
 
         menu.popup(remote.getCurrentWindow());
     }
 
     handleAddNoteClick() {
-        this._notesPresenter.addNote(this._defaultSyntax)
+        this._noteListPresenter.addNote(this._defaultSyntax)
             .then(() => {
-                this._store.notesStore.selectedIndex = 0;
+                this._store.noteList.selectedIndex = 0;
 
                 this._noteSelection.onNext(0);
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     handleImportNotes() {
-        if (this._store.filtersStore.selectedIndex > -1 || this._store.categoriesStore.selectedIndex > -1) {
+        if (this._store.filterList.selectedIndex > -1 || this._store.categoryList.selectedIndex > -1) {
             dialog.showOpenDialog(remote.getCurrentWindow(), {
                 title      : 'Import from a text file',
                 filters    : [
@@ -515,7 +503,7 @@ export default class AppPresenter {
                 properties : [ 'openFile', 'multiSelections' ]
             }, filenames => {
                 if (filenames) {
-                    const syntax = this._store.defaultSyntaxDialogStore.list.selectedIndex > -1 ? SyntaxCodes[this._store.defaultSyntaxDialogStore.list.selectedIndex] : Config.defaultSyntax;
+                    const syntax = this._store.defaultSyntaxDialog.list.selectedIndex > -1 ? SyntaxCodes[this._store.defaultSyntaxDialog.list.selectedIndex] : Config.defaultSyntax;
 
                     filenames.forEach(filename => {
                         fs.readFile(filename, {
@@ -523,12 +511,11 @@ export default class AppPresenter {
                             flag     : 'r'
                         }, (error, fullText) => {
                             if (error) {
-                                PubSub.publish('Event.error', error.toString());
+                                EventUtils.broadcast(EVENT_ERROR, error.toString());
                             } else {
                                 this._database.addOrUpdate(Record.fromText(syntax, fullText))
-                                    .then(doc => {
-                                        this._store.notesStore.items.unshift(Record.fromDoc(doc).toListItemStore());
-                                    }).catch(error => PubSub.publish('Event.error', error.toString()));
+                                    .then(doc => this._store.noteList.items.unshift(Record.fromDoc(doc).toListItemStore()))
+                                    .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
                             }
                         });
                     });
@@ -538,7 +525,7 @@ export default class AppPresenter {
     }
 
     handleExportNote() {
-        if (this._store.notesStore.selectedIndex > -1) {
+        if (this._store.noteList.selectedIndex > -1) {
             dialog.showSaveDialog(remote.getCurrentWindow(), {
                 title   : 'Export to a text file',
                 filters : [
@@ -551,7 +538,7 @@ export default class AppPresenter {
                 if (filename) {
                     fs.access(filename, fs.constants.F_OK, error => {
                         if (error) {
-                            AppPresenter._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
+                            AppPresenter._exportNote(filename, this._store.noteList.selectedItem.record.fullText);
                         } else {
                             dialog.showMessageBox(remote.getCurrentWindow(), {
                                 type      : 'question',
@@ -561,9 +548,7 @@ export default class AppPresenter {
                                 defaultId : 0,
                                 cancelId  : 1
                             }, response => {
-                                if (response === 0) {
-                                    AppPresenter._exportNote(filename, this._store.notesStore.selectedItem.record.fullText);
-                                }
+                                if (response === 0) AppPresenter._exportNote(filename, this._store.noteList.selectedItem.record.fullText);
                             });
                         }
                     });
@@ -575,14 +560,14 @@ export default class AppPresenter {
     handleExportNotes() {
         let countPromise;
 
-        if (this._store.filtersStore.selectedIndex === 0) {
+        if (this._store.filterList.selectedIndex === 0) {
             countPromise = this._database.countAll();
-        } else if (this._store.filtersStore.selectedIndex === 1) {
+        } else if (this._store.filterList.selectedIndex === 1) {
             countPromise = this._database.countByStarred();
-        } else if (this._store.filtersStore.selectedIndex === 2) {
+        } else if (this._store.filterList.selectedIndex === 2) {
             countPromise = this._database.countByArchived();
-        } else if (this._store.categoriesStore.selectedIndex > -1) {
-            countPromise = this._database.countByCategory(this._store.categoriesStore.selectedItem.primaryText);
+        } else if (this._store.categoryList.selectedIndex > -1) {
+            countPromise = this._database.countByCategory(this._store.categoryList.selectedItem.primaryText);
         }
 
         if (countPromise) {
@@ -590,14 +575,14 @@ export default class AppPresenter {
                 if (count > 0) {
                     let findPromise;
 
-                    if (this._store.filtersStore.selectedIndex === 0) {
+                    if (this._store.filterList.selectedIndex === 0) {
                         findPromise = this._database.findAll(this._store.notesSorting);
-                    } else if (this._store.filtersStore.selectedIndex === 1) {
+                    } else if (this._store.filterList.selectedIndex === 1) {
                         findPromise = this._database.findByStarred(this._store.notesSorting);
-                    } else if (this._store.filtersStore.selectedIndex === 2) {
+                    } else if (this._store.filterList.selectedIndex === 2) {
                         findPromise = this._database.findByArchived(this._store.notesSorting);
-                    } else if (this._store.categoriesStore.selectedIndex > -1) {
-                        findPromise = this._database.findByCategory(this._store.categoriesStore.selectedItem.primaryText, this._store.notesSorting);
+                    } else if (this._store.categoryList.selectedIndex > -1) {
+                        findPromise = this._database.findByCategory(this._store.categoryList.selectedItem.primaryText, this._store.notesSorting);
                     }
 
                     if (findPromise) {
@@ -621,7 +606,7 @@ export default class AppPresenter {
                         });
                     }
                 }
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
         }
     }
 
@@ -630,67 +615,67 @@ export default class AppPresenter {
     //region Editor operation
 
     handleStarClick() {
-        this._store.editorStore.record.starred = !this._store.editorStore.record.starred;
+        this._store.noteEditor.record.starred = !this._store.noteEditor.record.starred;
 
-        this._database.addOrUpdate(this._store.editorStore.record.toDoc())
-            .then(() => this._filtersPresenter.refresh())
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+        this._database.addOrUpdate(this._store.noteEditor.record.toDoc())
+            .then(() => this._filterListPresenter.refresh())
+            .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     handleArchiveClick() {
-        this._store.editorStore.record.archived = !this._store.editorStore.record.archived;
+        this._store.noteEditor.record.archived = !this._store.noteEditor.record.archived;
 
-        this._database.addOrUpdate(this._store.editorStore.record.toDoc())
-            .then(() => this._filtersPresenter.refresh())
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+        this._database.addOrUpdate(this._store.noteEditor.record.toDoc())
+            .then(() => this._filterListPresenter.refresh())
+            .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     handleSelectCategoryClick() {
         this._database.findCategories()
             .then(categories => {
-                this._store.selectCategoryDialogStore.list.items = [];
+                this._store.selectCategoryDialog.list.items = [];
 
                 categories.forEach(category => {
                     const item = new ListItemStore();
 
                     item.itemId      = category;
                     item.primaryText = category;
-                    item.selected    = this._store.editorStore.record.category ? this._store.editorStore.record.category === category : false;
+                    item.selected    = this._store.noteEditor.record.category ? this._store.noteEditor.record.category === category : false;
 
-                    this._store.selectCategoryDialogStore.list.items.push(item);
+                    this._store.selectCategoryDialog.list.items.push(item);
                 });
 
-                this._store.selectCategoryDialogStore.booleanValue = true;
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+                this._store.selectCategoryDialog.booleanValue = true;
+            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     /**
      * @param {number} index The category item index the user selects.
      */
     handleSelectCategoryItemClick(index) {
-        if (this._store.selectCategoryDialogStore.list.selectedIndex !== index) {
-            this._store.selectCategoryDialogStore.list.selectedIndex = index;
+        if (this._store.selectCategoryDialog.list.selectedIndex !== index) {
+            this._store.selectCategoryDialog.list.selectedIndex = index;
         }
     }
 
     handleSelectCategoryOkClick() {
-        if (this._store.selectCategoryDialogStore.list.selectedIndex > -1) {
-            this._store.editorStore.record.category = this._store.selectCategoryDialogStore.list.selectedItem.primaryText;
-            this._store.editorStore.changes.onNext(this._store.editorStore.record);
+        if (this._store.selectCategoryDialog.list.selectedIndex > -1) {
+            this._store.noteEditor.record.category = this._store.selectCategoryDialog.list.selectedItem.primaryText;
+            this._store.noteEditor.changes.onNext(this._store.noteEditor.record);
 
-            this._categoriesPresenter.notifyDataSetChanged();
+            this._categoryListPresenter.notifyDataSetChanged();
 
-            this._store.selectCategoryDialogStore.booleanValue = false;
+            this._store.selectCategoryDialog.booleanValue = false;
         }
     }
 
     handleSelectCategoryNoneClick() {
-        this._store.editorStore.record.category = null;
-        this._store.editorStore.changes.onNext(this._store.editorStore.record);
+        this._store.noteEditor.record.category = null;
+        this._store.noteEditor.changes.onNext(this._store.noteEditor.record);
 
-        this._categoriesPresenter.notifyDataSetChanged();
+        this._categoryListPresenter.notifyDataSetChanged();
 
-        this._store.selectCategoryDialogStore.booleanValue = false;
+        this._store.selectCategoryDialog.booleanValue = false;
     }
 
     //endregion
@@ -699,33 +684,31 @@ export default class AppPresenter {
 
     //region Refresh operations
 
-    refreshFilters() {
-        this._filtersPresenter.refresh();
+    refreshFilterList() {
+        this._filterListPresenter.refresh();
 
         this._noteSelection.onNext(-1);
 
-        this._store.filtersStore.selectedIndex = 0;
+        this._store.filterList.selectedIndex = 0;
     }
 
-    refreshCategories() {
-        this._categoriesPresenter.refresh();
+    refreshCategoryList() {
+        this._categoryListPresenter.refresh();
 
         this._noteSelection.onNext(-1);
     }
 
-    refreshNotes() {
-        this._notesPresenter.refresh();
+    refreshNoteList() {
+        this._noteListPresenter.refresh();
 
-        this.refreshEditor();
+        this.refreshNoteEditor();
     }
 
-    refreshEditor() {
-        this._editorPresenter.load(this._store.notesStore.selectedItemId)
+    refreshNoteEditor() {
+        this._noteEditorPresenter.load(this._store.noteList.selectedItemId)
             .then(() => {
-                if (this._store.notesStore.selectedItemId) {
-                    this._store.currentSyntaxDialogStore.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.editorStore.record.syntax);
-                }
-            }).catch(error => PubSub.publish('Event.error', error.toString()));
+                if (this._store.noteList.selectedItemId) this._store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.noteEditor.record.syntax);
+            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     //endregion
@@ -738,18 +721,14 @@ export default class AppPresenter {
      */
     addCategory(category) {
         if (_.isEmpty(category)) {
-            PubSub.publish(EVENT_ERROR, 'Please enter the name of the new category');
+            EventUtils.broadcast(EVENT_ERROR, 'Please enter the name of the new category');
         } else {
             this._database.addCategory(category)
                 .then(() => {
-                    this._store.addCategoryDialogStore.booleanValue = false;
+                    this._store.addCategoryDialog.booleanValue = false;
 
-                    this._categoriesPresenter.notifyDataSetChanged();
-                }).catch(error => {
-                    PubSub.publish('Event.error', error.toString());
-
-                    PubSub.publish(EVENT_ERROR, error.message);
-                });
+                    this._categoryListPresenter.notifyDataSetChanged();
+                }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
         }
     }
 
@@ -761,14 +740,10 @@ export default class AppPresenter {
     updateCategory(oldCategory, newCategory) {
         this._database.updateCategory(oldCategory, newCategory)
             .then(() => {
-                this._store.updateCategoryDialogStore.booleanValue = false;
+                this._store.updateCategoryDialog.booleanValue = false;
 
-                this._categoriesPresenter.notifyDataSetChanged();
-            }).catch(error => {
-                PubSub.publish('Event.error', error.toString());
-
-                PubSub.publish(EVENT_ERROR, error.message);
-            });
+                this._categoryListPresenter.notifyDataSetChanged();
+            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     /**
@@ -776,7 +751,7 @@ export default class AppPresenter {
      * @param {String} keyword
      */
     filterNoteList(keyword) {
-        this._notesPresenter.keyword = keyword;
+        this._noteListPresenter.keyword = keyword;
 
         this._noteSelection.onNext(-1);
     }
@@ -790,7 +765,7 @@ export default class AppPresenter {
      * @param {bool} show
      */
     showFilterList(show) {
-        this._store.showFilterList = show;
+        this._store.filterListShown = show;
 
         this._updateMenu();
     }
@@ -800,7 +775,7 @@ export default class AppPresenter {
      * @param {bool} show
      */
     showNoteList(show) {
-        this._store.showNoteList = show;
+        this._store.noteListShown = show;
 
         this._updateMenu();
     }
@@ -809,12 +784,12 @@ export default class AppPresenter {
      * @param {String} syntax
      */
     changeCurrentSyntax(syntax) {
-        this._store.editorStore.syntax = syntax;
+        this._store.noteEditor.syntax = syntax;
 
-        if (this._store.editorStore.record) {
-            this._store.editorStore.record.syntax = syntax;
+        if (this._store.noteEditor.record) {
+            this._store.noteEditor.record.syntax = syntax;
 
-            this._store.editorStore.changes.onNext(this._store.editorStore.record);
+            this._store.noteEditor.changes.onNext(this._store.noteEditor.record);
         }
     }
 
@@ -822,19 +797,19 @@ export default class AppPresenter {
      * @param {String} syntax
      */
     changeDefaultSyntax(syntax) {
-        this._settings.set('defaultSyntax', syntax).catch(error => PubSub.publish('Event.error', error.toString()));
+        this._settings.set('defaultSyntax', syntax).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     /**
      * @param {String} theme
      */
     changeTheme(theme) {
-        this._store.editorStore.theme = theme;
+        this._store.noteEditor.theme = theme;
 
         this._updateTheme();
 
         this._settings.set('theme', theme)
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+            .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     /**
@@ -844,39 +819,39 @@ export default class AppPresenter {
         AppPresenter._updateFont(font);
 
         this._settings.set('font', font)
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+            .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     changeSettings(data) {
         if (data.name === 'highlightActiveLine') {
-            this._store.editorStore.highlightActiveLine = data.value;
+            this._store.noteEditor.highlightActiveLine = data.value;
         } else if (data.name === 'tabSize') {
-            this._store.editorStore.tabSize = data.value;
+            this._store.noteEditor.tabSize = data.value;
         } else if (data.name === 'useSoftTabs') {
-            this._store.editorStore.useSoftTabs = data.value;
+            this._store.noteEditor.useSoftTabs = data.value;
         } else if (data.name === 'wordWrap') {
-            this._store.editorStore.wordWrap = data.value;
+            this._store.noteEditor.wordWrap = data.value;
         } else if (data.name === 'showLineNumbers') {
-            this._store.editorStore.showLineNumbers = data.value;
+            this._store.noteEditor.showLineNumbers = data.value;
         } else if (data.name === 'showPrintMargin') {
-            this._store.editorStore.showPrintMargin = data.value;
+            this._store.noteEditor.showPrintMargin = data.value;
         } else if (data.name === 'printMarginColumn') {
-            this._store.editorStore.printMarginColumn = data.value;
+            this._store.noteEditor.printMarginColumn = data.value;
         } else if (data.name === 'showInvisibles') {
-            this._store.editorStore.showInvisibles = data.value;
+            this._store.noteEditor.showInvisibles = data.value;
         } else if (data.name === 'showFoldWidgets') {
-            this._store.editorStore.showFoldWidgets = data.value;
+            this._store.noteEditor.showFoldWidgets = data.value;
         } else if (data.name === 'showGutter') {
-            this._store.editorStore.showGutter = data.value;
+            this._store.noteEditor.showGutter = data.value;
         } else if (data.name === 'displayIndentGuides') {
-            this._store.editorStore.displayIndentGuides = data.value;
+            this._store.noteEditor.displayIndentGuides = data.value;
         } else if (data.name === 'scrollPastEnd') {
-            this._store.editorStore.scrollPastEnd = data.value;
+            this._store.noteEditor.scrollPastEnd = data.value;
         } else {
             console.warn('Unrecognized setting ' + data.name + ' = ' + data.value);
         }
 
-        this._settings.set(data.name, data.value).catch(error => PubSub.publish('Event.error', error.toString()));
+        this._settings.set(data.name, data.value).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     //endregion
@@ -889,7 +864,7 @@ export default class AppPresenter {
 
     resetSettings() {
         this._settings.clear()
-            .catch(error => PubSub.publish('Event.error', error.toString()));
+            .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     //endregion
@@ -899,15 +874,16 @@ export default class AppPresenter {
     _initSettings() {
         return new Promise((resolve, reject) => {
             Promise.all([
-                this._settings.get('showFilterList',      true),
-                this._settings.get('showNoteList',        true),
-                this._settings.get('filterListWidth',     Config.filterListWidth),
-                this._settings.get('noteListWidth',       Config.noteListWidth),
+                this._settings.get('filterListShown',     true),
+                this._settings.get('noteListShown',       true),
+                this._settings.get('filterListWidth',     Constants.SOURCE_LIST_MIN_WIDTH),
+                this._settings.get('noteListWidth',       Constants.NOTE_LIST_MIN_WIDTH),
                 this._settings.get('defaultSyntax',       Config.defaultSyntax),
                 this._settings.get('theme',               Config.defaultTheme),
                 this._settings.get('font',                undefined),
                 this._settings.get('fontFamily',          undefined),
-                this._settings.get('textSize',            undefined),
+                this._settings.get('textSize',            Constants.DEFAULT_NOTE_EDITOR_FONT_SIZE),
+                //region NoteEditor settings
                 this._settings.get('highlightActiveLine', Config.defaultHighlightActiveLine),
                 this._settings.get('tabSize',             Config.defaultTabSize),
                 this._settings.get('useSoftTabs',         Config.defaultUseSoftTabs),
@@ -920,18 +896,19 @@ export default class AppPresenter {
                 this._settings.get('showGutter',          Config.defaultShowGutter),
                 this._settings.get('displayIndentGuides', Config.defaultDisplayIndentGuides),
                 this._settings.get('scrollPastEnd',       Config.defaultScrollPastEnd),
+                //endregion
                 this._settings.get('notesSorting',        Config.defaultNotesSorting)
             ]).then(values => {
                 let i = 0;
 
-                this._store.showFilterList     = values[i] !== undefined ? values[i] : true;                   i++;
-                this._store.showNoteList       = values[i] !== undefined ? values[i] : true;                   i++;
-                this._store.filterListWidth    = values[i] !== undefined ? values[i] : Config.filterListWidth; i++;
-                this._store.noteListWidth      = values[i] !== undefined ? values[i] : Config.noteListWidth;   i++;
-                this._store.editorStore.syntax = values[i] !== undefined ? values[i] : Config.defaultSyntax;   i++;
-                this._store.editorStore.theme  = values[i] !== undefined ? values[i] : Config.defaultTheme;    i++;
+                this._store.filterListShown   = values[i] !== undefined ? values[i] : true;                            i++;
+                this._store.noteListShown     = values[i] !== undefined ? values[i] : true;                            i++;
+                this._store.filterListWidth   = values[i] !== undefined ? values[i] : Constants.SOURCE_LIST_MIN_WIDTH; i++;
+                this._store.noteListWidth     = values[i] !== undefined ? values[i] : Constants.NOTE_LIST_MIN_WIDTH;   i++;
+                this._store.noteEditor.syntax = values[i] !== undefined ? values[i] : Config.defaultSyntax;            i++;
+                this._store.noteEditor.theme  = values[i] !== undefined ? values[i] : Config.defaultTheme;             i++;
 
-                this._defaultSyntax = this._store.editorStore.syntax;
+                this._defaultSyntax = this._store.noteEditor.syntax;
 
                 if (values[i] !== undefined) {
                     AppPresenter._updateFont(values[i]);
@@ -939,10 +916,12 @@ export default class AppPresenter {
 
                 i++;
 
-                this._store.editorStore.fontFamily = values[i] !== undefined ? values[i] : undefined; i++;
-                this._store.editorStore.textSize   = values[i] !== undefined ? values[i] : undefined; i++;
+                this._store.noteEditor.fontFamily = values[i] !== undefined ? values[i] : undefined;                               i++;
+                this._store.noteEditor.textSize   = values[i] !== undefined ? values[i] : Constants.DEFAULT_NOTE_EDITOR_FONT_SIZE; i++;
 
                 const data = {};
+
+                //region NoteEditor settings
 
                 data.highlightActiveLine = values[i] !== undefined ? values[i] : Config.defaultHighlightActiveLine; i++;
                 data.tabSize             = values[i] !== undefined ? values[i] : Config.defaultTabSize;             i++;
@@ -957,44 +936,55 @@ export default class AppPresenter {
                 data.displayIndentGuides = values[i] !== undefined ? values[i] : Config.defaultDisplayIndentGuides; i++;
                 data.scrollPastEnd       = values[i] !== undefined ? values[i] : Config.defaultScrollPastEnd;       i++;
 
+                //endregion
+
                 this._store.notesSorting = values[i] !== undefined ? values[i] : Config.defaultNotesSorting;
 
-                this._notesPresenter.sorting = this._store.notesSorting;
+                this._noteListPresenter.sorting = this._store.notesSorting;
 
-                this._store.defaultSyntaxDialogStore.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.editorStore.syntax);
-                this._store.themeDialogStore.list.selectedIndex         = _.indexOf(ThemeCodes.items,  this._store.editorStore.theme);
+                this._store.defaultSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.noteEditor.syntax);
+                this._store.themeDialog.list.selectedIndex         = _.indexOf(ThemeCodes.items,  this._store.noteEditor.theme);
 
-                this._store.settingsStore.highlightCurrentLine.booleanValue = data.highlightActiveLine;
-                this._store.settingsStore.tabSize2.booleanValue             = data.tabSize === Constants.TAB_SIZES[0];
-                this._store.settingsStore.tabSize4.booleanValue             = data.tabSize === Constants.TAB_SIZES[1];
-                this._store.settingsStore.tabSize8.booleanValue             = data.tabSize === Constants.TAB_SIZES[2];
-                this._store.settingsStore.useSoftTabs.booleanValue          = data.useSoftTabs;
-                this._store.settingsStore.wordWrap.booleanValue             = data.wordWrap;
-                this._store.settingsStore.showLineNumbers.booleanValue      = data.showLineNumebrs;
-                this._store.settingsStore.showPrintMargin.booleanValue      = data.showPrintMargin;
-                this._store.settingsStore.printMarginColumn72.booleanValue  = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[0];
-                this._store.settingsStore.printMarginColumn80.booleanValue  = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[1];
-                this._store.settingsStore.printMarginColumn100.booleanValue = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[2];
-                this._store.settingsStore.printMarginColumn120.booleanValue = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[3];
-                this._store.settingsStore.showInvisibles.booleanValue       = data.showInvisibles;
-                this._store.settingsStore.showFoldWidgets.booleanValue      = data.showFoldWidgets;
-                this._store.settingsStore.showGutter.booleanValue           = data.showGutter;
-                this._store.settingsStore.showIndentGuides.booleanValue     = data.displayIndentGuides;
-                this._store.settingsStore.scrollPastLastLine.booleanValue   = data.scrollPastEnd;
-                this._store.editorStore.highlightActiveLine                 = data.highlightActiveLine;
-                this._store.editorStore.tabSize                             = data.tabSize;
-                this._store.editorStore.useSoftTabs                         = data.useSoftTabs;
-                this._store.editorStore.wordWrap                            = data.wordWrap;
-                this._store.editorStore.showLineNumbers                     = data.showLineNumebrs;
-                this._store.editorStore.showPrintMargin                     = data.showPrintMargin;
-                this._store.editorStore.printMarginColumn                   = data.printMarginColumn;
-                this._store.editorStore.showInvisibles                      = data.showInvisibles;
-                this._store.editorStore.showFoldWidgets                     = data.showFoldWidgets;
-                this._store.editorStore.showGutter                          = data.showGutter;
-                this._store.editorStore.displayIndentGuides                 = data.displayIndentGuides;
-                this._store.editorStore.scrollPastEnd                       = data.scrollPastEnd;
+                //region Editor settings dialog
 
-                PubSub.publish('TextEditor.init', data);
+                this._store.editorSettingsDialog.settings.highlightCurrentLine.booleanValue = data.highlightActiveLine;
+                this._store.editorSettingsDialog.settings.tabSize2.booleanValue             = data.tabSize === Constants.TAB_SIZES[0];
+                this._store.editorSettingsDialog.settings.tabSize4.booleanValue             = data.tabSize === Constants.TAB_SIZES[1];
+                this._store.editorSettingsDialog.settings.tabSize8.booleanValue             = data.tabSize === Constants.TAB_SIZES[2];
+                this._store.editorSettingsDialog.settings.useSoftTabs.booleanValue          = data.useSoftTabs;
+                this._store.editorSettingsDialog.settings.wordWrap.booleanValue             = data.wordWrap;
+                this._store.editorSettingsDialog.settings.showLineNumbers.booleanValue      = data.showLineNumebrs;
+                this._store.editorSettingsDialog.settings.showPrintMargin.booleanValue      = data.showPrintMargin;
+                this._store.editorSettingsDialog.settings.printMarginColumn72.booleanValue  = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[0];
+                this._store.editorSettingsDialog.settings.printMarginColumn80.booleanValue  = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[1];
+                this._store.editorSettingsDialog.settings.printMarginColumn100.booleanValue = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[2];
+                this._store.editorSettingsDialog.settings.printMarginColumn120.booleanValue = data.printMarginColumn === Constants.PRINT_MARGIN_COLUMNS[3];
+                this._store.editorSettingsDialog.settings.showInvisibles.booleanValue       = data.showInvisibles;
+                this._store.editorSettingsDialog.settings.showFoldWidgets.booleanValue      = data.showFoldWidgets;
+                this._store.editorSettingsDialog.settings.showGutter.booleanValue           = data.showGutter;
+                this._store.editorSettingsDialog.settings.showIndentGuides.booleanValue     = data.displayIndentGuides;
+                this._store.editorSettingsDialog.settings.scrollPastLastLine.booleanValue   = data.scrollPastEnd;
+
+                //endregion
+
+                //region NoteEditor settings
+
+                this._store.noteEditor.highlightActiveLine = data.highlightActiveLine;
+                this._store.noteEditor.tabSize             = data.tabSize;
+                this._store.noteEditor.useSoftTabs         = data.useSoftTabs;
+                this._store.noteEditor.wordWrap            = data.wordWrap;
+                this._store.noteEditor.showLineNumbers     = data.showLineNumebrs;
+                this._store.noteEditor.showPrintMargin     = data.showPrintMargin;
+                this._store.noteEditor.printMarginColumn   = data.printMarginColumn;
+                this._store.noteEditor.showInvisibles      = data.showInvisibles;
+                this._store.noteEditor.showFoldWidgets     = data.showFoldWidgets;
+                this._store.noteEditor.showGutter          = data.showGutter;
+                this._store.noteEditor.displayIndentGuides = data.displayIndentGuides;
+                this._store.noteEditor.scrollPastEnd       = data.scrollPastEnd;
+
+                //endregion
+
+                EventUtils.broadcast('NoteEditor.init', data);
 
                 this._updateMenu();
                 this._updateTheme();
@@ -1007,43 +997,38 @@ export default class AppPresenter {
     _initDatabase() {
         return new Promise((resolve, reject) => this._database.load(Config.databaseName)
             .then(() => {
-                this.refreshFilters();
-                this.refreshCategories();
-                this.refreshNotes();
+                this.refreshFilterList();
+                this.refreshCategoryList();
+                this.refreshNoteList();
 
                 resolve();
             }).catch(error => reject(error)));
     }
 
     _initAutoSave() {
-        this._store.editorStore.changes.subscribe(record => {
-            this._database.findById(this._store.notesStore.selectedItemId)
-                .then(() => {
-                    this._database.addOrUpdate(record.toDoc())
-                        .then(doc => {
-                            this._store.notesStore.selectedItem.update(Record.fromDoc(doc));
-                        }).catch(error => PubSub.publish('Event.error', error.toString()));
-                }).catch(error => PubSub.publish('Event.error', error.toString()));
-        });
+        this._store.noteEditor.changes.subscribe(record => this._database.findById(this._store.noteList.selectedItemId)
+            .then(() => this._database.addOrUpdate(record.toDoc()))
+            .then(doc => this._store.noteList.selectedItem.update(Record.fromDoc(doc)))
+            .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString())));
     }
 
     _updateMenu() {
         return new Promise(resolve => {
             const viewMenu = Menu.getApplicationMenu().items[is.macOS() ? 3 : 2];
 
-            viewMenu.submenu.items[0].booleanValue = this._store.showFilterList;
-            viewMenu.submenu.items[1].booleanValue = this._store.showNoteList;
+            viewMenu.submenu.items[0].booleanValue = this._store.filterListShown;
+            viewMenu.submenu.items[1].booleanValue = this._store.noteListShown;
 
             resolve();
         });
     }
 
     _updateTheme() {
-        this._store.theme = _.indexOf(DARK_THEMES, this._store.editorStore.theme) > -1 ? 'dark' : 'light';
+        this._store.theme = _.indexOf(DARK_THEMES, this._store.noteEditor.theme) > -1 ? 'dark' : 'light';
     }
 
     static _updateFont(font) {
-        PubSub.publish('TextEditor.changeFont', font);
+        EventUtils.broadcast('NoteEditor.font.change', font);
     }
 
     /**
@@ -1051,10 +1036,26 @@ export default class AppPresenter {
      * @private
      */
     _updateNotesSorting(sorting) {
-        this._store.notesSorting     = sorting;
-        this._notesPresenter.sorting = sorting;
+        this._store.notesSorting        = sorting;
+        this._noteListPresenter.sorting = sorting;
 
-        this._settings.set('notesSorting', sorting).catch(error => PubSub.publish('Event.error', error.toString()));
+        this._settings.set('notesSorting', sorting).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+    }
+
+    _duplicateNote() {
+        const now = Date.now();
+        const doc = this._store.noteList.selectedItem.record.toDoc();
+
+        doc._id           = undefined;
+        doc.lastUpdatedAt = now;
+        doc.createdAt     = now;
+
+        this._database.addOrUpdate(doc)
+            .then(() => {
+                this._filterListPresenter.refresh();
+                this._categoryListPresenter.notifyDataSetChanged();
+                this._noteListPresenter.refresh();
+            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     /**

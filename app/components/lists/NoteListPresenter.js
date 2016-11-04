@@ -1,39 +1,35 @@
 'use strict';
 
-import FilterListViewPresenter from './FilterListViewPresenter';
-import CategoryListViewPresenter from './CategoryListViewPresenter';
-import ListViewStore from './ListViewStore';
+import FilterListViewPresenter from './FilterListPresenter';
+import CategoryListPresenter from './CategoryListPresenter';
+import ListStore from './ListStore';
 import Database from '../../data/Database';
 import Record from '../../data/Record';
-import Config from '../../../config.json';
+import EventUtils from '../../utils/EventUtils';
+import Constants from '../../utils/Constants';
+import Config from '../../definitions/config.json';
 import Rx from 'rx-lite';
 import moment from 'moment';
-import PubSub from 'pubsub-js';
-import is from 'electron-is';
 import _ from 'lodash';
 
-if (is.dev()) PubSub.immediateExceptions = true;
-
-export default class NoteListViewPresenter {
+export default class NoteListPresenter {
     /**
-     * Creates a new instance of NoteListViewPresenter.
-     * @param {FilterListViewPresenter} filterListViewPresenter
-     * @param {CategoryListViewPresenter} categoryListViewPresenter
+     * Creates a new instance of NoteListPresenter.
+     * @param {FilterListPresenter} filterListPresenter
+     * @param {CategoryListPresenter} categoryListPresenter
      * @param {Database} database
      */
-    constructor(filterListViewPresenter, categoryListViewPresenter, database) {
-        this._filtersPresenter    = filterListViewPresenter;
-        this._categoriesPresenter = categoryListViewPresenter;
-        this._store               = new ListViewStore();
-        this._database            = database;
-        this._sorting             = NoteListViewPresenter.DEFAULT_SORTING;
-        this._keyword             = undefined;
+    constructor(filterListPresenter, categoryListPresenter, database) {
+        this._filterListPresenter   = filterListPresenter;
+        this._categoryListPresenter = categoryListPresenter;
+        this._store                 = new ListStore();
+        this._database              = database;
+        this._sorting               = NoteListPresenter.DEFAULT_SORTING;
+        this._keyword               = undefined;
 
-        Rx.Observable.interval(1000).subscribe(() => {
+        Rx.Observable.interval(Constants.NOTE_TIMESTAMP_REFRESH_INTERVAL).subscribe(() => {
             this._store.items.forEach(item => {
-                if (item.record) {
-                    item.tertiaryText = moment(item.record.lastUpdatedAt).fromNow();
-                }
+                if (item.record) item.tertiaryText = moment(item.record.lastUpdatedAt).fromNow();
             });
         });
     }
@@ -105,8 +101,8 @@ export default class NoteListViewPresenter {
     refresh() {
         this._store.selectedItemId = undefined;
 
-        const selectedFilterItemId   = this._filtersPresenter.store.selectedItemId;
-        const selectedCategoryItemId = this._categoriesPresenter.store.selectedItemId;
+        const selectedFilterItemId   = this._filterListPresenter.store.selectedItemId;
+        const selectedCategoryItemId = this._categoryListPresenter.store.selectedItemId;
 
         let promise;
 
@@ -117,18 +113,12 @@ export default class NoteListViewPresenter {
         } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_ARCHIVED_ID) {
             promise = this._database.findByArchived(this._sorting, this._keyword);
         } else if (selectedCategoryItemId) {
-            promise = this._database.findByCategory(this._categoriesPresenter.store.selectedItem.primaryText, this._sorting, this._keyword);
+            promise = this._database.findByCategory(this._categoryListPresenter.store.selectedItem.primaryText, this._sorting, this._keyword);
         }
 
         this._store.items = [];
 
-        if (promise) {
-            promise.then(docs => {
-                docs.forEach(doc => {
-                    this._store.items.push(Record.fromDoc(doc).toListItemStore());
-                });
-            }).catch(error => PubSub.publish('Event.error', error));
-        }
+        if (promise) promise.then(docs => docs.forEach(doc => this._store.items.push(Record.fromDoc(doc).toListItemStore()))).catch(error => EventUtils.broadcast('global.error', error));
     }
 
     /**
@@ -136,8 +126,8 @@ export default class NoteListViewPresenter {
      * @return {Promise}
      */
     addNote(syntax) {
-        const selectedFilterItemId   = this._filtersPresenter.store.selectedItemId;
-        const selectedCategoryItemId = this._categoriesPresenter.store.selectedItemId;
+        const selectedFilterItemId   = this._filterListPresenter.store.selectedItemId;
+        const selectedCategoryItemId = this._categoryListPresenter.store.selectedItemId;
 
         if (selectedFilterItemId || selectedCategoryItemId) {
             const record = Record.fromText(syntax, '');
@@ -147,33 +137,33 @@ export default class NoteListViewPresenter {
                 record.starred  = false;
                 record.archived = false;
 
-                this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_EVERYTHING_ID).secondaryText = 1 + parseInt(this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_EVERYTHING_ID).secondaryText);
+                this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_EVERYTHING_ID).secondaryText = 1 + parseInt(this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_EVERYTHING_ID).secondaryText);
 
                 // Force refresh
-                this._filtersPresenter.store.items = this._filtersPresenter.store.items;
+                this._filterListPresenter.store.items = this._filterListPresenter.store.items;
             } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_STARRED_ID) {
                 record.starred  = true;
                 record.archived = false;
 
-                this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_STARRED_ID).secondaryText = 1 + parseInt(this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_STARRED_ID).secondaryText);
+                this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_STARRED_ID).secondaryText = 1 + parseInt(this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_STARRED_ID).secondaryText);
 
                 // Force refresh
-                this._filtersPresenter.store.items = this._filtersPresenter.store.items;
+                this._filterListPresenter.store.items = this._filterListPresenter.store.items;
             } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_ARCHIVED_ID) {
                 record.starred  = false;
                 record.archived = true;
 
-                this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_ARCHIVED_ID).secondaryText = 1 + parseInt(this._filtersPresenter.store.getItem(FilterListViewPresenter.FILTER_ARCHIVED_ID).secondaryText);
+                this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_ARCHIVED_ID).secondaryText = 1 + parseInt(this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_ARCHIVED_ID).secondaryText);
 
                 // Force refresh
-                this._filtersPresenter.store.items = this._filtersPresenter.store.items;
+                this._filterListPresenter.store.items = this._filterListPresenter.store.items;
             } else if (selectedCategoryItemId) {
                 record.category = selectedCategoryItemId;
 
-                this._categoriesPresenter.store.getItem(selectedCategoryItemId).secondaryText = 1 + parseInt(this._categoriesPresenter.store.getItem(selectedCategoryItemId).secondaryText);
+                this._categoryListPresenter.store.getItem(selectedCategoryItemId).secondaryText = 1 + parseInt(this._categoryListPresenter.store.getItem(selectedCategoryItemId).secondaryText);
 
                 // Force refresh
-                this._categoriesPresenter.store.items = this._categoriesPresenter.store.items;
+                this._categoryListPresenter.store.items = this._categoryListPresenter.store.items;
             }
 
             return new Promise((resolve, reject) => this._database.addOrUpdate(record.toDoc())
@@ -190,6 +180,6 @@ export default class NoteListViewPresenter {
     }
 }
 
-NoteListViewPresenter.DEFAULT_SORTING = 3;
+NoteListPresenter.DEFAULT_SORTING = Config.defaultNotesSorting;
 
-module.exports = NoteListViewPresenter;
+module.exports = NoteListPresenter;

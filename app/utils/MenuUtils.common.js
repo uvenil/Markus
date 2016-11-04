@@ -1,10 +1,8 @@
 'use strict';
 
+import EventUtils from './EventUtils';
 import Constants from './Constants';
-import PubSub from 'pubsub-js';
 import is from 'electron-is';
-
-if (is.dev()) PubSub.immediateExceptions = true;
 
 const { remote } = require('electron');
 
@@ -58,14 +56,14 @@ const createViewMenu = () => {
                 label : 'Show filter list',
                 type  : 'checkbox',
                 click : (item, win) => {
-                    if (win) PubSub.publish('View.showFilterList', item.checked);
+                    if (win) EventUtils.broadcast('ui.filterList.visibility', item.checked);
                 }
             },
             {
                 label : 'Show note list',
                 type  : 'checkbox',
                 click : (item, win) => {
-                    if (win) PubSub.publish('View.showNoteList', item.checked);
+                    if (win) EventUtils.broadcast('ui.categoryList.visibility', item.checked);
                 }
             },
             {
@@ -74,21 +72,13 @@ const createViewMenu = () => {
             {
                 role  : 'zoomin',
                 click : (item, win) => {
-                    if (win) {
-                        remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => {
-                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + Constants.ZOOM_FACTOR_STEP);
-                        });
-                    }
+                    if (win) remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + Constants.ZOOM_FACTOR_STEP));
                 }
             },
             {
                 role  : 'zoomout',
                 click : (item, win) => {
-                    if (win) {
-                        remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => {
-                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - Constants.ZOOM_FACTOR_STEP);
-                        });
-                    }
+                    if (win) remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - Constants.ZOOM_FACTOR_STEP));
                 }
             },
             {
@@ -133,13 +123,13 @@ const createDeveloperMenu = () => {
             {
                 label : 'Reset settings',
                 click : (item, win) => {
-                    if (win) PubSub.publish('Settings.reset');
+                    if (win) EventUtils.broadcast('dev.settings.reset');
                 }
             },
             {
                 label : 'Reset database',
                 click : (item, win) => {
-                    if (win) PubSub.publish('Database.reset');
+                    if (win) EventUtils.broadcast('dev.database.reset');
                 }
             }
         ]

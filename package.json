@@ -34,9 +34,9 @@
     },
     "devDependencies" : {
         "babel-eslint"        : "^7.1.0",
-        "electron"            : "^1.4.4",
+        "electron"            : "^1.4.5",
         "eslint"              : "^3.7.1",
-        "eslint-plugin-react" : "^6.4.1"
+        "eslint-plugin-react" : "^6.5.0"
     },
     "dependencies"    : {
         "babel-plugin-transform-decorators-legacy"       : "^1.3.4",
@@ -48,6 +48,7 @@
         "brace"                                          : "^0.9.0",
         "electron-is"                                    : "^2.3.0",
         "electron-json-storage"                          : "^2.0.3",
+        "electron-window-state"                          : "^3.1.0",
         "lodash"                                         : "^4.16.6",
         "material-ui"                                    : "^0.16.1",
         "mobx"                                           : "^2.6.1",
@@ -62,12 +63,5 @@
         "react-split-pane"                               : "^0.1.52",
         "react-tap-event-plugin"                         : "^1.0.0",
         "rx-lite"                                        : "^4.0.8"
-    },
-    "engines"         : {
-        "node" : "^7.0.0"
-    },
-    "os"              : [
-        "win32",
-        "darwin"
-    ]
+    }
 }

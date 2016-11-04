@@ -7,13 +7,9 @@ import Checkbox from 'material-ui/Checkbox';
 import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton';
 import Label from '../text/Label.jsx';
 import Button from '../buttons/Button.jsx';
-import BooleanStore from '../BooleanStore';
-import SettingsStore from './SettingsStore';
+import EditorSettingsDialogStore from './EditorSettingsDialogStore';
+import EventUtils from '../../utils/EventUtils';
 import Constants from '../../utils/Constants';
-import PubSub from 'pubsub-js';
-import is from 'electron-is';
-
-if (is.dev()) PubSub.immediateExceptions = true;
 
 @observer
 export default class EditorSettingsDialog extends React.Component {
@@ -31,217 +27,188 @@ export default class EditorSettingsDialog extends React.Component {
                 actions={[
                     <Button
                         label="Close"
+                        labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
                         color="primary"
+                        height={Constants.BUTTON_HEIGHT_X1}
                         onTouchTap={() => this.props.store.booleanValue = false} />
                 ]}
                 onRequestClose={() => this.props.store.booleanValue = false}>
-                <div style={{ width : '100%', display : 'table', textAlign : 'center' }}>
+                <div style={{ width : '100%', fontSize : Constants.DIALOG_TEXT_FONT_SIZE, display : 'table', textAlign : 'center' }}>
                     {/* Highlight current line */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Highlight current line</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <Checkbox
-                                checked={this.props.settingsStore.highlightCurrentLine.booleanValue}
-                                onCheck={(event, checked) => {
-                                    this.props.settingsStore.highlightCurrentLine.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'highlightActiveLine', value : checked });
-                                }} />
-                        </div>
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Highlight current line</Label>
+                        <Checkbox
+                            checked={this.props.store.settings.highlightCurrentLine.booleanValue}
+                            labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onCheck={(event, checked) => {
+                                this.props.store.settings.highlightCurrentLine.booleanValue = checked;
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'highlightActiveLine', value: checked });
+                            }} />
                     </div>
                     {/* Show line numbers */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Show line numbers</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <Checkbox
-                                checked={this.props.settingsStore.showLineNumbers.booleanValue}
-                                onCheck={(event, checked) => {
-                                    this.props.settingsStore.showLineNumbers.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'showLineNumbers', value : checked });
-                                }} />
-                        </div>
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Show line numbers</Label>
+                        <Checkbox
+                            checked={this.props.store.settings.showLineNumbers.booleanValue}
+                            labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onCheck={(event, checked) => {
+                                this.props.store.settings.showLineNumbers.booleanValue = checked;
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'showLineNumbers', value: checked });
+                            }} />
                     </div>
                     {/* Tab size */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'top', paddingTop : Constants.PADDING_X1, display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Tab size</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <RadioButtonGroup
-                                name="tabSize"
-                                valueSelected={this.props.settingsStore.tabSize2.booleanValue ? 2 : this.props.settingsStore.tabSize4.booleanValue ? 4 : 8}
-                                onChange={(event, value) => {
-                                    this.props.settingsStore.tabSize2.booleanValue = value === 2;
-                                    this.props.settingsStore.tabSize4.booleanValue = value === 4;
-                                    this.props.settingsStore.tabSize8.booleanValue = value === 8;
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'top', paddingTop : Constants.PADDING_X1, display : 'table-cell', textAlign : 'right' }}>Tab size</Label>
+                        <RadioButtonGroup
+                            name="tabSize"
+                            valueSelected={this.props.store.settings.tabSize2.booleanValue ? 2 : this.props.store.settings.tabSize4.booleanValue ? 4 : 8}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onChange={(event, value) => {
+                                this.props.store.settings.tabSize2.booleanValue = value === 2;
+                                this.props.store.settings.tabSize4.booleanValue = value === 4;
+                                this.props.store.settings.tabSize8.booleanValue = value === 8;
 
-                                    PubSub.publish('TextEditor.settings', { name : 'tabSize', value : value });
-                                }}>
-                                <RadioButton
-                                    label="2 spaces"
-                                    labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
-                                    value={2} />
-                                <RadioButton
-                                    label="4 spaces"
-                                    labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
-                                    value={4} />
-                                <RadioButton
-                                    label="8 spaces"
-                                    labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
-                                    value={8} />
-                            </RadioButtonGroup>
-                        </div>
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'tabSize', value: value });
+                            }}>
+                            <RadioButton
+                                label="2 spaces"
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                                value={2} />
+                            <RadioButton
+                                label="4 spaces"
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                                style={{ paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0 }}
+                                value={4} />
+                            <RadioButton
+                                label="8 spaces"
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                                value={8} />
+                        </RadioButtonGroup>
                     </div>
                     {/* Use soft tabs */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Use soft tabs</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <Checkbox
-                                checked={this.props.settingsStore.useSoftTabs.booleanValue}
-                                onCheck={(event, checked) => {
-                                    this.props.settingsStore.useSoftTabs.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'useSoftTabs', value : checked });
-                                }} />
-                        </div>
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Use soft tabs</Label>
+                        <Checkbox
+                            checked={this.props.store.settings.useSoftTabs.booleanValue}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onCheck={(event, checked) => {
+                                this.props.store.settings.useSoftTabs.booleanValue = checked;
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'useSoftTabs', value: checked });
+                            }} />
                     </div>
                     {/* Word wrap */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Word wrap</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <Checkbox
-                                checked={this.props.settingsStore.wordWrap.booleanValue}
-                                onCheck={(event, checked) => {
-                                    this.props.settingsStore.wordWrap.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'wordWrap', value : checked });
-                                }} />
-                        </div>
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Word wrap</Label>
+                        <Checkbox
+                            checked={this.props.store.settings.wordWrap.booleanValue}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onCheck={(event, checked) => {
+                                this.props.store.settings.wordWrap.booleanValue = checked;
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'wordWrap', value: checked });
+                            }} />
                     </div>
                     {/* Show print margin */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Show print margin</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <Checkbox
-                                checked={this.props.settingsStore.showPrintMargin.booleanValue}
-                                onCheck={(event, checked) => {
-                                    this.props.settingsStore.showPrintMargin.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'showPrintMargin', value : checked });
-                                }} />
-                        </div>
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Show print margin</Label>
+                        <Checkbox
+                            checked={this.props.store.settings.showPrintMargin.booleanValue}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onCheck={(event, checked) => {
+                                this.props.store.settings.showPrintMargin.booleanValue = checked;
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'showPrintMargin', value: checked });
+                            }} />
                     </div>
                     {/* Print margin column */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'top', paddingTop : Constants.PADDING_X1, display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Print margin column</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <RadioButtonGroup
-                                name="tabSize"
-                                valueSelected={this.props.settingsStore.printMarginColumn72.booleanValue ? 72 : this.props.settingsStore.printMarginColumn80.booleanValue ? 80 : this.props.settingsStore.printMarginColumn100.booleanValue ? 100 : 120}
-                                onChange={(event, value) => {
-                                    this.props.settingsStore.printMarginColumn72.booleanValue  = value === 72;
-                                    this.props.settingsStore.printMarginColumn80.booleanValue  = value === 80;
-                                    this.props.settingsStore.printMarginColumn100.booleanValue = value === 100;
-                                    this.props.settingsStore.printMarginColumn120.booleanValue = value === 120;
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'top', paddingTop : Constants.PADDING_X1, display : 'table-cell', textAlign : 'right' }}>Print margin column</Label>
+                        <RadioButtonGroup
+                            name="tabSize"
+                            valueSelected={this.props.store.settings.printMarginColumn72.booleanValue ? 72 : this.props.store.settings.printMarginColumn80.booleanValue ? 80 : this.props.store.settings.printMarginColumn100.booleanValue ? 100 : 120}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onChange={(event, value) => {
+                                this.props.store.settings.printMarginColumn72.booleanValue  = value === 72;
+                                this.props.store.settings.printMarginColumn80.booleanValue  = value === 80;
+                                this.props.store.settings.printMarginColumn100.booleanValue = value === 100;
+                                this.props.store.settings.printMarginColumn120.booleanValue = value === 120;
 
-                                    PubSub.publish('TextEditor.settings', { name : 'printMarginColumn', value : value });
-                                }}>
-                                <RadioButton
-                                    label="72"
-                                    labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
-                                    value={72} />
-                                <RadioButton
-                                    label="80"
-                                    labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
-                                    value={80} />
-                                <RadioButton
-                                    label="100"
-                                    labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
-                                    value={100} />
-                                <RadioButton
-                                    label="120"
-                                    labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
-                                    value={120} />
-                            </RadioButtonGroup>
-                        </div>
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'printMarginColumn', value: value });
+                            }}>
+                            <RadioButton
+                                label="72 characters"
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                                value={72} />
+                            <RadioButton
+                                label="80 characters"
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                                style={{ paddingTop : Constants.PADDING_X0 }}
+                                value={80} />
+                            <RadioButton
+                                label="100 characters"
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                                style={{ paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0 }}
+                                value={100} />
+                            <RadioButton
+                                label="120 characters"
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                                value={120} />
+                        </RadioButtonGroup>
                     </div>
                     {/* Show invisibles */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Show invisibles</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <Checkbox
-                                checked={this.props.settingsStore.showInvisibles.booleanValue}
-                                onCheck={(event, checked) => {
-                                    this.props.settingsStore.showInvisibles.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'showInvisibles', value : checked });
-                                }} />
-                        </div>
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Show invisibles</Label>
+                        <Checkbox
+                            checked={this.props.store.settings.showInvisibles.booleanValue}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onCheck={(event, checked) => {
+                                this.props.store.settings.showInvisibles.booleanValue = checked;
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'showInvisibles', value: checked });
+                            }} />
                     </div>
                     {/* Show fold widgets */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Show fold widgets</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <Checkbox
-                                checked={this.props.settingsStore.showFoldWidgets.booleanValue}
-                                onCheck={(event, checked) => {
-                                    this.props.settingsStore.showFoldWidgets.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'showFoldWidgets', value : checked });
-                                }} />
-                        </div>
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Show fold widgets</Label>
+                        <Checkbox
+                            checked={this.props.store.settings.showFoldWidgets.booleanValue}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onCheck={(event, checked) => {
+                                this.props.store.settings.showFoldWidgets.booleanValue = checked;
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'showFoldWidgets', value: checked });
+                            }} />
                     </div>
                     {/* Show gutter */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Show gutter</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <Checkbox
-                                checked={this.props.settingsStore.showGutter.booleanValue}
-                                onCheck={(event, checked) => {
-                                    this.props.settingsStore.showGutter.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'showGutter', value : checked });
-                                }} />
-                        </div>
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Show gutter</Label>
+                        <Checkbox
+                            checked={this.props.store.settings.showGutter.booleanValue}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onCheck={(event, checked) => {
+                                this.props.store.settings.showGutter.booleanValue = checked;
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'showGutter', value: checked });
+                            }} />
                     </div>
                     {/* Show indent guides */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Show indent guides</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <Checkbox
-                                checked={this.props.settingsStore.showIndentGuides.booleanValue}
-                                onCheck={(event, checked) => {
-                                    this.props.settingsStore.showIndentGuides.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'displayIndentGuides', value : checked });
-                                }} />
-                        </div>
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Show indent guides</Label>
+                        <Checkbox
+                            checked={this.props.store.settings.showIndentGuides.booleanValue}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onCheck={(event, checked) => {
+                                this.props.store.settings.showIndentGuides.booleanValue = checked;
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'displayIndentGuides', value: checked });
+                            }} />
                     </div>
                     {/* Scroll past last line */}
-                    <div style={{ display : 'table-row' }}>
-                        <div style={{ verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>
-                            <Label theme={this.props.theme}>Scroll past last line</Label>
-                        </div>
-                        <div style={{ padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}>
-                            <Checkbox
-                                checked={this.props.settingsStore.scrollPastLastLine.booleanValue}
-                                onCheck={(event, checked) => {
-                                    this.props.settingsStore.scrollPastLastLine.booleanValue = checked;
-                                    PubSub.publish('TextEditor.settings', { name : 'scrollPastEnd', value : checked });
-                                }} />
-                        </div>
+                    <div style={{ width : '100%', display : 'table-row' }}>
+                        <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Scroll past last line</Label>
+                        <Checkbox
+                            checked={this.props.store.settings.scrollPastLastLine.booleanValue}
+                            style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
+                            onCheck={(event, checked) => {
+                                this.props.store.settings.scrollPastLastLine.booleanValue = checked;
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'scrollPastEnd', value: checked });
+                            }} />
                     </div>
                 </div>
             </Dialog>
@@ -250,8 +217,7 @@ export default class EditorSettingsDialog extends React.Component {
 }
 
 EditorSettingsDialog.propTypes = {
-    store         : React.PropTypes.instanceOf(BooleanStore),
-    settingsStore : React.PropTypes.instanceOf(SettingsStore)
+    store : React.PropTypes.instanceOf(EditorSettingsDialogStore)
 };
 
 module.exports = EditorSettingsDialog;

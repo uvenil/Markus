@@ -7,7 +7,7 @@
     "invertedTextColor"        : "#f2f1ef",
     "primaryBackgroundColor"   : "#ffffff",
     "secondaryBackgroundColor" : "#ecf0f1",
-    "selectedBackgroundColor"  : "#d2d7d3",
+    "selectedBackgroundColor"  : "#e6e9ed",
     "disabledBackgroundColor"  : "#dadfe1",
     "borderColor"              : "rgba(0, 0, 0, 0.13)"
 }

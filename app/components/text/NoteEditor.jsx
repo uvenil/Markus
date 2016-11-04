@@ -2,31 +2,29 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import Brace from 'brace';
 import AceEditor from 'react-ace';
-import TextEditorStore from './TextEditorStore';
+import NoteEditorStore from './NoteEditorStore';
 import Record from '../../data/Record';
-import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
+import EventUtils from '../../utils/EventUtils';
 import Unique from '../../utils/Unique';
 import Constants from '../../utils/Constants';
-import PubSub from 'pubsub-js';
-import is from 'electron-is';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
+import _ from 'lodash';
 
 require('brace/ext/searchbox');
 require('brace/ext/spellcheck');
 require('brace/ext/whitespace');
 
-if (is.dev()) PubSub.immediateExceptions = true;
-
 @observer
-class TextEditor extends React.Component {
+class NoteEditor extends React.Component {
     constructor(props) {
         super(props);
 
-        this._editorId      = Unique.elementId();
-        this._placeHolderId = Unique.elementId();
-        this._subscriptions = [];
+        this._editorId      = Unique.nextString();
+        this._placeHolderId = Unique.nextString();
+        this._events        = [];
 
         this._handleChange = value => {
             if (this.props.store.record) {
@@ -70,6 +68,9 @@ class TextEditor extends React.Component {
 
                 return false;
             });
+
+            this.refs.editor.editor.container.style.lineHeight = Constants.NOTE_EDITOR_LINE_HEIGHT;
+            this.refs.editor.editor.renderer.updateFontSize();
         };
 
         this._changeSettings = data => {
@@ -113,14 +114,14 @@ class TextEditor extends React.Component {
     }
 
     componentDidMount() {
-        this._subscriptions.push(PubSub.subscribe('TextEditor.init', (eventName, data) => this._init(data)));
-        this._subscriptions.push(PubSub.subscribe('TextEditor.settings', (eventName, data) => this._changeSettings(data)));
-        this._subscriptions.push(PubSub.subscribe('TextEditor.changeFont', (eventName, font) => this._changeFont(font)));
-        this._subscriptions.push(PubSub.subscribe('TextEditor.refresh', () => this._handleRefresh()));
+        this._events.push(EventUtils.register('NoteEditor.init', data => this._init(data)));
+        this._events.push(EventUtils.register('NoteEditor.settings.change', data => this._changeSettings(data)));
+        this._events.push(EventUtils.register('NoteEditor.font.change', font => this._changeFont(font)));
+        this._events.push(EventUtils.register('NoteEditor.refresh', () => this._handleRefresh()));
     }
 
     componentWillUnmount() {
-        this._subscriptions.forEach(subscription => subscription.unsubscribe());
+        this._events.forEach(event => EventUtils.unregister(event));
     }
 
     render() {
@@ -129,8 +130,10 @@ class TextEditor extends React.Component {
         require('brace/mode/' + syntax);
         require('brace/theme/' + this.props.store.theme);
 
+        const style = { width : '100%', height : 'calc(100vh - ' + (Constants.BOTTOM_BAR_HEIGHT + 1) + 'px)' };
+
         return (
-            <div style={{ width : '100%', height : 'calc(100vh - ' + (Constants.BOTTOM_BAR_HEIGHT + 1) + 'px)' }}>
+            <div style={_.assign(style, this.props.style)}>
                 <AceEditor
                     id={this._editorId}
                     ref="editor"
@@ -138,7 +141,7 @@ class TextEditor extends React.Component {
                     theme={this.props.store.theme}
                     value={this.props.store.record ? this.props.store.record.fullText : undefined}
                     width="100%"
-                    height={'calc(100vh - ' + (Constants.BOTTOM_BAR_HEIGHT + 1) + 'px)'}
+                    height={'calc(100vh - ' + (Constants.TOP_BAR_HEIGHT + Constants.BOTTOM_BAR_HEIGHT) + 'px)'}
                     fontSize={this.props.store.textSize}
                     showGutter={this.props.store.showGutter}
                     highlightActiveLine={this.props.store.highlightActiveLine}
@@ -155,8 +158,9 @@ class TextEditor extends React.Component {
     }
 }
 
-TextEditor.propTypes = {
-    store : React.PropTypes.instanceOf(TextEditorStore).isRequired
+NoteEditor.propTypes = {
+    store : React.PropTypes.instanceOf(NoteEditorStore).isRequired,
+    style : React.PropTypes.object
 };
 
-export default muiThemeable()(TextEditor);
+export default muiThemeable()(NoteEditor);

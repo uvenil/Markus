@@ -6,32 +6,30 @@ body {
     font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
 }
 
-.Label {
-    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
-    font-size   : 13px;
+::-webkit-scrollbar {
+    width              : 7px;
+    -webkit-appearance : none;
 }
 
-.Text {
-    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
-    font-size   : 13px;
+::-webkit-scrollbar-thumb {
+    border-radius      : 4px;
+    background-color   : rgba(127, 127, 127, 0.5);
+    -webkit-box-shadow : 0 0 1px rgba(127, 127, 127, 0.15);
 }
 
-.SearchBox {
-    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
-    font-size   : 13px;
+.draggable-region {
+    cursor             : -webkit-grab;
+    -webkit-app-region : grab;
 }
 
-.SearchBox i {
-    font-size   : 15px;
+.draggable-region:active {
+    cursor : -webkit-grabbing;
 }
 
-.ListView {
-    font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
-    font-size   : 13px;
+.SearchField > input {
+    background-color : rgba(127, 127, 127, 0.15);
 }
 
-.ListView .ListViewHeader {
-    font-weight : bold;
-    font-size   : 11px;
-    color       : #7a7b7c !important;
+.SearchField > input:focus {
+    background-color : transparent;
 }

@@ -1,23 +1,21 @@
 'use strict';
 
-import React from 'react';
 import { extendObservable } from 'mobx';
 import ListItemStore from '../components/lists/ListItemStore';
-import Unique from '../utils/Unique';
-import moment from 'moment';
 
 export default class Record {
     constructor(title, description, fullText, syntax, lastUpdatedAt, createdAt) {
         extendObservable(this, {
-            title         : title,
-            description   : description,
-            fullText      : fullText,
-            syntax        : syntax,
-            category      : null,
-            starred       : false,
-            archived      : false,
-            lastUpdatedAt : lastUpdatedAt,
-            createdAt     : createdAt
+            title          : title,
+            description    : description,
+            fullText       : fullText,
+            searchableText : fullText ? fullText.toLowerCase() : fullText,
+            syntax         : syntax,
+            category       : null,
+            starred        : false,
+            archived       : false,
+            lastUpdatedAt  : lastUpdatedAt,
+            createdAt      : createdAt
         });
     }
 
@@ -78,16 +76,17 @@ export default class Record {
      */
     toDoc() {
         return {
-            _id           : this._id,
-            title         : this.title,
-            description   : this.description,
-            fullText      : this.fullText,
-            syntax        : this.syntax,
-            category      : this.category,
-            starred       : this.starred,
-            archived      : this.archived,
-            lastUpdatedAt : this.lastUpdatedAt,
-            createdAt     : this.createdAt
+            _id            : this._id,
+            title          : this.title,
+            description    : this.description,
+            fullText       : this.fullText,
+            searchableText : this.fullText ? this.fullText.toLowerCase() : this.fullText,
+            syntax         : this.syntax,
+            category       : this.category,
+            starred        : this.starred,
+            archived       : this.archived,
+            lastUpdatedAt  : this.lastUpdatedAt,
+            createdAt      : this.createdAt
         };
     }
 
@@ -106,10 +105,11 @@ export default class Record {
     update(fullText) {
         const record = Record.fromText(this.syntax, fullText);
 
-        this.title         = record.title;
-        this.description   = record.description;
-        this.fullText      = record.fullText;
-        this.lastUpdatedAt = Date.now();
+        this.title          = record.title;
+        this.description    = record.description;
+        this.fullText       = record.fullText;
+        this.searchableText = record.fullText ? record.fullText.toLowerCase() : record.fullText;
+        this.lastUpdatedAt  = Date.now();
     }
 }
 

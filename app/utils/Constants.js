@@ -1,23 +1,53 @@
 'use strict';
 
-const FILTER_LIST_MIN_WIDTH = 150;
-const NOTE_LIST_MIN_WIDTH   = 210;
-const TOP_BAR_HEIGHT        = 32;
-const BOTTOM_BAR_HEIGHT     = 28;
-const PADDING_X0            = 4;
-const PADDING_X1            = 8;
-const PADDING_X2            = 16;
-const BUTTON_MIN_WIDTH      = 72;
-const BUTTON_MIN_HEIGHT     = 28;
-const DIALOG_MAX_WIDTH      = 480;
-const DRAWER_WIDTH          = 220;
+//region Layout
 
-const ICON_FONT_SIZE        = '14px';
-const TEXT_FONT_SIZE        = '13px';
-const HEADING_FONT_SIZE     = '16px';
-const SUB_HEADING_FONT_SIZE = '14px';
+const WINDOW_MIN_WIDTH  = 1050;
+const WINDOW_MIN_HEIGHT = 656;
 
-const SNACKBAR_DURATION = 4000;
+const TITLE_BAR_CONTROL_HEIGHT = 24;
+const SOURCE_LIST_MIN_WIDTH    = 200;
+const NOTE_LIST_MIN_WIDTH      = 280;
+const TOP_BAR_HEIGHT           = 38;
+const BOTTOM_BAR_HEIGHT        = 28;
+const DRAWER_WIDTH             = 200;
+
+//endregion
+
+//region Padding
+
+const PADDING_X0 = 4;
+const PADDING_X1 = 8;
+const PADDING_X2 = 16;
+const PADDING_X3 = 24;
+
+//endregion
+
+//region Element size
+
+const BUTTON_MIN_WIDTH = 96;
+const BUTTON_HEIGHT_X0 = 28;
+const BUTTON_HEIGHT_X1 = 36;
+const BUTTON_HEIGHT_X2 = 48;
+const DIALOG_MAX_WIDTH = 480;
+
+//endregion
+
+//region Font size
+
+const DEFAULT_FONT_SIZE             = 13;
+const ICON_FONT_SIZE                = 14;
+const DEFAULT_NOTE_EDITOR_FONT_SIZE = 13;
+const NOTE_EDITOR_LINE_HEIGHT       = '16px';
+const DIALOG_TEXT_FONT_SIZE         = 15;
+const DIALOG_BUTTON_FONT_SIZE       = 15;
+const HEADING_FONT_SIZE             = 15;
+const SUB_HEADING_FONT_SIZE         = 13;
+
+//endregion
+
+const NOTE_TIMESTAMP_REFRESH_INTERVAL = 1000;
+const SNACKBAR_DURATION               = 4000;
 
 const TAB_SIZES            = [ 2, 4, 8 ];
 const PRINT_MARGIN_COLUMNS = [ 72, 80, 100, 120 ];
@@ -25,21 +55,32 @@ const PRINT_MARGIN_COLUMNS = [ 72, 80, 100, 120 ];
 const ZOOM_FACTOR_STEP = 0.1;
 
 module.exports = {
-    FILTER_LIST_MIN_WIDTH,
+    WINDOW_MIN_WIDTH,
+    WINDOW_MIN_HEIGHT,
+    TITLE_BAR_CONTROL_HEIGHT,
+    SOURCE_LIST_MIN_WIDTH,
     NOTE_LIST_MIN_WIDTH,
     TOP_BAR_HEIGHT,
     BOTTOM_BAR_HEIGHT,
+    DRAWER_WIDTH,
     PADDING_X0,
     PADDING_X1,
     PADDING_X2,
+    PADDING_X3,
     BUTTON_MIN_WIDTH,
-    BUTTON_MIN_HEIGHT,
+    BUTTON_HEIGHT_X0,
+    BUTTON_HEIGHT_X1,
+    BUTTON_HEIGHT_X2,
     DIALOG_MAX_WIDTH,
-    DRAWER_WIDTH,
+    DEFAULT_FONT_SIZE,
+    DEFAULT_NOTE_EDITOR_FONT_SIZE,
+    NOTE_EDITOR_LINE_HEIGHT,
+    DIALOG_TEXT_FONT_SIZE,
     ICON_FONT_SIZE,
-    TEXT_FONT_SIZE,
+    DIALOG_BUTTON_FONT_SIZE,
     HEADING_FONT_SIZE,
     SUB_HEADING_FONT_SIZE,
+    NOTE_TIMESTAMP_REFRESH_INTERVAL,
     SNACKBAR_DURATION,
     TAB_SIZES,
     PRINT_MARGIN_COLUMNS,

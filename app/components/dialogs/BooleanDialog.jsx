@@ -6,6 +6,7 @@ import Dialog from 'material-ui/Dialog';
 import Button from '../buttons/Button.jsx';
 import Text from '../text/Text.jsx';
 import BooleanDialogStore from './BooleanDialogStore';
+import Constants from '../../utils/Constants';
 
 @observer
 export default class BooleanDialog extends React.Component {
@@ -21,7 +22,9 @@ export default class BooleanDialog extends React.Component {
                 actions={[
                     <Button
                         label={this.props.store.falseLabel}
+                        labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
                         color={this.props.store.falseLabelColor}
+                        height={Constants.BUTTON_HEIGHT_X1}
                         onTouchTap={() => {
                             this.props.store.booleanValue = false;
 
@@ -31,7 +34,9 @@ export default class BooleanDialog extends React.Component {
                         }} />,
                     <Button
                         label={this.props.store.trueLabel}
+                        labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
                         color={this.props.store.trueLabelColor}
+                        height={Constants.BUTTON_HEIGHT_X1}
                         onTouchTap={() => {
                             this.props.store.booleanValue = false;
 

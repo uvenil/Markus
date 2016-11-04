@@ -1,22 +1,19 @@
 'use strict';
 
-import TextEditorStore from './TextEditorStore';
+import NoteEditorStore from './NoteEditorStore';
 import Database from '../../data/Database';
 import Record from '../../data/Record';
-import PubSub from 'pubsub-js';
-import is from 'electron-is';
+import EventUtils from '../../utils/EventUtils';
 
-if (is.dev()) PubSub.immediateExceptions = true;
-
-export default class TextEditorPresenter {
+export default class NoteEditorPresenter {
     /**
-     * Creates a new instance of TextEditorPresenter.
+     * Creates a new instance of NoteEditorPresenter.
      * @param {Database} database
      */
     constructor(database) {
         this._database = database;
 
-        this._store = new TextEditorStore();
+        this._store = new NoteEditorStore();
     }
 
     get store() {
@@ -24,8 +21,8 @@ export default class TextEditorPresenter {
     }
 
     /**
-     * @param {String|undefined} recordId
-     * @return {Promise
+     * @param {String|undefined} [recordId]
+     * @return {Promise}
      */
     load(recordId) {
         return new Promise((resolve, reject) => {
@@ -34,14 +31,14 @@ export default class TextEditorPresenter {
                     .then(doc => {
                         this._store.record = Record.fromDoc(doc);
 
-                        PubSub.publish('TextEditor.refresh');
+                        EventUtils.broadcast('NoteEditor.refresh');
 
                         resolve();
                     }).catch(error => reject(error));
             } else {
                 this._store.record = undefined;
 
-                PubSub.publish('TextEditor.refresh');
+                EventUtils.broadcast('NoteEditor.refresh');
 
                 resolve();
             }
@@ -49,4 +46,4 @@ export default class TextEditorPresenter {
     }
 }
 
-module.exports = TextEditorPresenter;
+module.exports = NoteEditorPresenter;

@@ -1,18 +1,15 @@
 'use strict';
 
-import ListViewPresenter from './ListViewPresenter';
+import ListPresenter from './ListPresenter';
 import ListItemStore from './ListItemStore';
 import Database from '../../data/Database';
+import EventUtils from '../../utils/EventUtils';
 import Unique from '../../utils/Unique';
-import PubSub from 'pubsub-js';
-import is from 'electron-is';
 import _ from 'lodash';
 
-if (is.dev()) PubSub.immediateExceptions = true;
-
-export default class CategoryListViewPresenter extends ListViewPresenter {
+export default class CategoryListPresenter extends ListPresenter {
     /**
-     * Creates a new instance of CategoryListViewPresenter.
+     * Creates a new instance of CategoryListPresenter.
      * @param {Database} database
      */
     constructor(database) {
@@ -28,19 +25,19 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                     categories.forEach(category => {
                         const categoryStore = new ListItemStore();
 
-                        categoryStore.itemId      = 'categoryListItem-' + Unique.elementId();
+                        categoryStore.itemId      = Unique.nextString();
                         categoryStore.primaryText = category;
 
                         this.database.countByCategory(category)
                             .then(count => categoryStore.secondaryText = count)
-                            .catch(error => PubSub.publish('Event.error', error));
+                            .catch(error => EventUtils.broadcast('global.error', error));
 
                         this.store.items.push(categoryStore);
                     });
 
                     this._sort();
                 }
-            }).catch(error => PubSub.publish('Event.error', error));
+            }).catch(error => EventUtils.broadcast('global.error', error));
     }
 
     notifyDataSetChanged() {
@@ -91,7 +88,7 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                 newCategories.forEach(category => {
                     const categoryStore = new ListItemStore();
 
-                    categoryStore.itemId        = 'categoryListItem-' + Unique.elementId();
+                    categoryStore.itemId        = Unique.nextString();
                     categoryStore.primaryText   = category;
                     categoryStore.secondaryText = '0';
 
@@ -103,9 +100,9 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
                 this.store.items.forEach(item => {
                     this.database.countByCategory(item.primaryText)
                         .then(count => item.secondaryText = count)
-                        .catch(error => PubSub.publish('Event.error', error));
+                        .catch(error => EventUtils.broadcast('global.error', error));
                 });
-            }).catch(error => PubSub.publish('Event.error', error));
+            }).catch(error => EventUtils.broadcast('global.error', error));
     }
 
     initStore() {
@@ -119,4 +116,4 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
     }
 }
 
-module.exports = CategoryListViewPresenter;
+module.exports = CategoryListPresenter;

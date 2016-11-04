@@ -2,7 +2,7 @@
 
 import { extendObservable } from 'mobx';
 import Rx from 'rx-lite';
-import Config from '../../../config.json';
+import Config from '../../definitions/config.json';
 
 export default class TextEditorStore {
     constructor() {

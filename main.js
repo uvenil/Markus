@@ -1,29 +1,40 @@
 'use strict';
 
 import { BrowserWindow, app, shell } from 'electron';
-import Config from './config.json';
+import windowStateKeeper from 'electron-window-state';
+import Constants from './app/utils/Constants';
 import Path from 'path';
 import is from 'electron-is';
 
 let win;
 
 const createWindow = () => {
+    const winStateKeeper = windowStateKeeper({
+        defaultWidth  : Constants.WINDOW_MIN_WIDTH,
+        defaultHeight : Constants.WINDOW_MIN_HEIGHT
+    });
+
     win = new BrowserWindow({
         title           : app.getName(),
-        width           : Config.windowWidth,
-        height          : Config.windowHeight,
-        minWidth        : Config.windowMinWidth,
-        minHeight       : Config.windowMinHeight,
+        x               : winStateKeeper.x,
+        y               : winStateKeeper.y,
+        width           : winStateKeeper.width,
+        height          : winStateKeeper.height,
+        minWidth        : Constants.WINDOW_MIN_WIDTH,
+        minHeight       : Constants.WINDOW_MIN_HEIGHT,
+        titleBarStyle   : 'hidden',
         backgroundColor : '#f0f2f4',
         show            : false,
         webPreferences  : {
             defaultEncoding          : 'UTF-8',
-            defaultFontSize          : 13,
-            defaultMonospaceFontSize : 13,
+            defaultFontSize          : Constants.DEFAULT_FONT_SIZE,
+            defaultMonospaceFontSize : Constants.DEFAULT_NOTE_EDITOR_FONT_SIZE,
             webaudio                 : false,
             webgl                    : false
         }
     });
+
+    winStateKeeper.manage(win);
 
     win.once('ready-to-show', () => win.show());
     win.on('close', () => win = null);
