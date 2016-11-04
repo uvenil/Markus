@@ -404,6 +404,17 @@ export default class AppPresenter {
             }
         }));
 
+        if (this._store.filterList.selectedIndex !== 2) {
+            menu.append(new MenuItem({
+                label : 'Duplicate',
+                click : () => {
+                    this._store.noteList.selectedIndex = index;
+
+                    this._duplicateNote();
+                }
+            }));
+        }
+
         menu.append(new MenuItem({
             type : 'separator'
         }));
@@ -1029,6 +1040,22 @@ export default class AppPresenter {
         this._noteListPresenter.sorting = sorting;
 
         this._settings.set('notesSorting', sorting).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+    }
+
+    _duplicateNote() {
+        const now = Date.now();
+        const doc = this._store.noteList.selectedItem.record.toDoc();
+
+        doc._id           = undefined;
+        doc.lastUpdatedAt = now;
+        doc.createdAt     = now;
+
+        this._database.addOrUpdate(doc)
+            .then(() => {
+                this._filterListPresenter.refresh();
+                this._categoryListPresenter.notifyDataSetChanged();
+                this._noteListPresenter.refresh();
+            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     /**

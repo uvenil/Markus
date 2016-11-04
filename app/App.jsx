@@ -35,7 +35,8 @@ import Path from 'path';
 import is from 'electron-is';
 import _ from 'lodash';
 
-const { app } = require('electron').remote;
+const remote = require('electron').remote;
+const { app } = remote;
 
 const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
 
@@ -181,13 +182,9 @@ export default class App extends React.Component {
                             <div style={{ height : Constants.TITLE_BAR_CONTROL_HEIGHT }} />
                             <Subheader style={{ lineHeight : '32px', fontSize : Constants.SUB_HEADING_FONT_SIZE, fontWeight : 'bolder' }}>Settings</Subheader>
                             <Divider />
-                            {renderListItem('Note Editor', 'pencil-square-o', this.props.store.editorSettingsDialog)}
-                            <Divider />
                             {renderListItem('Default Syntax', 'code', this.props.store.defaultSyntaxDialog)}
                             <Divider />
                             {renderListItem('App Theme', 'eye', this.props.store.themeDialog)}
-                            <Divider />
-                            {renderListItem('Note Font', 'font', this.props.store.fontDialog)}
                             <Divider />
                         </List>
                     </Drawer>
@@ -286,6 +283,7 @@ export default class App extends React.Component {
                             <div style={{ height : '100vh', display : 'flex', flexFlow : 'column', backgroundColor : muiTheme.palette.canvasColor }}>
                                 {/* Note editor tools */}
                                 <div style={{ width : '100%', height : Constants.TOP_BAR_HEIGHT, display : 'flex', flexFlow : 'row', backgroundColor : muiTheme.palette.primary2Color, overflow : 'hidden' }}>
+                                    {/* Change syntax */}
                                     <Button
                                         label={SyntaxNames.items[_.indexOf(SyntaxCodes.items, this.props.store.noteEditor.syntax)]}
                                         labelSize={Constants.DEFAULT_FONT_SIZE}
@@ -296,6 +294,40 @@ export default class App extends React.Component {
                                             this.props.store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this.props.store.noteEditor.syntax);
                                             this.props.store.currentSyntaxDialog.booleanValue       = true;
                                         }} />
+                                    <span style={{ flex : '1 1 0' }} />
+                                    {/* Export note */}
+                                    <Button
+                                        icon="external-link"
+                                        width={Constants.TOP_BAR_HEIGHT}
+                                        height={Constants.TOP_BAR_HEIGHT}
+                                        disabled={_.isNil(this.props.store.noteEditor.record)}
+                                        onTouchTap={() => this.props.presenter.handleExportNote()} />
+                                    {/* Change font */}
+                                    <Button
+                                        icon="font"
+                                        width={Constants.TOP_BAR_HEIGHT}
+                                        height={Constants.TOP_BAR_HEIGHT}
+                                        disabled={_.isNil(this.props.store.noteEditor.record)}
+                                        onTouchTap={() => this.props.store.fontDialog.booleanValue = true} />
+                                    {/* Zoom-in */}
+                                    <Button
+                                        icon="search-plus"
+                                        width={Constants.TOP_BAR_HEIGHT}
+                                        height={Constants.TOP_BAR_HEIGHT}
+                                        onTouchTap={() => remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + Constants.ZOOM_FACTOR_STEP))} />
+                                    {/* Zoom-out */}
+                                    <Button
+                                        icon="search-minus"
+                                        width={Constants.TOP_BAR_HEIGHT}
+                                        height={Constants.TOP_BAR_HEIGHT}
+                                        onTouchTap={() => remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - Constants.ZOOM_FACTOR_STEP))} />
+                                    {/* Editor settings */}
+                                    <Button
+                                        icon="cogs"
+                                        width={Constants.TOP_BAR_HEIGHT}
+                                        height={Constants.TOP_BAR_HEIGHT}
+                                        disabled={_.isNil(this.props.store.noteEditor.record)}
+                                        onTouchTap={() => this.props.store.editorSettingsDialog.booleanValue = true} />
                                 </div>
                                 {/* Note editor */}
                                 <NoteEditor
@@ -330,7 +362,7 @@ export default class App extends React.Component {
                                     <div style={{ margin : 'auto', paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, flex : '1 1 0', textAlign : 'right' }}>
                                         {/* Overwrite status */}
                                         <Label>{this.props.store.noteEditor.isOverwriteEnabled ? 'OVR' : ''}</Label>
-                                        <span style={{ marginRight : Constants.PADDING_X1 }}></span>
+                                        <span style={{ marginRight : Constants.PADDING_X1 }} />
                                         {/* Row/column position */}
                                         <Label>{this.props.store.noteEditor.record && this.props.store.noteEditor.cursorPosition ? (this.props.store.noteEditor.cursorPosition.row + 1) + ' : ' + this.props.store.noteEditor.cursorPosition.column : ''}</Label>
                                     </div>

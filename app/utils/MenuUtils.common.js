@@ -72,21 +72,13 @@ const createViewMenu = () => {
             {
                 role  : 'zoomin',
                 click : (item, win) => {
-                    if (win) {
-                        remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => {
-                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + Constants.ZOOM_FACTOR_STEP);
-                        });
-                    }
+                    if (win) remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + Constants.ZOOM_FACTOR_STEP));
                 }
             },
             {
                 role  : 'zoomout',
                 click : (item, win) => {
-                    if (win) {
-                        remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => {
-                            remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - Constants.ZOOM_FACTOR_STEP);
-                        });
-                    }
+                    if (win) remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - Constants.ZOOM_FACTOR_STEP));
                 }
             },
             {
