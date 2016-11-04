@@ -19,7 +19,7 @@ body {
 
 .draggable-region {
     cursor             : -webkit-grab;
-    -webkit-app-region : grab;
+    -webkit-app-region : drag;
 }
 
 .draggable-region:active {
