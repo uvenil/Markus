@@ -27,5 +27,15 @@ div.ace_scroller > div.ace_content {
 ::-webkit-scrollbar-thumb {
     border-radius      : 4px;
     background-color   : rgba(127, 127, 127, 0.5);
-    -webkit-box-shadow : 0 0 1px rgba(127, 127, 127, 0.5);
+    -webkit-box-shadow : 0 0 1px rgba(127, 127, 127, 0.15);
+}
+
+.draggable-region {
+    cursor             : -webkit-grab;
+    -webkit-app-region : grab;
+}
+
+.draggable-region:active {
+    cursor : -webkit-grabbing;
+}
 }

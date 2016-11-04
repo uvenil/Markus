@@ -148,6 +148,18 @@ export default class App extends React.Component {
             );
         };
 
+        const renderDraggableRegion = () => {
+            if (is.macOS()) {
+                return (
+                    <div
+                        className="draggable-region"
+                        style={{ width : '100%', height : Constants.TITLE_BAR_CONTROL_HEIGHT, overflow : 'hidden' }}>&nbsp;</div>
+                );
+            }
+
+            return undefined;
+        };
+
         return (
             <MuiThemeProvider muiTheme={muiTheme}>
                 <div style={{ backgroundColor : muiTheme.palette.canvasColor }}>
@@ -191,6 +203,8 @@ export default class App extends React.Component {
                         onChange={size => this._handleFilterListWidthChange(size)}>
                         <MuiThemeProvider muiTheme={MUI_DARK_THEME}>
                             <div style={{ height : '100vh', display : 'flex', flexFlow : 'column', backgroundColor : MUI_DARK_THEME.palette.primary2Color }}>
+                                {/* Draggable region for macOS */}
+                                {renderDraggableRegion()}
                                 {/* Application menu */}
                                 <Button
                                     label="Menu"
@@ -198,7 +212,7 @@ export default class App extends React.Component {
                                     width="100%"
                                     height={Constants.BUTTON_HEIGHT_X2}
                                     align="left"
-                                    style={{ paddingLeft : Constants.PADDING_X0, paddingRight : Constants.PADDING_X0, marginTop : is.macOS() ? Constants.TITLE_BAR_CONTROL_HEIGHT : 0 }}
+                                    style={{ paddingLeft : Constants.PADDING_X0, paddingRight : Constants.PADDING_X0 }}
                                     onTouchTap={() => this.props.store.drawerOpened = true} />
                                 {/* Filter list */}
                                 <div style={{ height : 'calc(100vh - ' + (Constants.BUTTON_HEIGHT_X1 + Constants.BUTTON_HEIGHT_X2) + 'px)', display : 'flex', flexFlow : 'column', flex : '1 1 0', overflow : 'auto' }}>
@@ -238,6 +252,7 @@ export default class App extends React.Component {
                                 {/* Search notes */}
                                 <SearchField
                                     hintText="Search notes"
+                                    className="SearchField"
                                     style={{ width : 'calc(100% - ' + Constants.PADDING_X2 + 'px)', display : 'flex', flexFlow : 'row', padding : Constants.PADDING_X1, borderBottom : '1px solid ' + muiTheme.palette.borderColor }}
                                     onChange={value => this.props.presenter.filterNoteList(value)} />
                                 {/* Note list */}
