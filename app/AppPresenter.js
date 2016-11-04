@@ -16,7 +16,7 @@ import Database from './data/Database';
 import Record from './data/Record.js';
 import EventUtils from './utils/EventUtils';
 import Constants from './utils/Constants';
-import Config from '../config.json';
+import Config from './definitions/config.json';
 import SyntaxNames from './definitions/syntax-names.json';
 import SyntaxCodes from './definitions/syntax-codes.json';
 import ThemeNames from './definitions/theme-names.json';

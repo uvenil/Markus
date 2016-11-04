@@ -7,7 +7,7 @@ import Database from '../../data/Database';
 import Record from '../../data/Record';
 import EventUtils from '../../utils/EventUtils';
 import Constants from '../../utils/Constants';
-import Config from '../../../config.json';
+import Config from '../../definitions/config.json';
 import Rx from 'rx-lite';
 import moment from 'moment';
 import _ from 'lodash';

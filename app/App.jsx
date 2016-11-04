@@ -28,10 +28,11 @@ import AppPresenter from './AppPresenter';
 import Settings from './utils/Settings';
 import EventUtils from './utils/EventUtils';
 import Constants from './utils/Constants';
+import SyntaxNames from './definitions/syntax-names.json';
 import SyntaxCodes from './definitions/syntax-codes.json';
 import ThemeCodes from './definitions/theme-codes.json';
-import is from 'electron-is';
 import Path from 'path';
+import is from 'electron-is';
 import _ from 'lodash';
 
 const { app } = require('electron').remote;
@@ -130,11 +131,10 @@ export default class App extends React.Component {
         const sorting  = this.props.store.notesSorting;
         const muiTheme = this.props.store.theme === 'dark' ? MUI_DARK_THEME : MUI_LIGHT_THEME;
 
-        const renderListItem = (primaryText, secondaryText, icon, dialogStore) => {
+        const renderListItem = (primaryText, icon, dialogStore) => {
             return (
                 <ListItem
                     primaryText={primaryText}
-                    secondaryText={secondaryText}
                     leftIcon={
                         <FontIcon
                             className={'fa fa-fw fa-' + icon}
@@ -181,15 +181,13 @@ export default class App extends React.Component {
                             <div style={{ height : Constants.TITLE_BAR_CONTROL_HEIGHT }} />
                             <Subheader style={{ lineHeight : '32px', fontSize : Constants.SUB_HEADING_FONT_SIZE, fontWeight : 'bolder' }}>Settings</Subheader>
                             <Divider />
-                            {renderListItem('Editor', undefined, 'pencil-square-o', this.props.store.editorSettingsDialog)}
+                            {renderListItem('Note Editor', 'pencil-square-o', this.props.store.editorSettingsDialog)}
                             <Divider />
-                            {renderListItem('Syntax', 'For current note', 'code', this.props.store.currentSyntaxDialog)}
+                            {renderListItem('Default Syntax', 'code', this.props.store.defaultSyntaxDialog)}
                             <Divider />
-                            {renderListItem('Syntax', 'For default notes', 'code', this.props.store.defaultSyntaxDialog)}
+                            {renderListItem('App Theme', 'eye', this.props.store.themeDialog)}
                             <Divider />
-                            {renderListItem('Theme', undefined, 'eye', this.props.store.themeDialog)}
-                            <Divider />
-                            {renderListItem('Font', undefined, 'font', this.props.store.fontDialog)}
+                            {renderListItem('Note Font', 'font', this.props.store.fontDialog)}
                             <Divider />
                         </List>
                     </Drawer>
@@ -252,8 +250,9 @@ export default class App extends React.Component {
                                 {/* Search notes */}
                                 <SearchField
                                     hintText="Search notes"
+                                    disabled={!this.props.store.hasSourceSelected}
                                     className="SearchField"
-                                    style={{ width : 'calc(100% - ' + Constants.PADDING_X2 + 'px)', display : 'flex', flexFlow : 'row', padding : Constants.PADDING_X1, borderBottom : '1px solid ' + muiTheme.palette.borderColor }}
+                                    style={{ width : 'calc(100% - ' + Constants.PADDING_X2 + 'px)', display : 'flex', flexFlow : 'row', padding : Constants.PADDING_X1, borderBottom : '1px solid ' + muiTheme.palette.borderColor, backgroundColor : muiTheme.palette.primary2Color }}
                                     onChange={value => this.props.presenter.filterNoteList(value)} />
                                 {/* Note list */}
                                 <NoteList
@@ -285,11 +284,24 @@ export default class App extends React.Component {
                                 </div>
                             </div>
                             <div style={{ height : '100vh', display : 'flex', flexFlow : 'column', backgroundColor : muiTheme.palette.canvasColor }}>
+                                {/* Note editor tools */}
+                                <div style={{ width : '100%', height : Constants.TOP_BAR_HEIGHT, display : 'flex', flexFlow : 'row', backgroundColor : muiTheme.palette.primary2Color, overflow : 'hidden' }}>
+                                    <Button
+                                        label={SyntaxNames.items[_.indexOf(SyntaxCodes.items, this.props.store.noteEditor.syntax)]}
+                                        labelSize={Constants.DEFAULT_FONT_SIZE}
+                                        icon="code"
+                                        height={Constants.TOP_BAR_HEIGHT}
+                                        disabled={_.isNil(this.props.store.noteEditor.record)}
+                                        onTouchTap={() => {
+                                            this.props.store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this.props.store.noteEditor.syntax);
+                                            this.props.store.currentSyntaxDialog.booleanValue       = true;
+                                        }} />
+                                </div>
                                 {/* Note editor */}
                                 <NoteEditor
                                     store={this.props.store.noteEditor}
-                                    style={{ flex : '1 1 0' }} />
-                                {/* Note editor tools */}
+                                    style={{ height : 'calc(100vh - ' + (Constants.TOP_BAR_HEIGHT + Constants.BOTTOM_BAR_HEIGHT) + 'px)', flex : '1 1 0' }} />
+                                {/* Note editor status */}
                                 <div style={{ width : '100%', height : Constants.BOTTOM_BAR_HEIGHT, display : 'flex', flexFlow : 'row', backgroundColor : muiTheme.palette.primary2Color }}>
                                     {/* Star note */}
                                     <Button
@@ -311,10 +323,11 @@ export default class App extends React.Component {
                                         label={this.props.store.noteEditor.record ? this.props.store.noteEditor.record.category ? this.props.store.noteEditor.record.category : 'Uncategorized' : ''}
                                         labelWeight="normal"
                                         labelSize={Constants.DEFAULT_FONT_SIZE}
+                                        icon="tag"
                                         height={Constants.BOTTOM_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.noteEditor.record)}
                                         onTouchTap={() => this.props.presenter.handleSelectCategoryClick()} />
-                                    <div style={{ margin : 'auto', paddingLeft : Constants.PADDING_X0, paddingRight : Constants.PADDING_X0, flex : '1 1 0', textAlign : 'right' }}>
+                                    <div style={{ margin : 'auto', paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, flex : '1 1 0', textAlign : 'right' }}>
                                         {/* Overwrite status */}
                                         <Label>{this.props.store.noteEditor.isOverwriteEnabled ? 'OVR' : ''}</Label>
                                         <span style={{ marginRight : Constants.PADDING_X1 }}></span>

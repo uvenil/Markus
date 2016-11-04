@@ -1,8 +1,8 @@
 'use strict';
 
 import Nedb from 'nedb';
-import Path from 'path';
 import Settings from '../utils/Settings';
+import Path from 'path';
 import _ from 'lodash';
 
 const { app } = require('electron').remote;

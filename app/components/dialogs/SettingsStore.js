@@ -3,7 +3,7 @@
 import { extendObservable } from 'mobx';
 import BooleanStore from '../BooleanStore';
 import Constants from '../../utils/Constants';
-import Config from '../../../config.json';
+import Config from '../../definitions/config.json';
 
 export default class SettingsStore {
     constructor() {

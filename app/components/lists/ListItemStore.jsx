@@ -5,7 +5,7 @@ import { extendObservable } from 'mobx';
 import Record from '../../data/Record.js';
 import moment from 'moment';
 import Unique from '../../utils/Unique';
-import Config from '../../../config.json';
+import Config from '../../definitions/config.json';
 import _ from 'lodash';
 
 export default class ListItemStore {

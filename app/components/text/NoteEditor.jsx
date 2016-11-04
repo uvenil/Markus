@@ -141,7 +141,7 @@ class NoteEditor extends React.Component {
                     theme={this.props.store.theme}
                     value={this.props.store.record ? this.props.store.record.fullText : undefined}
                     width="100%"
-                    height={'calc(100vh - ' + (Constants.BOTTOM_BAR_HEIGHT + 1) + 'px)'}
+                    height={'calc(100vh - ' + (Constants.TOP_BAR_HEIGHT + Constants.BOTTOM_BAR_HEIGHT) + 'px)'}
                     fontSize={this.props.store.textSize}
                     showGutter={this.props.store.showGutter}
                     highlightActiveLine={this.props.store.highlightActiveLine}

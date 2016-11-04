@@ -6,19 +6,6 @@ body {
     font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
 }
 
-div.ace_gutter {
-    padding-top    : 16px !important;
-    padding-bottom : 16px !important;
-}
-
-div.ace_gutter > div.ace_gutter-active-line {
-    margin-top : 16px !important;
-}
-
-div.ace_scroller > div.ace_content {
-    padding-top : 16px !important;
-}
-
 ::-webkit-scrollbar {
     width              : 7px;
     -webkit-appearance : none;

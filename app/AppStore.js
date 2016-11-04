@@ -1,8 +1,8 @@
 'use strict';
 
-import { extendObservable } from 'mobx';
+import { extendObservable, computed } from 'mobx';
 import Constants from './utils/Constants';
-import Config from '../config.json';
+import Config from './definitions/config.json';
 
 export default class AppStore {
     constructor() {
@@ -32,6 +32,11 @@ export default class AppStore {
             selectCategoryDialog : undefined,
             notesSorting         : Config.defaultNotesSorting
         });
+    }
+
+    @computed
+    get hasSourceSelected() {
+        return (this.filterList && this.filterList.selectedIndex > -1) || (this.categoryList && this.categoryList.selectedIndex > -1);
     }
 }
 
