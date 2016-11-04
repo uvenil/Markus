@@ -2,35 +2,35 @@
 
 import { extendObservable } from 'mobx';
 import Constants from './utils/Constants';
+import Config from '../config.json';
 
 export default class AppStore {
     constructor() {
         extendObservable(this, {
-            theme                     : 'light',
-            drawerOpened              : false,
-            snackbarOpened            : false,
-            snackbarMessage           : '',
-            booleanDialogStore        : undefined,
-            aboutDialogStore          : undefined,
-            editorSettingsDialogStore : undefined,
-            currentSyntaxDialogStore  : undefined,
-            defaultSyntaxDialogStore  : undefined,
-            themeDialogStore          : undefined,
-            fontDialogStore           : undefined,
-            settingsStore             : undefined,
-            showFilterList            : true,
-            showNoteList              : true,
-            filterListWidth           : Constants.FILTER_LIST_MIN_WIDTH,
-            noteListWidth             : Constants.NOTE_LIST_MIN_WIDTH,
-            filtersStore              : undefined,
-            categoriesStore           : undefined,
-            notesStore                : undefined,
-            editorStore               : undefined,
-            addNoteEnabled            : false,
-            addCategoryDialogStore    : undefined,
-            updateCategoryDialogStore : undefined,
-            selectCategoryDialogStore : undefined,
-            notesSorting              : 3
+            theme                : 'light',
+            drawerOpened         : false,
+            snackbarOpened       : false,
+            snackbarMessage      : '',
+            booleanDialog        : undefined,
+            aboutDialog          : undefined,
+            editorSettingsDialog : undefined,
+            currentSyntaxDialog  : undefined,
+            defaultSyntaxDialog  : undefined,
+            themeDialog          : undefined,
+            fontDialog           : undefined,
+            filterListShown      : true,
+            noteListShown        : true,
+            filterListWidth      : Constants.FILTER_LIST_MIN_WIDTH,
+            noteListWidth        : Constants.NOTE_LIST_MIN_WIDTH,
+            filterList           : undefined,
+            categoryList         : undefined,
+            noteList             : undefined,
+            noteEditor           : undefined,
+            addNoteEnabled       : false,
+            addCategoryDialog    : undefined,
+            updateCategoryDialog : undefined,
+            selectCategoryDialog : undefined,
+            notesSorting         : Config.defaultNotesSorting
         });
     }
 }

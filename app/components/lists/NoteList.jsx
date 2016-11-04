@@ -1,8 +1,8 @@
 'use strict';
 
 import React from 'react';
-import ListView from './ListView.jsx';
-import ListViewStore from './ListViewStore';
+import List from './List.jsx';
+import ListStore from './ListStore';
 import Text from '../text/Text.jsx';
 import { observer } from 'mobx-react';
 import Unique from '../../utils/Unique';
@@ -10,14 +10,14 @@ import Constants from '../../utils/Constants';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
 @observer
-class NoteListView extends React.Component {
+class NoteList extends React.Component {
     constructor(props) {
         super(props);
     }
 
     render() {
         return (
-            <ListView
+            <List
                 header={this.props.store.headerText}
                 selectedIndex={this.props.store.selectedIndex}
                 style={{ height : 'calc(100vh - ' + (Constants.TOP_BAR_HEIGHT + Constants.BOTTOM_BAR_HEIGHT + 2) + 'px)', overflowY : 'auto' }}
@@ -35,15 +35,15 @@ class NoteListView extends React.Component {
                         </div>
                     );
                 })}
-            </ListView>
+            </List>
         );
     }
 }
 
-NoteListView.propTypes = {
-    store            : React.PropTypes.instanceOf(ListViewStore).isRequired,
+NoteList.propTypes = {
+    store            : React.PropTypes.instanceOf(ListStore).isRequired,
     onItemClick      : React.PropTypes.func,
     onItemRightClick : React.PropTypes.func
 };
 
-export default muiThemeable()(NoteListView);
+export default muiThemeable()(NoteList);

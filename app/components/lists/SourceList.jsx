@@ -3,21 +3,21 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Label from '../text/Label.jsx';
-import ListView from './ListView.jsx';
-import ListViewStore from './ListViewStore';
+import List from './List.jsx';
+import ListStore from './ListStore';
 import Unique from '../../utils/Unique';
 import Constants from '../../utils/Constants';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
 @observer
-class FilterListView extends React.Component {
+class SourceList extends React.Component {
     constructor(props) {
         super(props);
     }
 
     render() {
         return (
-            <ListView
+            <List
                 header={this.props.store.headerText}
                 selectedIndex={this.props.store.selectedIndex}
                 style={{ paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0 }}
@@ -40,15 +40,15 @@ class FilterListView extends React.Component {
                         </div>
                     );
                 })}
-            </ListView>
+            </List>
         );
     }
 }
 
-FilterListView.propTypes = {
-    store            : React.PropTypes.instanceOf(ListViewStore).isRequired,
+SourceList.propTypes = {
+    store            : React.PropTypes.instanceOf(ListStore).isRequired,
     onItemClick      : React.PropTypes.func,
     onItemRightClick : React.PropTypes.func
 };
 
-export default muiThemeable()(FilterListView);
+export default muiThemeable()(SourceList);

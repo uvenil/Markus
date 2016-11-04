@@ -5,17 +5,13 @@ import { observer } from 'mobx-react';
 import Dialog from 'material-ui/Dialog';
 import Button from '../buttons/Button.jsx';
 import Text from '../text/Text.jsx';
-import ListView from '../lists/ListView.jsx';
-import ListViewDialogStore from './ListViewDialogStore';
+import List from '../lists/List.jsx';
+import ListDialogStore from './ListDialogStore';
 import Constants from '../../utils/Constants';
-import PubSub from 'pubsub-js';
-import is from 'electron-is';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
-if (is.dev()) PubSub.immediateExceptions = true;
-
 @observer
-class ListViewDialog extends React.Component {
+class ListDialog extends React.Component {
     constructor(props) {
         super(props);
     }
@@ -31,34 +27,41 @@ class ListViewDialog extends React.Component {
             );
         };
 
+        const actions = [
+            <Button
+                label="Close"
+                color={this.props.positiveAction ? 'default' : 'primary'}
+                onTouchTap={() => this.props.store.booleanValue = false} />
+        ];
+
+        if (this.props.neutralAction) actions.push(this.props.neutralAction);
+        if (this.props.positiveAction) actions.push(this.props.positiveAction);
+
         return (
             <Dialog
                 title={this.props.title}
                 autoScrollBodyContent={true}
                 open={this.props.store.booleanValue}
                 bodyStyle={{ padding : 0, overflowX : 'hidden' }}
-                actions={[
-                    <Button
-                        label="Close"
-                        color="primary"
-                        onTouchTap={() => this.props.store.booleanValue = false} />
-                ]}
+                actions={actions}
                 onRequestClose={() => this.props.store.booleanValue = false}>
-                <ListView
+                <List
                     selectedIndex={this.props.store.list.selectedIndex}
                     backgroundColor={this.props.muiTheme.palette.canvasColor}
                     onItemClick={this.props.onItemClick}>
                     {this.props.store.list.items.map(item => renderListItem(item))}
-                </ListView>
+                </List>
             </Dialog>
         );
     }
 }
 
-ListViewDialog.propTypes = {
-    store       : React.PropTypes.instanceOf(ListViewDialogStore),
-    title       : React.PropTypes.string,
-    onItemClick : React.PropTypes.func
+ListDialog.propTypes = {
+    store          : React.PropTypes.instanceOf(ListDialogStore),
+    title          : React.PropTypes.string,
+    neutralAction  : React.PropTypes.element,
+    positiveAction : React.PropTypes.element,
+    onItemClick    : React.PropTypes.func
 };
 
-export default muiThemeable()(ListViewDialog);
+export default muiThemeable()(ListDialog);

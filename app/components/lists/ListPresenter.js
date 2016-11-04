@@ -1,11 +1,11 @@
 'use strict';
 
-import ListViewStore from './ListViewStore';
+import ListStore from './ListStore';
 import Database from '../../data/Database';
 
-export default class ListViewPresenter {
+export default class ListPresenter {
     /**
-     * Creates a new instance of FilterListViewPresenter.
+     * Creates a new instance of FilterListPresenter.
      * @param {Database} database
      */
     constructor(database) {
@@ -34,8 +34,8 @@ export default class ListViewPresenter {
     }
 
     initStore() {
-        this.store = new ListViewStore();
+        this.store = new ListStore();
     }
 }
 
-module.exports = ListViewPresenter;
+module.exports = ListPresenter;

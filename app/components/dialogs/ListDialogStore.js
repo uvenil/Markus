@@ -2,16 +2,16 @@
 
 import { extendObservable } from 'mobx';
 import BooleanStore from '../BooleanStore';
-import ListViewStore from '../lists/ListViewStore';
+import ListStore from '../lists/ListStore';
 
-export default class ListViewDialogStore extends BooleanStore {
+export default class ListDialogStore extends BooleanStore {
     constructor() {
         super();
 
         extendObservable(this, {
-            list : new ListViewStore()
+            list : new ListStore()
         });
     }
 }
 
-module.exports = ListViewDialogStore;
+module.exports = ListDialogStore;

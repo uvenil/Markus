@@ -3,7 +3,7 @@
 import { extendObservable, computed } from 'mobx';
 import _ from 'lodash';
 
-export default class ListViewStore {
+export default class ListStore {
     constructor() {
         extendObservable(this, {
             headerText : '',
@@ -109,4 +109,4 @@ export default class ListViewStore {
     }
 }
 
-module.exports = ListViewStore;
+module.exports = ListStore;

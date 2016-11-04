@@ -1,19 +1,19 @@
 'use strict';
 
-import TextEditorStore from './TextEditorStore';
+import NoteEditorStore from './NoteEditorStore';
 import Database from '../../data/Database';
 import Record from '../../data/Record';
 import EventUtils from '../../utils/EventUtils';
 
-export default class TextEditorPresenter {
+export default class NoteEditorPresenter {
     /**
-     * Creates a new instance of TextEditorPresenter.
+     * Creates a new instance of NoteEditorPresenter.
      * @param {Database} database
      */
     constructor(database) {
         this._database = database;
 
-        this._store = new TextEditorStore();
+        this._store = new NoteEditorStore();
     }
 
     get store() {
@@ -31,14 +31,14 @@ export default class TextEditorPresenter {
                     .then(doc => {
                         this._store.record = Record.fromDoc(doc);
 
-                        EventUtils.broadcast('TextEditor.refresh');
+                        EventUtils.broadcast('NoteEditor.refresh');
 
                         resolve();
                     }).catch(error => reject(error));
             } else {
                 this._store.record = undefined;
 
-                EventUtils.broadcast('TextEditor.refresh');
+                EventUtils.broadcast('NoteEditor.refresh');
 
                 resolve();
             }
@@ -46,4 +46,4 @@ export default class TextEditorPresenter {
     }
 }
 
-module.exports = TextEditorPresenter;
+module.exports = NoteEditorPresenter;

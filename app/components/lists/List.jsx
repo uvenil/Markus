@@ -6,7 +6,7 @@ import Unique from '../../utils/Unique';
 import Constants from '../../utils/Constants';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
-const ListView = props => {
+const List = props => {
     let header;
 
     if (props.header) {
@@ -42,7 +42,7 @@ const ListView = props => {
     );
 };
 
-ListView.propTypes = {
+List.propTypes = {
     header           : React.PropTypes.node,
     selectedIndex    : React.PropTypes.number,
     className        : React.PropTypes.string,
@@ -51,8 +51,8 @@ ListView.propTypes = {
     onItemRightClick : React.PropTypes.func
 };
 
-ListView.defaultProps = {
+List.defaultProps = {
     selectedIndex : -1,
 };
 
-export default muiThemeable()(ListView);
+export default muiThemeable()(List);

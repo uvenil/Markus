@@ -1,15 +1,15 @@
 'use strict';
 
-import ListViewPresenter from './ListViewPresenter';
+import ListPresenter from './ListPresenter';
 import ListItemStore from './ListItemStore';
 import Database from '../../data/Database';
 import EventUtils from '../../utils/EventUtils';
 import Unique from '../../utils/Unique';
 import _ from 'lodash';
 
-export default class CategoryListViewPresenter extends ListViewPresenter {
+export default class CategoryListPresenter extends ListPresenter {
     /**
-     * Creates a new instance of CategoryListViewPresenter.
+     * Creates a new instance of CategoryListPresenter.
      * @param {Database} database
      */
     constructor(database) {
@@ -116,4 +116,4 @@ export default class CategoryListViewPresenter extends ListViewPresenter {
     }
 }
 
-module.exports = CategoryListViewPresenter;
+module.exports = CategoryListPresenter;

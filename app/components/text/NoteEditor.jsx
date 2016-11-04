@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Brace from 'brace';
 import AceEditor from 'react-ace';
-import TextEditorStore from './TextEditorStore';
+import NoteEditorStore from './NoteEditorStore';
 import Record from '../../data/Record';
 import EventUtils from '../../utils/EventUtils';
 import Unique from '../../utils/Unique';
@@ -18,7 +18,7 @@ require('brace/ext/spellcheck');
 require('brace/ext/whitespace');
 
 @observer
-class TextEditor extends React.Component {
+class NoteEditor extends React.Component {
     constructor(props) {
         super(props);
 
@@ -111,10 +111,10 @@ class TextEditor extends React.Component {
     }
 
     componentDidMount() {
-        this._events.push(EventUtils.register('TextEditor.init', data => this._init(data)));
-        this._events.push(EventUtils.register('TextEditor.settings.change', data => this._changeSettings(data)));
-        this._events.push(EventUtils.register('TextEditor.font.change', font => this._changeFont(font)));
-        this._events.push(EventUtils.register('TextEditor.refresh', () => this._handleRefresh()));
+        this._events.push(EventUtils.register('NoteEditor.init', data => this._init(data)));
+        this._events.push(EventUtils.register('NoteEditor.settings.change', data => this._changeSettings(data)));
+        this._events.push(EventUtils.register('NoteEditor.font.change', font => this._changeFont(font)));
+        this._events.push(EventUtils.register('NoteEditor.refresh', () => this._handleRefresh()));
     }
 
     componentWillUnmount() {
@@ -155,9 +155,9 @@ class TextEditor extends React.Component {
     }
 }
 
-TextEditor.propTypes = {
-    store : React.PropTypes.instanceOf(TextEditorStore).isRequired,
+NoteEditor.propTypes = {
+    store : React.PropTypes.instanceOf(NoteEditorStore).isRequired,
     style : React.PropTypes.object
 };
 
-export default muiThemeable()(TextEditor);
+export default muiThemeable()(NoteEditor);

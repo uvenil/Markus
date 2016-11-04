@@ -40,7 +40,7 @@ export default class EditorSettingsDialog extends React.Component {
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.highlightCurrentLine.booleanValue = checked;
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'highlightActiveLine', value : checked });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'highlightActiveLine', value: checked });
                             }} />
                     </div>
                     {/* Show line numbers */}
@@ -51,7 +51,7 @@ export default class EditorSettingsDialog extends React.Component {
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.showLineNumbers.booleanValue = checked;
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'showLineNumbers', value : checked });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'showLineNumbers', value: checked });
                             }} />
                     </div>
                     {/* Tab size */}
@@ -66,7 +66,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 this.props.store.settings.tabSize4.booleanValue = value === 4;
                                 this.props.store.settings.tabSize8.booleanValue = value === 8;
 
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'tabSize', value : value });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'tabSize', value: value });
                             }}>
                             <RadioButton
                                 label="2 spaces"
@@ -90,7 +90,7 @@ export default class EditorSettingsDialog extends React.Component {
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.useSoftTabs.booleanValue = checked;
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'useSoftTabs', value : checked });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'useSoftTabs', value: checked });
                             }} />
                     </div>
                     {/* Word wrap */}
@@ -101,7 +101,7 @@ export default class EditorSettingsDialog extends React.Component {
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.wordWrap.booleanValue = checked;
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'wordWrap', value : checked });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'wordWrap', value: checked });
                             }} />
                     </div>
                     {/* Show print margin */}
@@ -112,7 +112,7 @@ export default class EditorSettingsDialog extends React.Component {
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.showPrintMargin.booleanValue = checked;
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'showPrintMargin', value : checked });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'showPrintMargin', value: checked });
                             }} />
                     </div>
                     {/* Print margin column */}
@@ -128,7 +128,7 @@ export default class EditorSettingsDialog extends React.Component {
                                 this.props.store.settings.printMarginColumn100.booleanValue = value === 100;
                                 this.props.store.settings.printMarginColumn120.booleanValue = value === 120;
 
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'printMarginColumn', value : value });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'printMarginColumn', value: value });
                             }}>
                             <RadioButton
                                 label="72"
@@ -156,7 +156,7 @@ export default class EditorSettingsDialog extends React.Component {
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.showInvisibles.booleanValue = checked;
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'showInvisibles', value : checked });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'showInvisibles', value: checked });
                             }} />
                     </div>
                     {/* Show fold widgets */}
@@ -167,7 +167,7 @@ export default class EditorSettingsDialog extends React.Component {
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.showFoldWidgets.booleanValue = checked;
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'showFoldWidgets', value : checked });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'showFoldWidgets', value: checked });
                             }} />
                     </div>
                     {/* Show gutter */}
@@ -178,7 +178,7 @@ export default class EditorSettingsDialog extends React.Component {
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.showGutter.booleanValue = checked;
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'showGutter', value : checked });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'showGutter', value: checked });
                             }} />
                     </div>
                     {/* Show indent guides */}
@@ -189,7 +189,7 @@ export default class EditorSettingsDialog extends React.Component {
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.showIndentGuides.booleanValue = checked;
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'displayIndentGuides', value : checked });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'displayIndentGuides', value: checked });
                             }} />
                     </div>
                     {/* Scroll past last line */}
@@ -200,7 +200,7 @@ export default class EditorSettingsDialog extends React.Component {
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.scrollPastLastLine.booleanValue = checked;
-                                EventUtils.broadcast('TextEditor.settings.change', { name : 'scrollPastEnd', value : checked });
+                                EventUtils.broadcast('NoteEditor.settings.change', { name: 'scrollPastEnd', value: checked });
                             }} />
                     </div>
                 </div>

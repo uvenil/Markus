@@ -7,7 +7,7 @@ import Constants from '../../utils/Constants';
 import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
 import _ from 'lodash';
 
-const SearchBox = props => {
+const SearchField = props => {
     const textBoxId     = Unique.nextString();
     const clearButtonId = Unique.nextString();
 
@@ -57,7 +57,7 @@ const SearchBox = props => {
     );
 };
 
-SearchBox.propTypes = {
+SearchField.propTypes = {
     hintText  : React.PropTypes.string,
     className : React.PropTypes.string,
     style     : React.PropTypes.object,
@@ -65,9 +65,9 @@ SearchBox.propTypes = {
     onChange  : React.PropTypes.func
 };
 
-SearchBox.defaultProps = {
+SearchField.defaultProps = {
     hintText : 'Search',
     disabled : false
 };
 
-export default muiThemeable()(SearchBox);
+export default muiThemeable()(SearchField);
