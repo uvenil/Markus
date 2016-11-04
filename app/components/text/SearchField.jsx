@@ -36,12 +36,12 @@ const SearchField = props => {
             style={_.assign(style, props.style)}>
             <i
                 className="fa fa-fw fa-search"
-                style={{ position : 'absolute', left : Constants.PADDING_X0 + Constants.PADDING_X1, top : Constants.PADDING_X0 + Constants.PADDING_X1, fontSize : 15, color : props.muiTheme.palette.disabledColor, cursor : 'default' }} />
+                style={{ position : 'absolute', left : Constants.PADDING_X0 + Constants.PADDING_X1, top : Constants.PADDING_X0 + Constants.PADDING_X1, fontSize : 14, color : props.muiTheme.palette.disabledColor, cursor : 'default' }} />
             <input
                 id={textBoxId}
                 type="text"
                 placeholder={props.hintText}
-                style={{ width : 'calc(100% - ' + (Constants.PADDING_X1 * 2 + Constants.PADDING_X2 * 2) + 'px)', paddingLeft : Constants.PADDING_X1 + Constants.PADDING_X2, paddingRight : Constants.PADDING_X1 + Constants.PADDING_X2, paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0, WebkitUserSelect : 'none', color : props.muiTheme.palette.textColor, outline : 'none', borderWidth : 1, borderStyle : 'solid', borderRadius : Constants.PADDING_X2 , borderColor : props.muiTheme.palette.borderColor }}
+                style={{ width : 'calc(100% - ' + (Constants.PADDING_X1 * 2 + Constants.PADDING_X2 * 2) + 'px)', paddingLeft : Constants.PADDING_X1 + Constants.PADDING_X2, paddingRight : Constants.PADDING_X1 + Constants.PADDING_X2, paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0, WebkitUserSelect : 'none', color : props.muiTheme.palette.textColor, border : 'none', outline : 'none' }}
                 onChange={event => handleChange(event.target.value)}
                 onMouseDown={event => {
                     if (event.nativeEvent.button === 2) {
@@ -51,7 +51,7 @@ const SearchField = props => {
             <i
                 id={clearButtonId}
                 className="fa fa-fw fa-times-circle"
-                style={{ display : 'none', position : 'absolute', right : Constants.PADDING_X0 + Constants.PADDING_X1, top : Constants.PADDING_X0 + Constants.PADDING_X1, fontSize : 15, color : props.muiTheme.palette.disabledColor, cursor : 'pointer' }}
+                style={{ display : 'none', position : 'absolute', right : Constants.PADDING_X0 + Constants.PADDING_X1, top : Constants.PADDING_X0 + Constants.PADDING_X1, fontSize : 14, color : props.muiTheme.palette.disabledColor, cursor : 'pointer' }}
                 onClick={handleClear} />
         </div>
     );

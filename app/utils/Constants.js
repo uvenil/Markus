@@ -8,7 +8,7 @@ const WINDOW_MIN_HEIGHT = 656;
 const TITLE_BAR_CONTROL_HEIGHT = 24;
 const SOURCE_LIST_MIN_WIDTH    = 200;
 const NOTE_LIST_MIN_WIDTH      = 280;
-const TOP_BAR_HEIGHT           = 39;
+const TOP_BAR_HEIGHT           = 38;
 const BOTTOM_BAR_HEIGHT        = 28;
 const DRAWER_WIDTH             = 200;
 
