@@ -5,11 +5,12 @@
 const WINDOW_MIN_WIDTH  = 1050;
 const WINDOW_MIN_HEIGHT = 656;
 
-const SOURCE_LIST_MIN_WIDTH = 200;
-const NOTE_LIST_MIN_WIDTH   = 280;
-const TOP_BAR_HEIGHT        = 32;
-const BOTTOM_BAR_HEIGHT     = 28;
-const DRAWER_WIDTH          = 200;
+const TITLE_BAR_CONTROL_HEIGHT = 24;
+const SOURCE_LIST_MIN_WIDTH    = 200;
+const NOTE_LIST_MIN_WIDTH      = 280;
+const TOP_BAR_HEIGHT           = 32;
+const BOTTOM_BAR_HEIGHT        = 28;
+const DRAWER_WIDTH             = 200;
 
 //endregion
 
@@ -40,8 +41,8 @@ const DEFAULT_NOTE_EDITOR_FONT_SIZE = 13;
 const NOTE_EDITOR_LINE_HEIGHT       = '16px';
 const DIALOG_TEXT_FONT_SIZE         = 15;
 const DIALOG_BUTTON_FONT_SIZE       = 15;
-const HEADING_FONT_SIZE             = 16;
-const SUB_HEADING_FONT_SIZE         = 14;
+const HEADING_FONT_SIZE             = 15;
+const SUB_HEADING_FONT_SIZE         = 13;
 
 //endregion
 
@@ -56,6 +57,7 @@ const ZOOM_FACTOR_STEP = 0.1;
 module.exports = {
     WINDOW_MIN_WIDTH,
     WINDOW_MIN_HEIGHT,
+    TITLE_BAR_CONTROL_HEIGHT,
     SOURCE_LIST_MIN_WIDTH,
     NOTE_LIST_MIN_WIDTH,
     TOP_BAR_HEIGHT,

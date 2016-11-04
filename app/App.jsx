@@ -233,58 +233,48 @@ export default class App extends React.Component {
                             pane1Style={{ display : this.props.store.noteListShown ? 'block' : 'none' }}
                             style={{ backgroundColor : muiTheme.palette.canvasColor }}
                             onChange={size => this._handleNoteListWidthChange(size)}>
-                            <SplitPane
-                                split="horizontal"
-                                defaultSize={Constants.TOP_BAR_HEIGHT}
-                                allowResize={false}
-                                style={{ backgroundColor : muiTheme.palette.canvasColor }}>
+                            <div style={{ height : '100vh', display : 'flex', flexFlow : 'column', backgroundColor : muiTheme.palette.canvasColor }}>
                                 {/* Search notes */}
                                 <SearchField
                                     hintText="Search notes"
-                                    style={{ display : 'flex', flexFlow : 'row', padding : Constants.PADDING_X0, paddingRight : Constants.PADDING_X1, borderBottom : '1px solid ' + muiTheme.palette.borderColor }}
+                                    style={{ width : 'calc(100% - ' + Constants.PADDING_X2 + 'px)', display : 'flex', flexFlow : 'row', padding : Constants.PADDING_X1, borderBottom : '1px solid ' + muiTheme.palette.borderColor }}
                                     onChange={value => this.props.presenter.filterNoteList(value)} />
-                                <SplitPane
-                                    split="horizontal"
-                                    defaultSize={Constants.BOTTOM_BAR_HEIGHT}
-                                    allowResize={false}
-                                    primary="second"
-                                    style={{ backgroundColor : muiTheme.palette.canvasColor }}>
-                                    {/* Note list */}
-                                    <NoteList
-                                        store={this.props.store.noteList}
-                                        onItemClick={index => this.props.presenter.handleNoteItemClick(index)}
-                                        onItemRightClick={index => this.props.presenter.handleNoteItemRightClick(index)} />
-                                    {/* Note list tools */}
-                                    <div style={{ width : '100%', display : 'flex', flexFlow : 'row' }}>
-                                        {/* Add note */}
-                                        <Button
-                                            label="New note"
-                                            labelWeight="normal"
-                                            labelSize={Constants.DEFAULT_FONT_SIZE}
-                                            icon="file-o"
-                                            height={Constants.BUTTON_HEIGHT_X0}
-                                            onTouchTap={() => this.props.presenter.handleAddNoteClick()} />
-                                        {/* Sort note list */}
-                                        <Button
-                                            label={sorting === 0 || sorting === 1 ? 'Name' : sorting === 2 || sorting === 3 ? 'Updated' : 'Created'}
-                                            labelPosition="before"
-                                            labelWeight="normal"
-                                            labelSize={Constants.DEFAULT_FONT_SIZE}
-                                            icon={'caret-' + (sorting === 1 || sorting === 3 || sorting === 5 ? 'down' : 'up')}
-                                            height={Constants.BUTTON_HEIGHT_X0}
-                                            align="right"
-                                            style={{ flex : '1 1 0' }}
-                                            onTouchTap={() => this.props.presenter.handleNotesSortingClick()} />
-                                    </div>
-                                </SplitPane>
-                            </SplitPane>
+                                {/* Note list */}
+                                <NoteList
+                                    store={this.props.store.noteList}
+                                    style={{ flex : '1 1 0' }}
+                                    onItemClick={index => this.props.presenter.handleNoteItemClick(index)}
+                                    onItemRightClick={index => this.props.presenter.handleNoteItemRightClick(index)} />
+                                {/* Note list tools */}
+                                <div style={{ width : '100%', display : 'flex', flexFlow : 'row', backgroundColor : muiTheme.palette.primary2Color }}>
+                                    {/* Add note */}
+                                    <Button
+                                        label="New note"
+                                        labelWeight="normal"
+                                        labelSize={Constants.DEFAULT_FONT_SIZE}
+                                        icon="file-o"
+                                        height={Constants.BUTTON_HEIGHT_X0}
+                                        onTouchTap={() => this.props.presenter.handleAddNoteClick()} />
+                                    <span style={{ flex : '1 1 0' }} />
+                                    {/* Sort note list */}
+                                    <Button
+                                        label={sorting === 0 || sorting === 1 ? 'Name' : sorting === 2 || sorting === 3 ? 'Updated' : 'Created'}
+                                        labelPosition="before"
+                                        labelWeight="normal"
+                                        labelSize={Constants.DEFAULT_FONT_SIZE}
+                                        icon={'caret-' + (sorting === 1 || sorting === 3 || sorting === 5 ? 'down' : 'up')}
+                                        height={Constants.BUTTON_HEIGHT_X0}
+                                        align="right"
+                                        onTouchTap={() => this.props.presenter.handleNotesSortingClick()} />
+                                </div>
+                            </div>
                             <div style={{ height : '100vh', display : 'flex', flexFlow : 'column', backgroundColor : muiTheme.palette.canvasColor }}>
                                 {/* Note editor */}
                                 <NoteEditor
                                     store={this.props.store.noteEditor}
                                     style={{ flex : '1 1 0' }} />
                                 {/* Note editor tools */}
-                                <div style={{ width : '100%', height : Constants.BOTTOM_BAR_HEIGHT, display : 'flex', flexFlow : 'row' }}>
+                                <div style={{ width : '100%', height : Constants.BOTTOM_BAR_HEIGHT, display : 'flex', flexFlow : 'row', backgroundColor : muiTheme.palette.primary2Color }}>
                                     {/* Star note */}
                                     <Button
                                         icon={'star' + ((!_.isNil(this.props.store.noteEditor.record) && this.props.store.noteEditor.record.starred) ? '' : '-o')}

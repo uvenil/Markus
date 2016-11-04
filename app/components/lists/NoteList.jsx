@@ -20,6 +20,7 @@ class NoteList extends React.Component {
             <List
                 header={this.props.store.headerText}
                 selectedIndex={this.props.store.selectedIndex}
+                className={this.props.className}
                 style={{ height : 'calc(100vh - ' + (Constants.TOP_BAR_HEIGHT + Constants.BOTTOM_BAR_HEIGHT) + 'px)', overflowY : 'auto' }}
                 onItemClick={this.props.onItemClick}
                 onItemRightClick={this.props.onItemRightClick}>
@@ -28,7 +29,7 @@ class NoteList extends React.Component {
                         <div
                             key={Unique.nextString()}
                             title={item.tooltip}
-                            style={{ width : 'calc(100% - ' + Constants.PADDING_X2 * 2 + 'px)', padding : Constants.PADDING_X2, borderBottom : '1px solid ' + this.props.muiTheme.palette.borderColor, cursor : 'default' }}>
+                            style={{ padding : Constants.PADDING_X2, borderBottom : '1px solid ' + this.props.muiTheme.palette.borderColor, cursor : 'default' }}>
                             <Text style={{ lineHeight : '1.7em', whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'bolder', fontSize : '115%' }}>{item.primaryText}</Text>
                             <Text style={{ height : '3.0em', lineHeight : '1.5em', display : '-webkit-box', WebkitLineClamp : 2, WebkitBoxOrient : 'vertical', overflow : 'hidden', textOverflow : 'ellipsis' }}>{item.secondaryText}</Text>
                             <Text style={{ lineHeight : '1.5em', whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'lighter', fontSize : '95%' }}>{item.tertiaryText}</Text>
@@ -42,6 +43,7 @@ class NoteList extends React.Component {
 
 NoteList.propTypes = {
     store            : React.PropTypes.instanceOf(ListStore).isRequired,
+    className        : React.PropTypes.string,
     onItemClick      : React.PropTypes.func,
     onItemRightClick : React.PropTypes.func
 };
