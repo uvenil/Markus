@@ -32,11 +32,11 @@ class SourceList extends React.Component {
                     return (
                         <div
                             key={Unique.nextString()}
-                            style={{ display : 'flex', flexFlow : 'row', paddingLeft : Constants.PADDING_X3, paddingRight : Constants.PADDING_X2, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1 }}>
+                            style={{ display : 'flex', flexFlow : 'row', paddingLeft : Constants.PADDING_X3, paddingRight : Constants.PADDING_X2, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1, WebkitUserSelect : 'none', cursor : 'pointer' }}>
                             <div style={{ flex : '1 1 0', overflow : 'hidden', textOverflow : 'ellipsis', whiteSpace : 'nowrap' }}>
-                                {icon} <Label>{item.primaryText}</Label>
+                                {icon}<Label style={{ cursor : 'pointer' }}>&nbsp;{item.primaryText}</Label>
                             </div>
-                            <Label style={{ fontWeight : 300 }}>{item.secondaryText}</Label>
+                            <Label style={{ fontWeight : 300, cursor : 'pointer' }}>{item.secondaryText}</Label>
                         </div>
                     );
                 })}

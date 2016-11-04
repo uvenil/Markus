@@ -21,8 +21,8 @@ class ListDialog extends React.Component {
             return (
                 <div
                     key={item.itemId}
-                    style={{ width : '100%', paddingLeft : Constants.PADDING_X2, paddingRight : Constants.PADDING_X2, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1, borderBottom : '1px solid ' + this.props.muiTheme.palette.borderColor }}>
-                    <Text>{item.primaryText}</Text>
+                    style={{ width : '100%', paddingLeft : Constants.PADDING_X2, paddingRight : Constants.PADDING_X2, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1, borderBottom : '1px solid ' + this.props.muiTheme.palette.borderColor, WebkitUserSelect : 'none', cursor : 'pointer' }}>
+                    <Text style={{ cursor : 'pointer' }}>{item.primaryText}</Text>
                 </div>
             );
         };
