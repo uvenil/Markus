@@ -41,7 +41,7 @@ const SearchField = props => {
                 id={textBoxId}
                 type="text"
                 placeholder={props.hintText}
-                style={{ width : 'calc(100% - ' + (Constants.PADDING_X1 * 2 + Constants.PADDING_X2 * 2) + 'px)', paddingLeft : Constants.PADDING_X1 + Constants.PADDING_X2, paddingRight : Constants.PADDING_X1 + Constants.PADDING_X2, paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0, WebkitUserSelect : 'none', color : props.muiTheme.palette.textColor, backgroundColor : props.muiTheme.palette.primary2Color, outline : 'none', borderWidth : 1, borderStyle : 'solid', borderRadius : Constants.PADDING_X2 , borderColor : props.muiTheme.palette.borderColor }}
+                style={{ width : 'calc(100% - ' + (Constants.PADDING_X1 * 2 + Constants.PADDING_X2 * 2) + 'px)', paddingLeft : Constants.PADDING_X1 + Constants.PADDING_X2, paddingRight : Constants.PADDING_X1 + Constants.PADDING_X2, paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0, WebkitUserSelect : 'none', color : props.muiTheme.palette.textColor, outline : 'none', borderWidth : 1, borderStyle : 'solid', borderRadius : Constants.PADDING_X2 , borderColor : props.muiTheme.palette.borderColor }}
                 onChange={event => handleChange(event.target.value)}
                 onMouseDown={event => {
                     if (event.nativeEvent.button === 2) {

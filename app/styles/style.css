@@ -38,4 +38,11 @@ div.ace_scroller > div.ace_content {
 .draggable-region:active {
     cursor : -webkit-grabbing;
 }
+
+.SearchField > input {
+    background-color : rgba(127, 127, 127, 0.15);
+}
+
+.SearchField > input:focus {
+    background-color : transparent;
 }
