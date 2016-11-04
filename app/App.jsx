@@ -166,7 +166,8 @@ export default class App extends React.Component {
                         open={this.props.store.drawerOpened}
                         onRequestChange={open => this.props.store.drawerOpened = open}>
                         <List>
-                            <Subheader style={{ lineHeight : '32px', fontSize : Constants.SUB_HEADING_FONT_SIZE }}>Settings</Subheader>
+                            <div style={{ height : Constants.TITLE_BAR_CONTROL_HEIGHT }} />
+                            <Subheader style={{ lineHeight : '32px', fontSize : Constants.SUB_HEADING_FONT_SIZE, fontWeight : 'bolder' }}>Settings</Subheader>
                             <Divider />
                             {renderListItem('Editor', undefined, 'pencil-square-o', this.props.store.editorSettingsDialog)}
                             <Divider />
@@ -197,7 +198,7 @@ export default class App extends React.Component {
                                     width="100%"
                                     height={Constants.BUTTON_HEIGHT_X2}
                                     align="left"
-                                    style={{ paddingLeft : Constants.PADDING_X0, paddingRight : Constants.PADDING_X0 }}
+                                    style={{ paddingLeft : Constants.PADDING_X0, paddingRight : Constants.PADDING_X0, marginTop : is.macOS() ? Constants.TITLE_BAR_CONTROL_HEIGHT : 0 }}
                                     onTouchTap={() => this.props.store.drawerOpened = true} />
                                 {/* Filter list */}
                                 <div style={{ height : 'calc(100vh - ' + (Constants.BUTTON_HEIGHT_X1 + Constants.BUTTON_HEIGHT_X2) + 'px)', display : 'flex', flexFlow : 'column', flex : '1 1 0', overflow : 'auto' }}>

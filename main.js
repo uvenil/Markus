@@ -22,6 +22,7 @@ const createWindow = () => {
         height          : winStateKeeper.height,
         minWidth        : Constants.WINDOW_MIN_WIDTH,
         minHeight       : Constants.WINDOW_MIN_HEIGHT,
+        titleBarStyle   : 'hidden',
         backgroundColor : '#f0f2f4',
         show            : false,
         webPreferences  : {
