@@ -1,8 +1,8 @@
 # Artisan
 A note-taking app for programmers, hand crafted with ❤
 
-<img src="https://github.com/ayltai/artisan/blob/master/screenshots/screenshot_light.png?raw=true" width="824" height="581" />
-<img src="https://github.com/ayltai/artisan/blob/master/screenshots/screenshot_dark.png?raw=true" width="824" height="581" />
+<img src="https://github.com/ayltai/artisan/blob/master/screenshots/screenshot_light.png?raw=true" width="1008" height="672" />
+<img src="https://github.com/ayltai/artisan/blob/master/screenshots/screenshot_dark.png?raw=true" width="1008" height="656" />
 
 ## Features
 
