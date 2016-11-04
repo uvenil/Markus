@@ -182,7 +182,7 @@ export default class App extends React.Component {
                     </Drawer>
                     <SplitPane
                         split="vertical"
-                        minSize={this.props.store.filterListShown ? Constants.FILTER_LIST_MIN_WIDTH : 0}
+                        minSize={this.props.store.filterListShown ? Constants.SOURCE_LIST_MIN_WIDTH : 0}
                         defaultSize={this.props.store.filterListShown ? this.props.store.filterListWidth : 0}
                         allowResize={this.props.store.filterListShown}
                         pane1Style={{ display : this.props.store.filterListShown ? 'block' : 'none' }}
@@ -195,11 +195,12 @@ export default class App extends React.Component {
                                     label="Menu"
                                     icon="bars"
                                     width="100%"
-                                    height={Constants.TOP_BAR_HEIGHT}
+                                    height={Constants.BUTTON_HEIGHT_X2}
                                     align="left"
+                                    style={{ paddingLeft : Constants.PADDING_X0, paddingRight : Constants.PADDING_X0 }}
                                     onTouchTap={() => this.props.store.drawerOpened = true} />
                                 {/* Filter list */}
-                                <div style={{ height : 'calc(100vh - ' + Constants.BOTTOM_BAR_HEIGHT + 'px)', display : 'flex', flexFlow : 'column', flex : '1 1 0', overflow : 'auto' }}>
+                                <div style={{ height : 'calc(100vh - ' + (Constants.BUTTON_HEIGHT_X1 + Constants.BUTTON_HEIGHT_X2) + 'px)', display : 'flex', flexFlow : 'column', flex : '1 1 0', overflow : 'auto' }}>
                                     <SourceList
                                         store={this.props.store.filterList}
                                         onItemClick={index => this.props.presenter.handleFilterItemClick(index)}
@@ -215,10 +216,12 @@ export default class App extends React.Component {
                                 <Button
                                     label="Add category…"
                                     labelWeight="normal"
+                                    labelSize={Constants.DEFAULT_FONT_SIZE}
                                     icon="plus"
                                     width="100%"
-                                    height={Constants.BOTTOM_BAR_HEIGHT}
+                                    height={Constants.BUTTON_HEIGHT_X1}
                                     align="left"
+                                    style={{ paddingLeft : Constants.PADDING_X0, paddingRight : Constants.PADDING_X0 }}
                                     onTouchTap={() => this.props.presenter.handleAddCategoryClick()} />
                             </div>
                         </MuiThemeProvider>
@@ -238,7 +241,7 @@ export default class App extends React.Component {
                                 {/* Search notes */}
                                 <SearchField
                                     hintText="Search notes"
-                                    style={{ display : 'flex', flexFlow : 'row', padding : Constants.PADDING_X0, paddingRight : Constants.PADDING_X1 }}
+                                    style={{ display : 'flex', flexFlow : 'row', padding : Constants.PADDING_X0, paddingRight : Constants.PADDING_X1, borderBottom : '1px solid ' + muiTheme.palette.borderColor }}
                                     onChange={value => this.props.presenter.filterNoteList(value)} />
                                 <SplitPane
                                     split="horizontal"
@@ -257,16 +260,18 @@ export default class App extends React.Component {
                                         <Button
                                             label="New note"
                                             labelWeight="normal"
+                                            labelSize={Constants.DEFAULT_FONT_SIZE}
                                             icon="file-o"
-                                            height={Constants.BOTTOM_BAR_HEIGHT}
+                                            height={Constants.BUTTON_HEIGHT_X0}
                                             onTouchTap={() => this.props.presenter.handleAddNoteClick()} />
                                         {/* Sort note list */}
                                         <Button
                                             label={sorting === 0 || sorting === 1 ? 'Name' : sorting === 2 || sorting === 3 ? 'Updated' : 'Created'}
                                             labelPosition="before"
                                             labelWeight="normal"
+                                            labelSize={Constants.DEFAULT_FONT_SIZE}
                                             icon={'caret-' + (sorting === 1 || sorting === 3 || sorting === 5 ? 'down' : 'up')}
-                                            height={Constants.BOTTOM_BAR_HEIGHT}
+                                            height={Constants.BUTTON_HEIGHT_X0}
                                             align="right"
                                             style={{ flex : '1 1 0' }}
                                             onTouchTap={() => this.props.presenter.handleNotesSortingClick()} />
@@ -299,6 +304,7 @@ export default class App extends React.Component {
                                     <Button
                                         label={this.props.store.noteEditor.record ? this.props.store.noteEditor.record.category ? this.props.store.noteEditor.record.category : 'Uncategorized' : ''}
                                         labelWeight="normal"
+                                        labelSize={Constants.DEFAULT_FONT_SIZE}
                                         height={Constants.BOTTOM_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.noteEditor.record)}
                                         onTouchTap={() => this.props.presenter.handleSelectCategoryClick()} />

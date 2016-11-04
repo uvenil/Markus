@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { extendObservable } from 'mobx';
-import Record from '../../data/Record.jsx';
+import Record from '../../data/Record.js';
 import moment from 'moment';
 import Unique from '../../utils/Unique';
 import Config from '../../../config.json';

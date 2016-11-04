@@ -27,7 +27,7 @@ const createWindow = () => {
         webPreferences  : {
             defaultEncoding          : 'UTF-8',
             defaultFontSize          : Constants.DEFAULT_FONT_SIZE,
-            defaultMonospaceFontSize : Constants.DEFAULT_FONT_SIZE,
+            defaultMonospaceFontSize : Constants.DEFAULT_NOTE_EDITOR_FONT_SIZE,
             webaudio                 : false,
             webgl                    : false
         }

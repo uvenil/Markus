@@ -1,13 +1,13 @@
 'use strict';
 
 import React from 'react';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import List from './List.jsx';
 import ListStore from './ListStore';
 import Text from '../text/Text.jsx';
 import { observer } from 'mobx-react';
 import Unique from '../../utils/Unique';
 import Constants from '../../utils/Constants';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 
 @observer
 class NoteList extends React.Component {
@@ -20,7 +20,7 @@ class NoteList extends React.Component {
             <List
                 header={this.props.store.headerText}
                 selectedIndex={this.props.store.selectedIndex}
-                style={{ height : 'calc(100vh - ' + (Constants.TOP_BAR_HEIGHT + Constants.BOTTOM_BAR_HEIGHT + 2) + 'px)', overflowY : 'auto' }}
+                style={{ height : 'calc(100vh - ' + (Constants.TOP_BAR_HEIGHT + Constants.BOTTOM_BAR_HEIGHT) + 'px)', overflowY : 'auto' }}
                 onItemClick={this.props.onItemClick}
                 onItemRightClick={this.props.onItemRightClick}>
                 {this.props.store.items.map(item => {
@@ -28,10 +28,10 @@ class NoteList extends React.Component {
                         <div
                             key={Unique.nextString()}
                             title={item.tooltip}
-                            style={{ width : 'calc(100% - ' + Constants.PADDING_X2 + 'px)', padding : Constants.PADDING_X1, borderBottom : '1px solid ' + this.props.muiTheme.palette.borderColor, cursor : 'default' }}>
-                            <Text style={{ lineHeight : '1.5em', whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'bolder', fontSize : '105%' }}>{item.primaryText}</Text>
-                            <Text style={{ lineHeight : '1.2em', height : '2.4em', display : '-webkit-box', WebkitLineClamp : 2, WebkitBoxOrient : 'vertical', overflow : 'hidden', textOverflow : 'ellipsis' }}>{item.secondaryText}</Text>
-                            <Text style={{ whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'lighter', fontSize : '95%' }}>{item.tertiaryText}</Text>
+                            style={{ width : 'calc(100% - ' + Constants.PADDING_X2 * 2 + 'px)', padding : Constants.PADDING_X2, borderBottom : '1px solid ' + this.props.muiTheme.palette.borderColor, cursor : 'default' }}>
+                            <Text style={{ lineHeight : '1.7em', whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'bolder', fontSize : '115%' }}>{item.primaryText}</Text>
+                            <Text style={{ height : '3.0em', lineHeight : '1.5em', display : '-webkit-box', WebkitLineClamp : 2, WebkitBoxOrient : 'vertical', overflow : 'hidden', textOverflow : 'ellipsis' }}>{item.secondaryText}</Text>
+                            <Text style={{ lineHeight : '1.5em', whiteSpace : 'nowrap', overflow : 'hidden', textOverflow : 'ellipsis', fontWeight : 'lighter', fontSize : '95%' }}>{item.tertiaryText}</Text>
                         </div>
                     );
                 })}

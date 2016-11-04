@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import Dialog from 'material-ui/Dialog';
 import Button from '../buttons/Button.jsx';
 import Text from '../text/Text.jsx';
 import List from '../lists/List.jsx';
 import ListDialogStore from './ListDialogStore';
 import Constants from '../../utils/Constants';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 
 @observer
 class ListDialog extends React.Component {
@@ -30,7 +30,9 @@ class ListDialog extends React.Component {
         const actions = [
             <Button
                 label="Close"
+                labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
                 color={this.props.positiveAction ? 'default' : 'primary'}
+                height={Constants.BUTTON_HEIGHT_X1}
                 onTouchTap={() => this.props.store.booleanValue = false} />
         ];
 

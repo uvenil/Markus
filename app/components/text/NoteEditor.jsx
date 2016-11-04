@@ -68,6 +68,9 @@ class NoteEditor extends React.Component {
 
                 return false;
             });
+
+            this.refs.editor.editor.container.style.lineHeight = Constants.NOTE_EDITOR_LINE_HEIGHT;
+            this.refs.editor.editor.renderer.updateFontSize();
         };
 
         this._changeSettings = data => {

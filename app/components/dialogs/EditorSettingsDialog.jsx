@@ -27,16 +27,19 @@ export default class EditorSettingsDialog extends React.Component {
                 actions={[
                     <Button
                         label="Close"
+                        labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
                         color="primary"
+                        height={Constants.BUTTON_HEIGHT_X1}
                         onTouchTap={() => this.props.store.booleanValue = false} />
                 ]}
                 onRequestClose={() => this.props.store.booleanValue = false}>
-                <div style={{ width : '100%', display : 'table', textAlign : 'center' }}>
+                <div style={{ width : '100%', fontSize : Constants.DIALOG_TEXT_FONT_SIZE, display : 'table', textAlign : 'center' }}>
                     {/* Highlight current line */}
                     <div style={{ width : '100%', display : 'table-row' }}>
                         <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Highlight current line</Label>
                         <Checkbox
                             checked={this.props.store.settings.highlightCurrentLine.booleanValue}
+                            labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.highlightCurrentLine.booleanValue = checked;
@@ -48,6 +51,7 @@ export default class EditorSettingsDialog extends React.Component {
                         <Label style={{ width : '50%', verticalAlign : 'middle', display : 'table-cell', textAlign : 'right' }}>Show line numbers</Label>
                         <Checkbox
                             checked={this.props.store.settings.showLineNumbers.booleanValue}
+                            labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onCheck={(event, checked) => {
                                 this.props.store.settings.showLineNumbers.booleanValue = checked;
@@ -70,15 +74,16 @@ export default class EditorSettingsDialog extends React.Component {
                             }}>
                             <RadioButton
                                 label="2 spaces"
-                                labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
                                 value={2} />
                             <RadioButton
                                 label="4 spaces"
-                                labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                                style={{ paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0 }}
                                 value={4} />
                             <RadioButton
                                 label="8 spaces"
-                                labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
                                 value={8} />
                         </RadioButtonGroup>
                     </div>
@@ -131,20 +136,22 @@ export default class EditorSettingsDialog extends React.Component {
                                 EventUtils.broadcast('NoteEditor.settings.change', { name: 'printMarginColumn', value: value });
                             }}>
                             <RadioButton
-                                label="72"
-                                labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
+                                label="72 characters"
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
                                 value={72} />
                             <RadioButton
-                                label="80"
-                                labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
+                                label="80 characters"
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                                style={{ paddingTop : Constants.PADDING_X0 }}
                                 value={80} />
                             <RadioButton
-                                label="100"
-                                labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
+                                label="100 characters"
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
+                                style={{ paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0 }}
                                 value={100} />
                             <RadioButton
-                                label="120"
-                                labelStyle={{ fontSize : Constants.TEXT_FONT_SIZE }}
+                                label="120 characters"
+                                labelStyle={{ fontSize : Constants.DIALOG_TEXT_FONT_SIZE }}
                                 value={120} />
                         </RadioButtonGroup>
                     </div>

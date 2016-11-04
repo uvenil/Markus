@@ -20,7 +20,7 @@ export default class AppStore {
             fontDialog           : undefined,
             filterListShown      : true,
             noteListShown        : true,
-            filterListWidth      : Constants.FILTER_LIST_MIN_WIDTH,
+            filterListWidth      : Constants.SOURCE_LIST_MIN_WIDTH,
             noteListWidth        : Constants.NOTE_LIST_MIN_WIDTH,
             filterList           : undefined,
             categoryList         : undefined,

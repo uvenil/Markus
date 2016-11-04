@@ -13,7 +13,7 @@ import ListItemStore from './components/lists/ListItemStore';
 import SettingsStore from './components/dialogs/SettingsStore';
 import Settings from './utils/Settings';
 import Database from './data/Database';
-import Record from './data/Record.jsx';
+import Record from './data/Record.js';
 import EventUtils from './utils/EventUtils';
 import Constants from './utils/Constants';
 import Config from '../config.json';
@@ -865,13 +865,13 @@ export default class AppPresenter {
             Promise.all([
                 this._settings.get('filterListShown',     true),
                 this._settings.get('noteListShown',       true),
-                this._settings.get('filterListWidth',     Constants.FILTER_LIST_MIN_WIDTH),
+                this._settings.get('filterListWidth',     Constants.SOURCE_LIST_MIN_WIDTH),
                 this._settings.get('noteListWidth',       Constants.NOTE_LIST_MIN_WIDTH),
                 this._settings.get('defaultSyntax',       Config.defaultSyntax),
                 this._settings.get('theme',               Config.defaultTheme),
                 this._settings.get('font',                undefined),
                 this._settings.get('fontFamily',          undefined),
-                this._settings.get('textSize',            undefined),
+                this._settings.get('textSize',            Constants.DEFAULT_NOTE_EDITOR_FONT_SIZE),
                 //region NoteEditor settings
                 this._settings.get('highlightActiveLine', Config.defaultHighlightActiveLine),
                 this._settings.get('tabSize',             Config.defaultTabSize),
@@ -892,7 +892,7 @@ export default class AppPresenter {
 
                 this._store.filterListShown   = values[i] !== undefined ? values[i] : true;                            i++;
                 this._store.noteListShown     = values[i] !== undefined ? values[i] : true;                            i++;
-                this._store.filterListWidth   = values[i] !== undefined ? values[i] : Constants.FILTER_LIST_MIN_WIDTH; i++;
+                this._store.filterListWidth   = values[i] !== undefined ? values[i] : Constants.SOURCE_LIST_MIN_WIDTH; i++;
                 this._store.noteListWidth     = values[i] !== undefined ? values[i] : Constants.NOTE_LIST_MIN_WIDTH;   i++;
                 this._store.noteEditor.syntax = values[i] !== undefined ? values[i] : Config.defaultSyntax;            i++;
                 this._store.noteEditor.theme  = values[i] !== undefined ? values[i] : Config.defaultTheme;             i++;
@@ -905,8 +905,8 @@ export default class AppPresenter {
 
                 i++;
 
-                this._store.noteEditor.fontFamily = values[i] !== undefined ? values[i] : undefined; i++;
-                this._store.noteEditor.textSize   = values[i] !== undefined ? values[i] : undefined; i++;
+                this._store.noteEditor.fontFamily = values[i] !== undefined ? values[i] : undefined;                               i++;
+                this._store.noteEditor.textSize   = values[i] !== undefined ? values[i] : Constants.DEFAULT_NOTE_EDITOR_FONT_SIZE; i++;
 
                 const data = {};
 

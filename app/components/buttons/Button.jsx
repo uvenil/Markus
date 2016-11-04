@@ -11,7 +11,7 @@ const Button = props => {
     const icon = props.icon ?
         <FontIcon
             className={'fa fa-fw fa-' + props.icon}
-            style={{ marginLeft : props.labelPosition === 'before' || !props.label ? 0 : Constants.PADDING_X1, marginRight : props.labelPosition === 'after' || !props.label ? 0 : Constants.PADDING_X1, fontSize : Constants.TEXT_FONT_SIZE }} /> : undefined;
+            style={{ marginLeft : props.labelPosition === 'before' || !props.label ? 0 : Constants.PADDING_X1, marginRight : props.labelPosition === 'after' || !props.label ? 0 : Constants.PADDING_X1, fontSize : Constants.DEFAULT_FONT_SIZE }} /> : undefined;
 
     const style = { minWidth : props.width, height : props.height, lineHeight : props.height + 'px', textAlign : props.align };
 
@@ -20,7 +20,7 @@ const Button = props => {
             <FlatButton
                 label={props.label}
                 labelPosition={props.labelPosition}
-                labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : Constants.TEXT_FONT_SIZE, fontWeight : props.labelWeight === 'light' ? 300 : props.labelWeight === 'bold' ? 500 : 400, textTransform : 'none' } : {}}
+                labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : props.labelSize, fontWeight : props.labelWeight === 'light' ? 300 : props.labelWeight === 'bold' ? 500 : 400, textTransform : 'none' } : {}}
                 icon={icon}
                 primary={props.color === 'primary'}
                 secondary={props.color === 'secondary'}
@@ -33,7 +33,7 @@ const Button = props => {
     return (
         <RaisedButton
             label={props.label}
-            labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : Constants.TEXT_FONT_SIZE, textTransform : 'none' } : {}}
+            labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : props.labelSize, textTransform : 'none' } : {}}
             icon={icon}
             primary={props.color === 'primary'}
             secondary={props.color === 'secondary'}
@@ -47,6 +47,7 @@ Button.propTypes = {
     label         : React.PropTypes.string,
     labelPosition : React.PropTypes.oneOf([ 'before', 'after' ]),
     labelWeight   : React.PropTypes.oneOf([ 'light', 'normal', 'bold' ]),
+    labelSize     : React.PropTypes.oneOfType([ React.PropTypes.number, React.PropTypes.string ]),
     icon          : React.PropTypes.string,
     borderless    : React.PropTypes.bool,
     color         : React.PropTypes.oneOf([ 'default', 'primary', 'secondary' ]),
@@ -61,8 +62,9 @@ Button.propTypes = {
 Button.defaultProps = {
     labelPosition : 'after',
     labelWeight   : 'bold',
+    labelSize     : Constants.DIALOG_BUTTON_FONT_SIZE,
     width         : Constants.BUTTON_MIN_WIDTH,
-    height        : Constants.BUTTON_MIN_HEIGHT,
+    height        : Constants.BUTTON_HEIGHT_X0,
     borderless    : true,
     color         : 'default',
     align         : 'center',

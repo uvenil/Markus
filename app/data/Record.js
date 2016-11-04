@@ -1,10 +1,7 @@
 'use strict';
 
-import React from 'react';
 import { extendObservable } from 'mobx';
 import ListItemStore from '../components/lists/ListItemStore';
-import Unique from '../utils/Unique';
-import moment from 'moment';
 
 export default class Record {
     constructor(title, description, fullText, syntax, lastUpdatedAt, createdAt) {
