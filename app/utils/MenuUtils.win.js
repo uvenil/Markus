@@ -1,8 +1,8 @@
 'use strict';
 
 import EventUtils from './EventUtils';
+import EnvironmentUtils from './EnvironmentUtils';
 import { createEditMenu, createViewMenu, createDeveloperMenu } from './MenuUtils.common';
-import is from 'electron-is';
 
 const { app, Menu } = require('electron').remote;
 
@@ -47,7 +47,7 @@ export default function createWindowMenu() {
 
     template.push(createViewMenu());
 
-    if (is.dev()) template.push(createDeveloperMenu());
+    if (EnvironmentUtils.isDev()) template.push(createDeveloperMenu());
 
     template.push({
         label   : 'Help',

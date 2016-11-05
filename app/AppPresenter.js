@@ -15,6 +15,7 @@ import Settings from './utils/Settings';
 import Database from './data/Database';
 import Record from './data/Record.js';
 import EventUtils from './utils/EventUtils';
+import EnvironmentUtils from './utils/EnvironmentUtils';
 import Constants from './utils/Constants';
 import Config from './definitions/config.json';
 import SyntaxNames from './definitions/syntax-names.json';
@@ -23,7 +24,6 @@ import ThemeNames from './definitions/theme-names.json';
 import ThemeCodes from './definitions/theme-codes.json';
 import Rx from 'rx-lite';
 import Path from 'path';
-import is from 'electron-is';
 import fs from 'fs';
 import _ from 'lodash';
 
@@ -35,7 +35,7 @@ const CLEAR_CACHE_INTERVAL = 5 * 60 * 1000;
 const EVENT_ERROR = 'global.error';
 const DARK_THEMES = [ 'ambiance', 'chaos', 'clouds_midnight', 'cobalt', 'idle_fingers', 'iplastic', 'kr_theme', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monokai', 'pastel_on_dark', 'solarized_dark', 'terminal', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink' ];
 
-const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
+const FONTS = EnvironmentUtils.isMacOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
 
 export default class AppPresenter {
     constructor() {
@@ -1014,7 +1014,7 @@ export default class AppPresenter {
 
     _updateMenu() {
         return new Promise(resolve => {
-            const viewMenu = Menu.getApplicationMenu().items[is.macOS() ? 3 : 2];
+            const viewMenu = Menu.getApplicationMenu().items[EnvironmentUtils.isMacOS() ? 3 : 2];
 
             viewMenu.submenu.items[0].booleanValue = this._store.filterListShown;
             viewMenu.submenu.items[1].booleanValue = this._store.noteListShown;

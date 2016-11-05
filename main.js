@@ -2,9 +2,9 @@
 
 import { BrowserWindow, app, shell } from 'electron';
 import windowStateKeeper from 'electron-window-state';
+import EnvironmentUtils from './app/utils/EnvironmentUtils';
 import Constants from './app/utils/Constants';
 import Path from 'path';
-import is from 'electron-is';
 
 let win;
 
@@ -50,7 +50,7 @@ const createWindow = () => {
 app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
-    if (!is.macOS()) app.quit();
+    if (!EnvironmentUtils.isMacOS()) app.quit();
 });
 
 app.on('activate', () => {

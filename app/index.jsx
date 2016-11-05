@@ -4,12 +4,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import AppPresenter from './AppPresenter';
-import is from 'electron-is';
+import EnvironmentUtils from './utils/EnvironmentUtils';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 injectTapEventPlugin();
 
-const createWindowMenu = is.macOS() ? require('./utils/MenuUtils.mac') : require('./utils/MenuUtils.win');
+const createWindowMenu = EnvironmentUtils.isMacOS() ? require('./utils/MenuUtils.mac') : require('./utils/MenuUtils.win');
 createWindowMenu();
 
 const presenter = new AppPresenter();
