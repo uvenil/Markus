@@ -285,13 +285,13 @@ export default class App extends React.Component {
                                 <div style={{ width : '100%', height : Constants.TOP_BAR_HEIGHT, display : 'flex', flexFlow : 'row', backgroundColor : muiTheme.palette.primary2Color, overflow : 'hidden' }}>
                                     {/* Change syntax */}
                                     <Button
-                                        label={SyntaxNames.items[_.indexOf(SyntaxCodes.items, this.props.store.noteEditor.syntax)]}
+                                        label={_.isNil(this.props.store.noteEditor.record) ? '' : SyntaxNames.items[_.indexOf(SyntaxCodes.items, this.props.store.noteEditor.record.syntax)]}
                                         labelSize={Constants.DEFAULT_FONT_SIZE}
                                         icon="code"
                                         height={Constants.TOP_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.noteEditor.record)}
                                         onTouchTap={() => {
-                                            this.props.store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this.props.store.noteEditor.syntax);
+                                            this.props.store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this.props.store.noteEditor.record.syntax);
                                             this.props.store.currentSyntaxDialog.booleanValue       = true;
                                         }} />
                                     <span style={{ flex : '1 1 0' }} />
