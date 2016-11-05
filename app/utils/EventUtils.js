@@ -1,9 +1,9 @@
 'use strict';
 
+import EnvironmentUtils from './EnvironmentUtils';
 import PubSub from 'pubsub-js';
-import is from 'electron-is';
 
-if (is.dev()) PubSub.immediateExceptions = true;
+if (EnvironmentUtils.isDev()) PubSub.immediateExceptions = true;
 
 export default class EventUtils {
     /**

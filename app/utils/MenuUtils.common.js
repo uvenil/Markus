@@ -1,8 +1,8 @@
 'use strict';
 
 import EventUtils from './EventUtils';
+import EnvironmentUtils from './EnvironmentUtils';
 import Constants from './Constants';
-import is from 'electron-is';
 
 const { remote } = require('electron');
 
@@ -112,7 +112,7 @@ const createDeveloperMenu = () => {
             },
             {
                 label       : 'Toggle Developer Tools',
-                accelerator : is.macOS() ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+                accelerator : EnvironmentUtils.isMacOS() ? 'Alt+Command+I' : 'Ctrl+Shift+I',
                 click       : (item, win) => {
                     if (win) win.webContents.toggleDevTools();
                 }

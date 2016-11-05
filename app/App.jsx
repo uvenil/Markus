@@ -27,18 +27,18 @@ import AppStore from './AppStore';
 import AppPresenter from './AppPresenter';
 import Settings from './utils/Settings';
 import EventUtils from './utils/EventUtils';
+import EnvironmentUtils from './utils/EnvironmentUtils';
 import Constants from './utils/Constants';
 import SyntaxNames from './definitions/syntax-names.json';
 import SyntaxCodes from './definitions/syntax-codes.json';
 import ThemeCodes from './definitions/theme-codes.json';
 import Path from 'path';
-import is from 'electron-is';
 import _ from 'lodash';
 
 const remote = require('electron').remote;
 const { app } = remote;
 
-const FONTS = is.macOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
+const FONTS = EnvironmentUtils.isMacOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
 
 const LIGHT_THEME = require('./definitions/theme.light.json');
 const DARK_THEME  = require('./definitions/theme.dark.json');
@@ -150,7 +150,7 @@ export default class App extends React.Component {
         };
 
         const renderDraggableRegion = () => {
-            if (is.macOS()) {
+            if (EnvironmentUtils.isMacOS()) {
                 return (
                     <div
                         className="draggable-region"
@@ -179,7 +179,7 @@ export default class App extends React.Component {
                         open={this.props.store.drawerOpened}
                         onRequestChange={open => this.props.store.drawerOpened = open}>
                         <List>
-                            <div style={{ height : Constants.TITLE_BAR_CONTROL_HEIGHT }} />
+                            <div style={{ height : EnvironmentUtils.isMacOS() ? Constants.TITLE_BAR_CONTROL_HEIGHT : 0 }} />
                             <Subheader style={{ lineHeight : '32px', fontSize : Constants.SUB_HEADING_FONT_SIZE, fontWeight : 'bolder' }}>Settings</Subheader>
                             <Divider />
                             {renderListItem('Default Syntax', 'code', this.props.store.defaultSyntaxDialog)}
