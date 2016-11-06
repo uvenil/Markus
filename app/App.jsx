@@ -297,7 +297,7 @@ export default class App extends React.Component {
                                     <span style={{ flex : '1 1 0' }} />
                                     {/* Export note */}
                                     <Button
-                                        icon="external-link"
+                                        icon="share-square-o"
                                         width={Constants.TOP_BAR_HEIGHT}
                                         height={Constants.TOP_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.noteEditor.record)}
@@ -323,7 +323,7 @@ export default class App extends React.Component {
                                         onTouchTap={() => remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - Constants.ZOOM_FACTOR_STEP))} />
                                     {/* Editor settings */}
                                     <Button
-                                        icon="cogs"
+                                        icon="cog"
                                         width={Constants.TOP_BAR_HEIGHT}
                                         height={Constants.TOP_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.noteEditor.record)}
