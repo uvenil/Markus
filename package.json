@@ -36,7 +36,7 @@
         "babel-eslint"        : "^7.1.0",
         "electron"            : "^1.4.5",
         "eslint"              : "^3.7.1",
-        "eslint-plugin-react" : "^6.5.0"
+        "eslint-plugin-react" : "^6.6.0"
     },
     "dependencies"    : {
         "babel-plugin-transform-decorators-legacy"       : "^1.3.4",
@@ -59,6 +59,7 @@
         "react"                                          : "^15.3.2",
         "react-ace"                                      : "^4.0.0",
         "react-dom"                                      : "^15.3.2",
+        "react-shortcuts"                                : "^1.1.0",
         "react-split-pane"                               : "^0.1.52",
         "react-tap-event-plugin"                         : "^1.0.0",
         "rx-lite"                                        : "^4.0.8"

@@ -1,6 +1,7 @@
 'use strict';
 
 import { extendObservable, computed } from 'mobx';
+import Rx from 'rx-lite';
 import _ from 'lodash';
 
 export default class ListStore {
@@ -9,6 +10,12 @@ export default class ListStore {
             headerText : '',
             items      : []
         });
+
+        this._selectionChanges = new Rx.Subject();
+    }
+
+    get selectionChanges() {
+        return this._selectionChanges;
     }
 
     @computed
@@ -48,6 +55,8 @@ export default class ListStore {
         for (let i = 0; i < this.items.length; i++) {
             this.items[i].selected = i === index;
         }
+
+        this._selectionChanges.onNext(index);
     }
 
     /**

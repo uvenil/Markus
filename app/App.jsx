@@ -29,19 +29,20 @@ import Settings from './utils/Settings';
 import EventUtils from './utils/EventUtils';
 import EnvironmentUtils from './utils/EnvironmentUtils';
 import Constants from './utils/Constants';
-import SyntaxNames from './definitions/syntax-names.json';
-import SyntaxCodes from './definitions/syntax-codes.json';
-import ThemeCodes from './definitions/theme-codes.json';
+import { ShortcutManager } from 'react-shortcuts';
+import SyntaxNames from './definitions/syntax/syntax-names.json';
+import SyntaxCodes from './definitions/syntax/syntax-codes.json';
+import ThemeCodes from './definitions/themes/theme-codes.json';
 import Path from 'path';
 import _ from 'lodash';
 
 const remote = require('electron').remote;
 const { app } = remote;
 
-const FONTS = EnvironmentUtils.isMacOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
+const FONTS = EnvironmentUtils.isMacOS() ? require('./definitions/fonts/fonts.mac.json') : require('./definitions/fonts/fonts.win.json');
 
-const LIGHT_THEME = require('./definitions/theme.light.json');
-const DARK_THEME  = require('./definitions/theme.dark.json');
+const LIGHT_THEME = require('./definitions/themes/theme.light.json');
+const DARK_THEME  = require('./definitions/themes/theme.dark.json');
 
 const MUI_LIGHT_THEME = getMuiTheme({
     palette : {
@@ -105,6 +106,10 @@ export default class App extends React.Component {
                 this.props.presenter.handleAddNoteClick();
             }
         };
+    }
+
+    getChildContext() {
+        return { shortcuts : this.props.shortcuts }
     }
 
     componentDidMount() {
@@ -476,7 +481,12 @@ export default class App extends React.Component {
 
 App.propTypes = {
     store     : React.PropTypes.instanceOf(AppStore),
-    presenter : React.PropTypes.instanceOf(AppPresenter)
+    presenter : React.PropTypes.instanceOf(AppPresenter),
+    shortcuts : React.PropTypes.instanceOf(ShortcutManager)
+};
+
+App.childContextTypes = {
+    shortcuts : React.PropTypes.object
 };
 
 module.exports = App;
