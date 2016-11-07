@@ -9,17 +9,51 @@ import Text from '../text/Text.jsx';
 import List from '../lists/List.jsx';
 import ListDialogStore from './ListDialogStore';
 import Constants from '../../utils/Constants';
+import { Shortcuts } from 'react-shortcuts';
 
 @observer
 class ListDialog extends React.Component {
     constructor(props) {
         super(props);
+
+        this._focus = () => document.getElementById(this.props.id).parentElement.focus();
+
+        this._handleItemClick = index => {
+            window.setTimeout(() => this._focus(), 100);
+
+            if (this.props.onItemClick) {
+                this.props.onItemClick(index);
+            }
+        };
+
+        this._handleShortcuts = action => {
+            switch (action) {
+                case 'up':
+                    if (this.props.store.list.selectedIndex > 0) {
+                        this.props.store.list.selectedIndex = this.props.store.list.selectedIndex - 1;
+
+                        this._focus();
+                    }
+
+                    break;
+
+                case 'down':
+                    if (this.props.store.list.selectedIndex < this.props.store.list.count - 1) {
+                        this.props.store.list.selectedIndex = this.props.store.list.selectedIndex + 1;
+
+                        this._focus();
+                    }
+
+                    break;
+            }
+        };
     }
 
     render() {
         const renderListItem = item => {
             return (
                 <div
+                    id={item.itemId}
                     key={item.itemId}
                     style={{ width : '100%', paddingLeft : Constants.PADDING_X2, paddingRight : Constants.PADDING_X2, paddingTop : Constants.PADDING_X1, paddingBottom : Constants.PADDING_X1, borderBottom : '1px solid ' + this.props.muiTheme.palette.borderColor, WebkitUserSelect : 'none', cursor : 'pointer' }}>
                     <Text style={{ cursor : 'pointer' }}>{item.primaryText}</Text>
@@ -47,18 +81,25 @@ class ListDialog extends React.Component {
                 bodyStyle={{ padding : 0, overflowX : 'hidden' }}
                 actions={actions}
                 onRequestClose={() => this.props.store.booleanValue = false}>
-                <List
-                    selectedIndex={this.props.store.list.selectedIndex}
-                    backgroundColor={this.props.muiTheme.palette.canvasColor}
-                    onItemClick={this.props.onItemClick}>
-                    {this.props.store.list.items.map(item => renderListItem(item))}
-                </List>
+                <Shortcuts
+                    name="listItem"
+                    className="no-outline"
+                    handler={this._handleShortcuts}>
+                    <List
+                        id={this.props.id}
+                        selectedIndex={this.props.store.list.selectedIndex}
+                        backgroundColor={this.props.muiTheme.palette.canvasColor}
+                        onItemClick={index => this._handleItemClick(index)}>
+                        {this.props.store.list.items.map(item => renderListItem(item))}
+                    </List>
+                </Shortcuts>
             </Dialog>
         );
     }
 }
 
 ListDialog.propTypes = {
+    id             : React.PropTypes.string,
     store          : React.PropTypes.instanceOf(ListDialogStore),
     title          : React.PropTypes.string,
     neutralAction  : React.PropTypes.element,

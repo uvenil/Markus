@@ -75,11 +75,7 @@ export default class AppPresenter {
                 this.refreshNoteList();
             });
 
-        this._store.noteList.selectionChanges.subscribe(index => {
-            this.refreshNoteEditor();
-
-            if (index > -1) window.setTimeout(() => document.getElementById(this._store.noteList.selectedItem.itemId).parentElement.focus(), 100);
-        });
+        this._store.noteList.selectionChanges.subscribe(() => this.refreshNoteEditor().then(() => document.getElementById('noteList').parentElement.focus()));
 
         //region Setting dialogs
 
@@ -697,14 +693,18 @@ export default class AppPresenter {
     refreshNoteList() {
         this._noteListPresenter.refresh();
 
-        this.refreshNoteEditor();
+        this.refreshNoteEditor().catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     refreshNoteEditor() {
-        this._noteEditorPresenter.load(this._store.noteList.selectedItemId)
-            .then(() => {
-                if (this._store.noteList.selectedItemId) this._store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.noteEditor.record.syntax);
-            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+        return new Promise((resolve, reject) => {
+            this._noteEditorPresenter.load(this._store.noteList.selectedItemId)
+                .then(() => {
+                    if (this._store.noteList.selectedItemId) this._store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.noteEditor.record.syntax);
+
+                    resolve();
+                }).catch(error => reject(error));
+        });
     }
 
     //endregion

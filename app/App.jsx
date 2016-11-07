@@ -414,6 +414,7 @@ export default class App extends React.Component {
                         onEnter={value => this.props.presenter.updateCategory(this.props.store.updateCategoryDialog.value, value)} />
                     {/* Select category dialog */}
                     <ListDialog
+                        id="selectCategoryListDialog"
                         store={this.props.store.selectCategoryDialog}
                         title="Category"
                         neutralAction={
@@ -437,6 +438,7 @@ export default class App extends React.Component {
                     <EditorSettingsDialog store={this.props.store.editorSettingsDialog} />
                     {/* Syntax dialog for current note */}
                     <ListDialog
+                        id="currentSyntaxListDialog"
                         store={this.props.store.currentSyntaxDialog}
                         title="Syntax for current note"
                         onItemClick={index => {
@@ -448,6 +450,7 @@ export default class App extends React.Component {
                         }} />
                     {/* Syntax dialog for default notes */}
                     <ListDialog
+                        id="defaultSyntaxListDialog"
                         store={this.props.store.defaultSyntaxDialog}
                         title="Syntax for default notes"
                         onItemClick={index => {
@@ -457,6 +460,7 @@ export default class App extends React.Component {
                         }} />
                     {/* Theme dialog */}
                     <ListDialog
+                        id="themeListDialog"
                         store={this.props.store.themeDialog}
                         title="Theme"
                         onItemClick={index => {
@@ -466,6 +470,7 @@ export default class App extends React.Component {
                         }} />
                     {/* Font dialog */}
                     <ListDialog
+                        id="fontListDialog"
                         store={this.props.store.fontDialog}
                         title="Font"
                         onItemClick={index => {

@@ -1,5 +1,5 @@
 {
-    "NoteListItem" : {
+    "listItem" : {
         "up"   : "up",
         "down" : "down"
     }
