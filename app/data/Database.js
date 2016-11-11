@@ -524,7 +524,7 @@ export default class Database {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(doc);
+                    resolve();
                 }
             });
         });
@@ -544,7 +544,7 @@ export default class Database {
                 if (error) {
                     reject(error);
                 } else {
-                    resolve(doc);
+                    resolve();
                 }
             });
         });
