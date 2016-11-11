@@ -22,6 +22,10 @@ body {
     -webkit-app-region : drag;
 }
 
+.no-outline {
+    outline : none;
+}
+
 .draggable-region:active {
     cursor : -webkit-grabbing;
 }

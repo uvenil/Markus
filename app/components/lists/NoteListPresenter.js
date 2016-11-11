@@ -126,10 +126,10 @@ export default class NoteListPresenter {
      * @return {Promise}
      */
     addNote(syntax) {
-        const selectedFilterItemId   = this._filterListPresenter.store.selectedItemId;
-        const selectedCategoryItemId = this._categoryListPresenter.store.selectedItemId;
+        const selectedFilterItemId = this._filterListPresenter.store.selectedItemId;
+        const selectedCategoryItem = this._categoryListPresenter.store.selectedItem.primaryText;
 
-        if (selectedFilterItemId || selectedCategoryItemId) {
+        if (selectedFilterItemId || selectedCategoryItem) {
             const record = Record.fromText(syntax, '');
             record.title = Config.defaultNoteTitle;
 
@@ -157,10 +157,10 @@ export default class NoteListPresenter {
 
                 // Force refresh
                 this._filterListPresenter.store.items = this._filterListPresenter.store.items;
-            } else if (selectedCategoryItemId) {
-                record.category = selectedCategoryItemId;
+            } else if (selectedCategoryItem) {
+                record.category = selectedCategoryItem;
 
-                this._categoryListPresenter.store.getItem(selectedCategoryItemId).secondaryText = 1 + parseInt(this._categoryListPresenter.store.getItem(selectedCategoryItemId).secondaryText);
+                this._categoryListPresenter.store.selectedItem.secondaryText = 1 + parseInt(this._categoryListPresenter.store.selectedItem.secondaryText);
 
                 // Force refresh
                 this._categoryListPresenter.store.items = this._categoryListPresenter.store.items;

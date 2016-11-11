@@ -28,9 +28,7 @@ export default class BooleanDialog extends React.Component {
                         onTouchTap={() => {
                             this.props.store.booleanValue = false;
 
-                            if (this.props.store.falseAction) {
-                                this.props.store.falseAction();
-                            }
+                            if (this.props.store.falseAction) this.props.store.falseAction();
                         }} />,
                     <Button
                         label={this.props.store.trueLabel}
@@ -40,9 +38,7 @@ export default class BooleanDialog extends React.Component {
                         onTouchTap={() => {
                             this.props.store.booleanValue = false;
 
-                            if (this.props.store.trueAction) {
-                                this.props.store.trueAction();
-                            }
+                            if (this.props.store.trueAction) this.props.store.trueAction();
                         }} />
                 ]}
                 onRequestClose={() => this.props.store.booleanValue = false}>

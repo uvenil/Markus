@@ -8,6 +8,19 @@ const { Menu, MenuItem, clipboard } = remote;
 const showTextBoxContextMenu = () => {
     const menu = new Menu();
 
+    let text = undefined;
+
+    if (window.getSelection) {
+        text = window.getSelection().toString();
+    } else if (document.selection && document.selection.type !== 'Control') {
+        text = document.selection.createRange().text;
+    }
+
+    const hasSelectedText = !_.isNil(text) && !_.isEmpty(text);
+
+    text = clipboard.readText();
+    const hasCopiedText = !_.isNil(text) && !_.isEmpty(text);
+
     menu.append(new MenuItem({
         role        : 'undo',
         accelerator : 'CmdOrCtrl+Z'
@@ -21,23 +34,30 @@ const showTextBoxContextMenu = () => {
     menu.append(new MenuItem({ type : 'separator' }));
 
     menu.append(new MenuItem({
-        role        : 'cut',
-        accelerator : 'CmdOrCtrl+X'
+        label       : 'Cut',
+        role        : hasSelectedText ? 'cut' : undefined,
+        accelerator : 'CmdOrCtrl+X',
+        enabled     : hasSelectedText
     }));
 
     menu.append(new MenuItem({
-        role        : 'copy',
-        accelerator : 'CmdOrCtrl+C'
+        label       : 'Copy',
+        role        : hasSelectedText ? 'copy' : undefined,
+        accelerator : 'CmdOrCtrl+C',
+        enabled     : hasSelectedText
     }));
 
     menu.append(new MenuItem({
-        role        : 'paste',
+        label       : 'Paste',
+        role        : hasCopiedText ? 'paste' : undefined,
         accelerator : 'CmdOrCtrl+V',
-        enabled     : !_.isNil(clipboard.readText())
+        enabled     : hasCopiedText
     }));
 
     menu.append(new MenuItem({
-        role : 'delete'
+        label   : 'Delete',
+        role    : hasSelectedText ? 'delete' : undefined,
+        enabled : hasSelectedText
     }));
 
     menu.append(new MenuItem({ type : 'separator' }));

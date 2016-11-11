@@ -29,19 +29,20 @@ import Settings from './utils/Settings';
 import EventUtils from './utils/EventUtils';
 import EnvironmentUtils from './utils/EnvironmentUtils';
 import Constants from './utils/Constants';
-import SyntaxNames from './definitions/syntax-names.json';
-import SyntaxCodes from './definitions/syntax-codes.json';
-import ThemeCodes from './definitions/theme-codes.json';
+import { ShortcutManager } from 'react-shortcuts';
+import SyntaxNames from './definitions/syntax/syntax-names.json';
+import SyntaxCodes from './definitions/syntax/syntax-codes.json';
+import ThemeCodes from './definitions/themes/theme-codes.json';
 import Path from 'path';
 import _ from 'lodash';
 
 const remote = require('electron').remote;
 const { app } = remote;
 
-const FONTS = EnvironmentUtils.isMacOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
+const FONTS = EnvironmentUtils.isMacOS() ? require('./definitions/fonts/fonts.mac.json') : require('./definitions/fonts/fonts.win.json');
 
-const LIGHT_THEME = require('./definitions/theme.light.json');
-const DARK_THEME  = require('./definitions/theme.dark.json');
+const LIGHT_THEME = require('./definitions/themes/theme.light.json');
+const DARK_THEME  = require('./definitions/themes/theme.dark.json');
 
 const MUI_LIGHT_THEME = getMuiTheme({
     palette : {
@@ -105,6 +106,10 @@ export default class App extends React.Component {
                 this.props.presenter.handleAddNoteClick();
             }
         };
+    }
+
+    getChildContext() {
+        return { shortcuts : this.props.shortcuts }
     }
 
     componentDidMount() {
@@ -297,7 +302,7 @@ export default class App extends React.Component {
                                     <span style={{ flex : '1 1 0' }} />
                                     {/* Export note */}
                                     <Button
-                                        icon="external-link"
+                                        icon="share-square-o"
                                         width={Constants.TOP_BAR_HEIGHT}
                                         height={Constants.TOP_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.noteEditor.record)}
@@ -323,7 +328,7 @@ export default class App extends React.Component {
                                         onTouchTap={() => remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - Constants.ZOOM_FACTOR_STEP))} />
                                     {/* Editor settings */}
                                     <Button
-                                        icon="cogs"
+                                        icon="cog"
                                         width={Constants.TOP_BAR_HEIGHT}
                                         height={Constants.TOP_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.noteEditor.record)}
@@ -409,6 +414,7 @@ export default class App extends React.Component {
                         onEnter={value => this.props.presenter.updateCategory(this.props.store.updateCategoryDialog.value, value)} />
                     {/* Select category dialog */}
                     <ListDialog
+                        id="selectCategoryListDialog"
                         store={this.props.store.selectCategoryDialog}
                         title="Category"
                         neutralAction={
@@ -432,6 +438,7 @@ export default class App extends React.Component {
                     <EditorSettingsDialog store={this.props.store.editorSettingsDialog} />
                     {/* Syntax dialog for current note */}
                     <ListDialog
+                        id="currentSyntaxListDialog"
                         store={this.props.store.currentSyntaxDialog}
                         title="Syntax for current note"
                         onItemClick={index => {
@@ -443,6 +450,7 @@ export default class App extends React.Component {
                         }} />
                     {/* Syntax dialog for default notes */}
                     <ListDialog
+                        id="defaultSyntaxListDialog"
                         store={this.props.store.defaultSyntaxDialog}
                         title="Syntax for default notes"
                         onItemClick={index => {
@@ -452,6 +460,7 @@ export default class App extends React.Component {
                         }} />
                     {/* Theme dialog */}
                     <ListDialog
+                        id="themeListDialog"
                         store={this.props.store.themeDialog}
                         title="Theme"
                         onItemClick={index => {
@@ -461,6 +470,7 @@ export default class App extends React.Component {
                         }} />
                     {/* Font dialog */}
                     <ListDialog
+                        id="fontListDialog"
                         store={this.props.store.fontDialog}
                         title="Font"
                         onItemClick={index => {
@@ -476,7 +486,12 @@ export default class App extends React.Component {
 
 App.propTypes = {
     store     : React.PropTypes.instanceOf(AppStore),
-    presenter : React.PropTypes.instanceOf(AppPresenter)
+    presenter : React.PropTypes.instanceOf(AppPresenter),
+    shortcuts : React.PropTypes.instanceOf(ShortcutManager)
+};
+
+App.childContextTypes = {
+    shortcuts : React.PropTypes.object
 };
 
 module.exports = App;

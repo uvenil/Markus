@@ -19,6 +19,7 @@ const List = props => {
 
     return (
         <div
+            id={props.id}
             className={props.className}
             style={props.style}>
             {header}
@@ -43,6 +44,7 @@ const List = props => {
 };
 
 List.propTypes = {
+    id               : React.PropTypes.string,
     header           : React.PropTypes.node,
     selectedIndex    : React.PropTypes.number,
     className        : React.PropTypes.string,

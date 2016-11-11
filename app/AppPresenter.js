@@ -18,10 +18,10 @@ import EventUtils from './utils/EventUtils';
 import EnvironmentUtils from './utils/EnvironmentUtils';
 import Constants from './utils/Constants';
 import Config from './definitions/config.json';
-import SyntaxNames from './definitions/syntax-names.json';
-import SyntaxCodes from './definitions/syntax-codes.json';
-import ThemeNames from './definitions/theme-names.json';
-import ThemeCodes from './definitions/theme-codes.json';
+import SyntaxNames from './definitions/syntax/syntax-names.json';
+import SyntaxCodes from './definitions/syntax/syntax-codes.json';
+import ThemeNames from './definitions/themes/theme-names.json';
+import ThemeCodes from './definitions/themes/theme-codes.json';
 import Rx from 'rx-lite';
 import Path from 'path';
 import fs from 'fs';
@@ -35,7 +35,7 @@ const CLEAR_CACHE_INTERVAL = 5 * 60 * 1000;
 const EVENT_ERROR = 'global.error';
 const DARK_THEMES = [ 'ambiance', 'chaos', 'clouds_midnight', 'cobalt', 'idle_fingers', 'iplastic', 'kr_theme', 'merbivore', 'merbivore_soft', 'mono_industrial', 'monokai', 'pastel_on_dark', 'solarized_dark', 'terminal', 'tomorrow_night', 'tomorrow_night_blue', 'tomorrow_night_bright', 'tomorrow_night_eighties', 'twilight', 'vibrant_ink' ];
 
-const FONTS = EnvironmentUtils.isMacOS() ? require('./definitions/fonts.mac.json') : require('./definitions/fonts.win.json');
+const FONTS = EnvironmentUtils.isMacOS() ? require('./definitions/fonts/fonts.mac.json') : require('./definitions/fonts/fonts.win.json');
 
 export default class AppPresenter {
     constructor() {
@@ -67,7 +67,6 @@ export default class AppPresenter {
 
         this._filterSelection   = new Rx.Subject();
         this._categorySelection = new Rx.Subject();
-        this._noteSelection     = new Rx.Subject();
 
         Rx.Observable.zip(this._filterSelection, this._categorySelection, (selectedFilterIndex, selectedCategoryIndex) => selectedFilterIndex > -1 || selectedCategoryIndex > -1)
             .subscribe(hasSelection => {
@@ -76,11 +75,7 @@ export default class AppPresenter {
                 this.refreshNoteList();
             });
 
-        this._noteSelection.subscribe(index => {
-            this._store.noteList.selectedIndex = index;
-
-            this.refreshNoteEditor();
-        });
+        this._store.noteList.selectionChanges.subscribe(() => this.refreshNoteEditor().then(() => document.getElementById('noteList').parentElement.focus()));
 
         //region Setting dialogs
 
@@ -384,7 +379,7 @@ export default class AppPresenter {
 
     handleNoteItemClick(index) {
         if (this._store.noteList.selectedIndex !== index) {
-            this._noteSelection.onNext(index);
+            this._store.noteList.selectedIndex = index;
         }
     }
 
@@ -485,8 +480,6 @@ export default class AppPresenter {
         this._noteListPresenter.addNote(this._defaultSyntax)
             .then(() => {
                 this._store.noteList.selectedIndex = 0;
-
-                this._noteSelection.onNext(0);
             }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
@@ -687,28 +680,31 @@ export default class AppPresenter {
     refreshFilterList() {
         this._filterListPresenter.refresh();
 
-        this._noteSelection.onNext(-1);
-
         this._store.filterList.selectedIndex = 0;
+        this._store.noteList.selectedIndex   = -1;
     }
 
     refreshCategoryList() {
         this._categoryListPresenter.refresh();
 
-        this._noteSelection.onNext(-1);
+        this._store.noteList.selectedIndex = -1;
     }
 
     refreshNoteList() {
         this._noteListPresenter.refresh();
 
-        this.refreshNoteEditor();
+        this.refreshNoteEditor().catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     refreshNoteEditor() {
-        this._noteEditorPresenter.load(this._store.noteList.selectedItemId)
-            .then(() => {
-                if (this._store.noteList.selectedItemId) this._store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.noteEditor.record.syntax);
-            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+        return new Promise((resolve, reject) => {
+            this._noteEditorPresenter.load(this._store.noteList.selectedItemId)
+                .then(() => {
+                    if (this._store.noteList.selectedItemId) this._store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.noteEditor.record.syntax);
+
+                    resolve();
+                }).catch(error => reject(error));
+        });
     }
 
     //endregion
@@ -753,7 +749,7 @@ export default class AppPresenter {
     filterNoteList(keyword) {
         this._noteListPresenter.keyword = keyword;
 
-        this._noteSelection.onNext(-1);
+        this._store.noteList.selectedIndex = -1;
     }
 
     //endregion
