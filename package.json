@@ -34,7 +34,7 @@
     },
     "devDependencies" : {
         "babel-eslint"        : "^7.1.0",
-        "electron"            : "^1.4.5",
+        "electron"            : "^1.4.6",
         "eslint"              : "^3.7.1",
         "eslint-plugin-react" : "^6.6.0"
     },
@@ -52,7 +52,7 @@
         "material-ui"                                    : "^0.16.1",
         "mobx"                                           : "^2.6.2",
         "mobx-react"                                     : "^3.5.9",
-        "moment"                                         : "^2.15.2",
+        "moment"                                         : "^2.16.0",
         "nedb"                                           : "^1.8.0",
         "pubsub-js"                                      : "^1.5.4",
         "randomstring"                                   : "^1.1.5",
