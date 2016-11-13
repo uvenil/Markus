@@ -11,7 +11,7 @@ const Button = props => {
     const icon = props.icon ?
         <FontIcon
             className={'fa fa-fw fa-' + props.icon}
-            style={{ marginLeft : props.labelPosition === 'before' || !props.label ? 0 : Constants.PADDING_X1, marginRight : props.labelPosition === 'after' || !props.label ? 0 : Constants.PADDING_X1, fontSize : Constants.DEFAULT_FONT_SIZE }} /> : undefined;
+            style={{ marginLeft : props.labelPosition === 'before' || !props.label ? 0 : Constants.PADDING_X1, marginRight : props.labelPosition === 'after' || !props.label ? 0 : Constants.PADDING_X1, fontSize : Constants.DEFAULT_FONT_SIZE, fontWeight : 400, verticalAlign : 'inherit' }} /> : undefined;
 
     const style = { minWidth : props.width, height : props.height, lineHeight : props.height + 'px', textAlign : props.align };
 
@@ -20,7 +20,7 @@ const Button = props => {
             <FlatButton
                 label={props.label}
                 labelPosition={props.labelPosition}
-                labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : props.labelSize, fontWeight : props.labelWeight === 'light' ? 300 : props.labelWeight === 'bold' ? 500 : 400, textTransform : 'none' } : {}}
+                labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : props.labelSize, fontWeight : props.labelWeight === 'light' ? 300 : props.labelWeight === 'bold' ? 500 : 400, textTransform : 'none', verticalAlign : 'inherit' } : {}}
                 icon={icon}
                 primary={props.color === 'primary'}
                 secondary={props.color === 'secondary'}
@@ -33,7 +33,7 @@ const Button = props => {
     return (
         <RaisedButton
             label={props.label}
-            labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : props.labelSize, textTransform : 'none' } : {}}
+            labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : props.labelSize, textTransform : 'none', verticalAlign : 'inherit' } : {}}
             icon={icon}
             primary={props.color === 'primary'}
             secondary={props.color === 'secondary'}

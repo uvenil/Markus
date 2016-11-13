@@ -208,6 +208,7 @@ export default class App extends React.Component {
                                 {/* Application menu */}
                                 <Button
                                     label="Menu"
+                                    labelWeight="normal"
                                     icon="bars"
                                     width="100%"
                                     height={Constants.BUTTON_HEIGHT_X2}
@@ -267,8 +268,8 @@ export default class App extends React.Component {
                                     {/* Add note */}
                                     <Button
                                         label="New note"
-                                        labelWeight="normal"
                                         labelSize={Constants.DEFAULT_FONT_SIZE}
+                                        labelWeight="normal"
                                         icon="file-o"
                                         height={Constants.BUTTON_HEIGHT_X0}
                                         onTouchTap={() => this.props.presenter.handleAddNoteClick()} />
@@ -292,6 +293,7 @@ export default class App extends React.Component {
                                     <Button
                                         label={_.isNil(this.props.store.noteEditor.record) ? '' : SyntaxNames.items[_.indexOf(SyntaxCodes.items, this.props.store.noteEditor.record.syntax)]}
                                         labelSize={Constants.DEFAULT_FONT_SIZE}
+                                        labelWeight="normal"
                                         icon="code"
                                         height={Constants.TOP_BAR_HEIGHT}
                                         disabled={_.isNil(this.props.store.noteEditor.record)}
@@ -387,17 +389,9 @@ export default class App extends React.Component {
                         onRequestClose={() => this.props.store.aboutDialog.booleanValue = false}>
                         <div style={{ width : '100%', textAlign : 'center' }}>
                             <img src={Path.join(__dirname, './images/artisan.png')} /><br />
-                            <Text
-                                fontWeight={500}
-                                textSize="large">
-                                {app.getName()}
-                            </Text>
+                            <Text style={{ fontSize : 'larger', fontWeight : 500 }}>{app.getName()}</Text>
                             <Text>{'Version ' + app.getVersion()}</Text>
-                            <Text
-                                fontWeight={300}
-                                textSize="small">
-                                {'Copyright © ' + new Date().getFullYear()}
-                            </Text>
+                            <Text style={{ fontSize : 'smaller', fontWeight : 300 }}>{'Copyright © ' + new Date().getFullYear()}</Text>
                         </div>
                     </Dialog>
                     {/* Add category dialog */}
