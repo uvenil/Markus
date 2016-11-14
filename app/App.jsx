@@ -383,7 +383,9 @@ export default class App extends React.Component {
                         actions={[
                             <Button
                                 label="Close"
+                                labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
                                 color="primary"
+                                height={Constants.BUTTON_HEIGHT_X1}
                                 onTouchTap={() => this.props.store.aboutDialog.booleanValue = false} />
                         ]}
                         onRequestClose={() => this.props.store.aboutDialog.booleanValue = false}>
@@ -414,13 +416,17 @@ export default class App extends React.Component {
                         neutralAction={
                             <Button
                                 label="None"
+                                labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
                                 color="secondary"
+                                height={Constants.BUTTON_HEIGHT_X1}
                                 onTouchTap={() => this.props.presenter.handleSelectCategoryNoneClick()} />
                         }
                         positiveAction={
                             <Button
                                 label="OK"
+                                labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
                                 color="primary"
+                                height={Constants.BUTTON_HEIGHT_X1}
                                 onTouchTap={() => this.props.presenter.handleSelectCategoryOkClick()} />
                         }
                         onItemClick={index => {
