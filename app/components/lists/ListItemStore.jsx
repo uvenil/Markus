@@ -6,7 +6,7 @@ import Record from '../../data/Record.js';
 import moment from 'moment';
 import Unique from '../../utils/Unique';
 import Config from '../../definitions/config.json';
-import _ from 'lodash';
+import isEmpty from 'lodash.isempty';
 
 export default class ListItemStore {
     constructor() {
@@ -29,7 +29,7 @@ export default class ListItemStore {
      */
     update(record) {
         this.itemId        = record._id;
-        this.primaryText   = _.isEmpty(record.title) ? Config.defaultNoteTitle : record.title;
+        this.primaryText   = isEmpty(record.title) ? Config.defaultNoteTitle : record.title;
         this.secondaryText = record.description ? record.description.split('\n').map(line => <span key={Unique.nextString()}>{line}<br /></span>) : record.description;
         this.tertiaryText  = moment(record.lastUpdatedAt).fromNow();
         this.tooltip       = 'Modified: ' + moment(record.lastUpdatedAt).format('LLLL') + '\nCreated: ' + moment(record.createdAt).format('LLLL');

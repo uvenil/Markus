@@ -1,6 +1,7 @@
 'use strict';
 
-import _ from 'lodash';
+import isEmpty from 'lodash.isempty';
+import isNil from 'lodash.isnil';
 
 const { remote } = require('electron');
 const { Menu, MenuItem, clipboard } = remote;
@@ -16,10 +17,10 @@ const showTextBoxContextMenu = () => {
         text = document.selection.createRange().text;
     }
 
-    const hasSelectedText = !_.isNil(text) && !_.isEmpty(text);
+    const hasSelectedText = !isNil(text) && !isEmpty(text);
 
     text = clipboard.readText();
-    const hasCopiedText = !_.isNil(text) && !_.isEmpty(text);
+    const hasCopiedText = !isNil(text) && !isEmpty(text);
 
     menu.append(new MenuItem({
         role        : 'undo',

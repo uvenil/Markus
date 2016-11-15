@@ -5,7 +5,7 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import FontIcon from 'material-ui/FontIcon';
 import Constants from '../../utils/Constants';
-import _ from 'lodash';
+import assign from 'lodash.assign';
 
 const Button = props => {
     const icon = props.icon ?
@@ -25,7 +25,7 @@ const Button = props => {
                 primary={props.color === 'primary'}
                 secondary={props.color === 'secondary'}
                 disabled={props.disabled}
-                style={_.assign(style, props.style)}
+                style={assign(style, props.style)}
                 onTouchTap={props.onTouchTap} />
         );
     }
@@ -38,7 +38,7 @@ const Button = props => {
             primary={props.color === 'primary'}
             secondary={props.color === 'secondary'}
             disabled={props.disabled}
-            style={_.assign(style, props.style)}
+            style={assign(style, props.style)}
             onTouchTap={props.onTouchTap} />
     );
 };

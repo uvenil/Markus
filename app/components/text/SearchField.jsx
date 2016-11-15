@@ -5,14 +5,15 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import Unique from '../../utils/Unique';
 import Constants from '../../utils/Constants';
 import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
-import _ from 'lodash';
+import assign from 'lodash.assign';
+import isEmpty from 'lodash.isempty';
 
 const SearchField = props => {
     const textBoxId     = Unique.nextString();
     const clearButtonId = Unique.nextString();
 
     const handleChange = value => {
-        document.getElementById(clearButtonId).style.display = _.isEmpty(value) ? 'none' : 'block';
+        document.getElementById(clearButtonId).style.display = isEmpty(value) ? 'none' : 'block';
 
         if (props.onChange) {
             props.onChange(value);
@@ -33,7 +34,7 @@ const SearchField = props => {
     return (
         <div
             className={props.className}
-            style={_.assign(style, props.style)}>
+            style={assign(style, props.style)}>
             <i
                 className="fa fa-fw fa-search"
                 style={{ position : 'absolute', left : Constants.PADDING_X0 + Constants.PADDING_X1, top : Constants.PADDING_X0 + Constants.PADDING_X1, fontSize : 14, color : props.muiTheme.palette.disabledColor, cursor : 'default' }} />

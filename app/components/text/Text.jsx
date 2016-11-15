@@ -3,7 +3,7 @@
 import React from 'react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Label from './Label.jsx';
-import _ from 'lodash';
+import assign from 'lodash.assign';
 
 const Text = props => {
     const style = { display : 'block' };
@@ -11,7 +11,7 @@ const Text = props => {
     return (
         <Label
             className={props.className}
-            style={_.assign(style, props.style)}
+            style={assign(style, props.style)}
             onClick={props.onClick}
             onRightClick={props.onRightClick}>
             {props.children}

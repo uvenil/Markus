@@ -34,7 +34,8 @@ import SyntaxNames from './definitions/syntax/syntax-names.json';
 import SyntaxCodes from './definitions/syntax/syntax-codes.json';
 import ThemeCodes from './definitions/themes/theme-codes.json';
 import Path from 'path';
-import _ from 'lodash';
+import indexOf from 'lodash.indexof';
+import isNil from 'lodash.isnil';
 
 const remote = require('electron').remote;
 const { app } = remote;
@@ -291,14 +292,14 @@ export default class App extends React.Component {
                                 <div style={{ width : '100%', height : Constants.TOP_BAR_HEIGHT, display : 'flex', flexFlow : 'row', backgroundColor : muiTheme.palette.primary2Color, overflow : 'hidden' }}>
                                     {/* Change syntax */}
                                     <Button
-                                        label={_.isNil(this.props.store.noteEditor.record) ? '' : SyntaxNames.items[_.indexOf(SyntaxCodes.items, this.props.store.noteEditor.record.syntax)]}
+                                        label={isNil(this.props.store.noteEditor.record) ? '' : SyntaxNames.items[indexOf(SyntaxCodes.items, this.props.store.noteEditor.record.syntax)]}
                                         labelSize={Constants.DEFAULT_FONT_SIZE}
                                         labelWeight="normal"
                                         icon="code"
                                         height={Constants.TOP_BAR_HEIGHT}
-                                        disabled={_.isNil(this.props.store.noteEditor.record)}
+                                        disabled={isNil(this.props.store.noteEditor.record)}
                                         onTouchTap={() => {
-                                            this.props.store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this.props.store.noteEditor.record.syntax);
+                                            this.props.store.currentSyntaxDialog.list.selectedIndex = indexOf(SyntaxCodes.items, this.props.store.noteEditor.record.syntax);
                                             this.props.store.currentSyntaxDialog.booleanValue       = true;
                                         }} />
                                     <span style={{ flex : '1 1 0' }} />
@@ -307,14 +308,14 @@ export default class App extends React.Component {
                                         icon="share-square-o"
                                         width={Constants.TOP_BAR_HEIGHT}
                                         height={Constants.TOP_BAR_HEIGHT}
-                                        disabled={_.isNil(this.props.store.noteEditor.record)}
+                                        disabled={isNil(this.props.store.noteEditor.record)}
                                         onTouchTap={() => this.props.presenter.handleExportNote()} />
                                     {/* Change font */}
                                     <Button
                                         icon="font"
                                         width={Constants.TOP_BAR_HEIGHT}
                                         height={Constants.TOP_BAR_HEIGHT}
-                                        disabled={_.isNil(this.props.store.noteEditor.record)}
+                                        disabled={isNil(this.props.store.noteEditor.record)}
                                         onTouchTap={() => this.props.store.fontDialog.booleanValue = true} />
                                     {/* Zoom-in */}
                                     <Button
@@ -333,7 +334,7 @@ export default class App extends React.Component {
                                         icon="cog"
                                         width={Constants.TOP_BAR_HEIGHT}
                                         height={Constants.TOP_BAR_HEIGHT}
-                                        disabled={_.isNil(this.props.store.noteEditor.record)}
+                                        disabled={isNil(this.props.store.noteEditor.record)}
                                         onTouchTap={() => this.props.store.editorSettingsDialog.booleanValue = true} />
                                 </div>
                                 {/* Note editor */}
@@ -344,17 +345,17 @@ export default class App extends React.Component {
                                 <div style={{ width : '100%', height : Constants.BOTTOM_BAR_HEIGHT, display : 'flex', flexFlow : 'row', backgroundColor : muiTheme.palette.primary2Color }}>
                                     {/* Star note */}
                                     <Button
-                                        icon={'star' + ((!_.isNil(this.props.store.noteEditor.record) && this.props.store.noteEditor.record.starred) ? '' : '-o')}
+                                        icon={'star' + ((!isNil(this.props.store.noteEditor.record) && this.props.store.noteEditor.record.starred) ? '' : '-o')}
                                         width={Constants.BOTTOM_BAR_HEIGHT}
                                         height={Constants.BOTTOM_BAR_HEIGHT}
-                                        disabled={_.isNil(this.props.store.noteEditor.record)}
+                                        disabled={isNil(this.props.store.noteEditor.record)}
                                         onTouchTap={() => this.props.presenter.handleStarClick()} />
                                     {/* Archive note */}
                                     <Button
-                                        icon={'trash' + ((!_.isNil(this.props.store.noteEditor.record) && this.props.store.noteEditor.record.archived) ? '' : '-o')}
+                                        icon={'trash' + ((!isNil(this.props.store.noteEditor.record) && this.props.store.noteEditor.record.archived) ? '' : '-o')}
                                         width={Constants.BOTTOM_BAR_HEIGHT}
                                         height={Constants.BOTTOM_BAR_HEIGHT}
-                                        disabled={_.isNil(this.props.store.noteEditor.record)}
+                                        disabled={isNil(this.props.store.noteEditor.record)}
                                         onTouchTap={() => this.props.presenter.handleArchiveClick()} />
                                     <span style={{ marginRight : Constants.PADDING_X1 }}></span>
                                     {/* Select category */}
@@ -364,7 +365,7 @@ export default class App extends React.Component {
                                         labelSize={Constants.DEFAULT_FONT_SIZE}
                                         icon="tag"
                                         height={Constants.BOTTOM_BAR_HEIGHT}
-                                        disabled={_.isNil(this.props.store.noteEditor.record)}
+                                        disabled={isNil(this.props.store.noteEditor.record)}
                                         onTouchTap={() => this.props.presenter.handleSelectCategoryClick()} />
                                     <div style={{ margin : 'auto', paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, flex : '1 1 0', textAlign : 'right' }}>
                                         {/* Overwrite status */}

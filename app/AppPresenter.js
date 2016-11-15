@@ -25,7 +25,8 @@ import ThemeCodes from './definitions/themes/theme-codes.json';
 import Rx from 'rx-lite';
 import Path from 'path';
 import fs from 'fs';
-import _ from 'lodash';
+import indexOf from 'lodash.indexof';
+import isEmpty from 'lodash.isempty';
 
 const { remote } = require('electron');
 const { dialog, Menu, MenuItem } = remote;
@@ -700,7 +701,7 @@ export default class AppPresenter {
         return new Promise((resolve, reject) => {
             this._noteEditorPresenter.load(this._store.noteList.selectedItemId)
                 .then(() => {
-                    if (this._store.noteList.selectedItemId) this._store.currentSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.noteEditor.record.syntax);
+                    if (this._store.noteList.selectedItemId) this._store.currentSyntaxDialog.list.selectedIndex = indexOf(SyntaxCodes.items, this._store.noteEditor.record.syntax);
 
                     resolve();
                 }).catch(error => reject(error));
@@ -716,7 +717,7 @@ export default class AppPresenter {
      * @param {String} category
      */
     addCategory(category) {
-        if (_.isEmpty(category)) {
+        if (isEmpty(category)) {
             EventUtils.broadcast(EVENT_ERROR, 'Please enter the name of the new category');
         } else {
             this._database.addCategory(category)
@@ -938,8 +939,8 @@ export default class AppPresenter {
 
                 this._noteListPresenter.sorting = this._store.notesSorting;
 
-                this._store.defaultSyntaxDialog.list.selectedIndex = _.indexOf(SyntaxCodes.items, this._store.noteEditor.syntax);
-                this._store.themeDialog.list.selectedIndex         = _.indexOf(ThemeCodes.items,  this._store.noteEditor.theme);
+                this._store.defaultSyntaxDialog.list.selectedIndex = indexOf(SyntaxCodes.items, this._store.noteEditor.syntax);
+                this._store.themeDialog.list.selectedIndex         = indexOf(ThemeCodes.items,  this._store.noteEditor.theme);
 
                 //region Editor settings dialog
 
@@ -1020,7 +1021,7 @@ export default class AppPresenter {
     }
 
     _updateTheme() {
-        this._store.theme = _.indexOf(DARK_THEMES, this._store.noteEditor.theme) > -1 ? 'dark' : 'light';
+        this._store.theme = indexOf(DARK_THEMES, this._store.noteEditor.theme) > -1 ? 'dark' : 'light';
     }
 
     static _updateFont(font) {

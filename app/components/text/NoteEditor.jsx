@@ -11,7 +11,7 @@ import EventUtils from '../../utils/EventUtils';
 import Unique from '../../utils/Unique';
 import Constants from '../../utils/Constants';
 import { showTextBoxContextMenu } from '../../utils/ContextMenuUtils';
-import _ from 'lodash';
+import assign from 'lodash.assign';
 
 require('brace/ext/searchbox');
 require('brace/ext/spellcheck');
@@ -133,7 +133,7 @@ class NoteEditor extends React.Component {
         const style = { width : '100%', height : 'calc(100vh - ' + (Constants.BOTTOM_BAR_HEIGHT + 1) + 'px)' };
 
         return (
-            <div style={_.assign(style, this.props.style)}>
+            <div style={assign(style, this.props.style)}>
                 <AceEditor
                     id={this._editorId}
                     ref="editor"
