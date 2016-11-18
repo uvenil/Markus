@@ -1,0 +1,17 @@
+exports[`test renders correctly 1`] = `
+<span
+  className={undefined}
+  onMouseDown={[Function]}
+  style={
+    Object {
+      "WebkitUserSelect": "none",
+      "color": "rgba(0, 0, 0, 0.87)",
+      "cursor": "default",
+      "display": "block",
+      "fontWeight": "bold",
+      "pointerEvents": "auto",
+    }
+  }>
+  Hello, World!
+</span>
+`;
