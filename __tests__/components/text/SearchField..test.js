@@ -20,7 +20,7 @@ it('renders correctly', () => {
     expect(searchField).toMatchSnapshot();
 });
 
-it('triggers onChange after a key press', () => {
+it('triggers onChange after a key press, and clear text after clicking clear button', () => {
     let searchFieldValue = '';
 
     const searchField = mount(
@@ -31,7 +31,7 @@ it('triggers onChange after a key press', () => {
         </MuiThemeProvider>
     );
 
-    const input = searchField.ref('SearchField_textBoxId');
+    const input = searchField.find('#SearchField_textBoxId');
 
     input.simulate('focus');
     input.simulate('change', {
@@ -41,4 +41,9 @@ it('triggers onChange after a key press', () => {
     });
 
     expect(searchFieldValue).toEqual('a');
+
+    const clearButton = searchField.find('#SearchField_clearButtonId');
+    clearButton.simulate('click');
+
+    expect(searchFieldValue).toEqual('');
 });

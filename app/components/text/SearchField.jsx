@@ -44,6 +44,7 @@ class SearchField extends React.Component {
                     className="fa fa-fw fa-search"
                     style={{ position : 'absolute', left : Constants.PADDING_X0 + Constants.PADDING_X1, top : Constants.PADDING_X0 + Constants.PADDING_X1, fontSize : 14, color : this.props.muiTheme.palette.disabledColor, cursor : 'default' }} />
                 <input
+                    id={this.textBoxId}
                     ref={this.textBoxId}
                     type="text"
                     placeholder={this.props.hintText}
@@ -55,6 +56,7 @@ class SearchField extends React.Component {
                         }
                     }} />
                 <i
+                    id={this.clearButtonId}
                     ref={this.clearButtonId}
                     className="fa fa-fw fa-times-circle"
                     style={{ display : 'none', position : 'absolute', right : Constants.PADDING_X0 + Constants.PADDING_X1, top : Constants.PADDING_X0 + Constants.PADDING_X1, fontSize : 14, color : this.props.muiTheme.palette.disabledColor, cursor : 'pointer' }}

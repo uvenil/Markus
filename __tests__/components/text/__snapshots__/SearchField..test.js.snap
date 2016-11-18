@@ -21,6 +21,7 @@ exports[`test renders correctly 1`] = `
       }
     } />
   <input
+    id="SearchField_textBoxId"
     onChange={[Function]}
     onMouseDown={[Function]}
     placeholder="Search"
@@ -40,6 +41,7 @@ exports[`test renders correctly 1`] = `
     type="text" />
   <i
     className="fa fa-fw fa-times-circle"
+    id="SearchField_clearButtonId"
     onClick={[Function]}
     style={
       Object {
