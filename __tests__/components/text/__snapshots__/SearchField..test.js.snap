@@ -1,0 +1,56 @@
+exports[`test renders correctly 1`] = `
+<div
+  className={undefined}
+  style={
+    Object {
+      "pointerEvents": "auto",
+      "position": "relative",
+      "width": "100%",
+    }
+  }>
+  <i
+    className="fa fa-fw fa-search"
+    style={
+      Object {
+        "color": "rgba(0, 0, 0, 0.3)",
+        "cursor": "default",
+        "fontSize": 14,
+        "left": 12,
+        "position": "absolute",
+        "top": 12,
+      }
+    } />
+  <input
+    onChange={[Function]}
+    onMouseDown={[Function]}
+    placeholder="Search"
+    style={
+      Object {
+        "WebkitUserSelect": "none",
+        "border": "none",
+        "color": "rgba(0, 0, 0, 0.87)",
+        "outline": "none",
+        "paddingBottom": 4,
+        "paddingLeft": 24,
+        "paddingRight": 24,
+        "paddingTop": 4,
+        "width": "calc(100% - 48px)",
+      }
+    }
+    type="text" />
+  <i
+    className="fa fa-fw fa-times-circle"
+    onClick={[Function]}
+    style={
+      Object {
+        "color": "rgba(0, 0, 0, 0.3)",
+        "cursor": "pointer",
+        "display": "none",
+        "fontSize": 14,
+        "position": "absolute",
+        "right": 12,
+        "top": 12,
+      }
+    } />
+</div>
+`;
