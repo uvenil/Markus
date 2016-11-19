@@ -2,7 +2,7 @@
 
 import React from 'react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import _ from 'lodash';
+import assign from 'lodash.assign';
 
 const Label = props => {
     const style = { WebkitUserSelect : 'none', cursor : 'default', color : props.muiTheme.palette.textColor, pointerEvents : props.disabled ? 'none' : 'auto' };
@@ -18,7 +18,7 @@ const Label = props => {
     return (
         <span
             className={props.className}
-            style={_.assign(style, props.style)}
+            style={assign(style, props.style)}
             onMouseDown={event => handleClick(event)}>
             {props.children}
         </span>

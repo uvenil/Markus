@@ -3,7 +3,9 @@
 import Nedb from 'nedb';
 import Settings from '../utils/Settings';
 import Path from 'path';
-import _ from 'lodash';
+import indexOf from 'lodash.indexof';
+import pull from 'lodash.pull';
+import sortBy from 'lodash.sortby';
 
 const { app } = require('electron').remote;
 
@@ -287,7 +289,7 @@ export default class Database {
         return new Promise((resolve, reject) => {
             this.findCategories()
                 .then(categories => {
-                    resolve(_.indexOf(categories, category) >= 0);
+                    resolve(indexOf(categories, category) >= 0);
                 }).catch(error => reject(error));
         });
     }
@@ -307,7 +309,7 @@ export default class Database {
                             .then(categories => {
                                 categories.push(category);
 
-                                categories = _.sortBy(categories);
+                                categories = sortBy(categories);
 
                                 this._settings.set(_KEY_CATEGORIES, categories)
                                     .then(() => resolve())
@@ -331,9 +333,9 @@ export default class Database {
                     if (hasCategory) {
                         this.findCategories()
                             .then(categories => {
-                                categories = _.pull(categories, oldCategory);
+                                categories = pull(categories, oldCategory);
                                 categories.push(newCategory);
-                                categories = _.sortBy(categories);
+                                categories = sortBy(categories);
 
                                 this._settings.set(_KEY_CATEGORIES, categories)
                                     .then(() => {
@@ -365,7 +367,7 @@ export default class Database {
                     if (hasCategory) {
                         this.findCategories()
                             .then(categories => {
-                                categories = _.pull(categories, category);
+                                categories = pull(categories, category);
 
                                 this._settings.set(_KEY_CATEGORIES, categories)
                                     .then(() => {

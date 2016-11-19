@@ -5,7 +5,7 @@ import ListItemStore from './ListItemStore';
 import Database from '../../data/Database';
 import EventUtils from '../../utils/EventUtils';
 import Unique from '../../utils/Unique';
-import _ from 'lodash';
+import sortBy from 'lodash.sortby';
 
 export default class CategoryListPresenter extends ListPresenter {
     /**
@@ -112,7 +112,7 @@ export default class CategoryListPresenter extends ListPresenter {
     }
 
     _sort() {
-        this.store.items = _.sortBy(this.store.items, item => item.primaryText);
+        this.store.items = sortBy(this.store.items, item => item.primaryText);
     }
 }
 

@@ -2,7 +2,7 @@
 
 import { extendObservable, computed } from 'mobx';
 import Rx from 'rx-lite';
-import _ from 'lodash';
+import isEmpty from 'lodash.isempty';
 
 export default class ListStore {
     constructor() {
@@ -20,7 +20,7 @@ export default class ListStore {
 
     @computed
     get isEmpty() {
-        return _.isEmpty(this.items);
+        return isEmpty(this.items);
     }
 
     /**
