@@ -76,7 +76,10 @@ export default class AppPresenter {
                 this.refreshNoteList();
             });
 
-        this._store.noteList.selectionChanges.subscribe(() => this.refreshNoteEditor().then(() => document.getElementById('noteList').parentElement.focus()));
+        this._store.noteList.selectionChanges.subscribe(() => this.refreshNoteEditor()
+            .then(() => {
+                if (this._store.noteList.selectedIndex > -1) document.getElementById('noteList').parentElement.focus();
+            }));
 
         //region Setting dialogs
 
