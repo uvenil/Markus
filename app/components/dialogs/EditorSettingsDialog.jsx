@@ -126,7 +126,7 @@ export default class EditorSettingsDialog extends React.Component {
                         <Label style={{ width : '50%', verticalAlign : 'top', paddingTop : Constants.PADDING_X1, display : 'table-cell', textAlign : 'right' }}>Print margin column</Label>
                         <RadioButtonGroup
                             name="tabSize"
-                            valueSelected={this.props.store.settings.printMarginColumn72.booleanValue ? 72 : this.props.store.settings.printMarginColumn80.booleanValue ? 80 : this.props.store.settings.printMarginColumn100.booleanValue ? 100 : 120}
+                            valueSelected={this.props.store.settings.printMarginColumn72.booleanValue ? Constants.PRINT_MARGIN_COLUMNS[0] : this.props.store.settings.printMarginColumn80.booleanValue ? 80 : this.props.store.settings.printMarginColumn100.booleanValue ? 100 : 120}
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onChange={(event, value) => {
                                 this.props.store.settings.printMarginColumn72.booleanValue  = value === Constants.PRINT_MARGIN_COLUMNS[0];

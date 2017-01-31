@@ -313,9 +313,7 @@ export default class Database {
                             .then(categories => {
                                 categories.push(category);
 
-                                categories = sortBy(categories);
-
-                                this._settings.set(_KEY_CATEGORIES, categories)
+                                this._settings.set(_KEY_CATEGORIES, sortBy(categories))
                                     .then(() => resolve())
                                     .catch(error => reject(error));
                             }).catch(error => reject(error));
@@ -337,11 +335,10 @@ export default class Database {
                     if (hasCategory) {
                         this.findCategories()
                             .then(categories => {
-                                categories = pull(categories, oldCategory);
-                                categories.push(newCategory);
-                                categories = sortBy(categories);
+                                const newCategories = pull(categories, oldCategory);
+                                newCategories.push(newCategory);
 
-                                this._settings.set(_KEY_CATEGORIES, categories)
+                                this._settings.set(_KEY_CATEGORIES, sortBy(newCategories))
                                     .then(() => {
                                         this._db.update({ category : oldCategory }, { $set : { category : newCategory }}, { multi : true }, error => {
                                             if (error) {
@@ -371,9 +368,7 @@ export default class Database {
                     if (hasCategory) {
                         this.findCategories()
                             .then(categories => {
-                                categories = pull(categories, category);
-
-                                this._settings.set(_KEY_CATEGORIES, categories)
+                                this._settings.set(_KEY_CATEGORIES, pull(categories, category))
                                     .then(() => {
                                         if (withNotes) {
                                             this._db.update({ category : category }, { $set : {

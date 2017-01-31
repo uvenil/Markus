@@ -1,4 +1,7 @@
 # Artisan
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8d229a771e504bffb7c58a50c85b192a)](https://www.codacy.com/app/ayltai/artisan?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ayltai/artisan&amp;utm_campaign=Badge_Grade)
+
 A note-taking app for programmers, hand crafted with ❤
 
 <img src="https://raw.githubusercontent.com/ayltai/artisan/master/screenshots/screenshot_light.png" width="882" height="574" />
