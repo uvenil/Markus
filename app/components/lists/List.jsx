@@ -54,7 +54,7 @@ List.propTypes = {
 };
 
 List.defaultProps = {
-    selectedIndex : -1,
+    selectedIndex : -1
 };
 
 export default muiThemeable()(List);

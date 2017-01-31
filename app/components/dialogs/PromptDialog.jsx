@@ -40,7 +40,7 @@ export default class PromptDialog extends React.Component {
                 ]}
                 onRequestClose={() => this.props.store.booleanValue = false}>
                 <TextField
-                    fullWidth={true}
+                    fullWidth
                     floatingLabelText={this.props.label}
                     value={this.props.store.value}
                     onChange={event => this.props.store.value = event.target.value} />

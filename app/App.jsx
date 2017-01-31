@@ -110,7 +110,7 @@ export default class App extends React.Component {
     }
 
     getChildContext() {
-        return { shortcuts : this.props.shortcuts }
+        return { shortcuts : this.props.shortcuts };
     }
 
     componentDidMount() {
