@@ -45,7 +45,7 @@ export default class CategoryListPresenter extends ListPresenter {
             .then(categories => {
                 //region Finds newly added categories
 
-                let newCategories = [];
+                const newCategories = [];
 
                 categories.forEach(category => {
                     let found = false;
