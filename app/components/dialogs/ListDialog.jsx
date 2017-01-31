@@ -12,6 +12,8 @@ import ListDialogStore from './ListDialogStore';
 import Constants from '../../utils/Constants';
 import Shortcuts from 'react-shortcuts/lib/component/shortcuts';
 
+const ASYNC_DELAY = 100;
+
 @observer
 class ListDialog extends React.Component {
     _focus           : Function;
@@ -32,7 +34,7 @@ class ListDialog extends React.Component {
         };
 
         this._handleItemClick = index => {
-            window.setTimeout(() => this._focus(), 100);
+            window.setTimeout(() => this._focus(), ASYNC_DELAY);
 
             if (this.props.onItemClick) this.props.onItemClick(index);
         };

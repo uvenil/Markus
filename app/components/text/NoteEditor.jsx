@@ -4,7 +4,6 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import Brace from 'brace';
 import AceEditor from 'react-ace';
 import NoteEditorStore from './NoteEditorStore';
 import Record from '../../data/Record';

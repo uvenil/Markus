@@ -8,6 +8,10 @@ import FontIcon from 'material-ui/FontIcon';
 import Constants from '../../utils/Constants';
 import assign from 'lodash.assign';
 
+const WEIGHT_LIGHT  = 300;
+const WEIGHT_MEDIUM = 400;
+const WEIGHT_HEAVY  = 500;
+
 const Button = (props : any) => {
     const icon = props.icon ?
         <FontIcon
@@ -21,7 +25,7 @@ const Button = (props : any) => {
             <FlatButton
                 label={props.label}
                 labelPosition={props.labelPosition}
-                labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : props.labelSize, fontWeight : props.labelWeight === 'light' ? 300 : props.labelWeight === 'bold' ? 500 : 400, textTransform : 'none', verticalAlign : 'inherit' } : {}}
+                labelStyle={props.label ? { paddingLeft : Constants.PADDING_X1, paddingRight : Constants.PADDING_X1, fontSize : props.labelSize, fontWeight : props.labelWeight === 'light' ? WEIGHT_LIGHT : props.labelWeight === 'bold' ? WEIGHT_HEAVY : WEIGHT_MEDIUM, textTransform : 'none', verticalAlign : 'inherit' } : {}}
                 icon={icon}
                 primary={props.color === 'primary'}
                 secondary={props.color === 'secondary'}

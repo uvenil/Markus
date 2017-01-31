@@ -129,10 +129,10 @@ export default class EditorSettingsDialog extends React.Component {
                             valueSelected={this.props.store.settings.printMarginColumn72.booleanValue ? 72 : this.props.store.settings.printMarginColumn80.booleanValue ? 80 : this.props.store.settings.printMarginColumn100.booleanValue ? 100 : 120}
                             style={{ width : '50%', padding : Constants.PADDING_X1, display : 'table-cell', textAlign : 'left' }}
                             onChange={(event, value) => {
-                                this.props.store.settings.printMarginColumn72.booleanValue  = value === 72;
-                                this.props.store.settings.printMarginColumn80.booleanValue  = value === 80;
-                                this.props.store.settings.printMarginColumn100.booleanValue = value === 100;
-                                this.props.store.settings.printMarginColumn120.booleanValue = value === 120;
+                                this.props.store.settings.printMarginColumn72.booleanValue  = value === Constants.PRINT_MARGIN_COLUMNS[0];
+                                this.props.store.settings.printMarginColumn80.booleanValue  = value === Constants.PRINT_MARGIN_COLUMNS[1];
+                                this.props.store.settings.printMarginColumn100.booleanValue = value === Constants.PRINT_MARGIN_COLUMNS[2];
+                                this.props.store.settings.printMarginColumn120.booleanValue = value === Constants.PRINT_MARGIN_COLUMNS[3];
 
                                 EventUtils.broadcast('NoteEditor.settings.change', { name : 'printMarginColumn', value : value });
                             }}>
