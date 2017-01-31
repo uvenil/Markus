@@ -31,7 +31,8 @@
     "scripts"         : {
         "start"       : "electron .",
         "test"        : "jest",
-        "lint"        : "eslint app"
+        "lint"        : "eslint app",
+        "check"       : "flow check"
     },
     "devDependencies" : {
         "babel-eslint"            : "^7.1.1",
@@ -40,6 +41,7 @@
         "enzyme"                  : "^2.7.1",
         "eslint"                  : "^3.14.1",
         "eslint-plugin-react"     : "^6.9.0",
+        "flow-bin"                : "^0.38.0",
         "jest"                    : "^18.1.0",
         "react-addons-test-utils" : "^15.4.2",
         "react-test-renderer"     : "^15.4.2"

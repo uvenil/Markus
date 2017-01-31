@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import React from 'react';
@@ -10,11 +11,11 @@ import Constants from '../../utils/Constants';
 
 @observer
 export default class BooleanDialog extends React.Component {
-    constructor(props) {
+    constructor(props : any) {
         super(props);
     }
 
-    render() {
+    render() : any {
         return (
             <Dialog
                 title={this.props.store.title}
@@ -51,5 +52,3 @@ export default class BooleanDialog extends React.Component {
 BooleanDialog.propTypes = {
     store : React.PropTypes.instanceOf(BooleanDialogStore)
 };
-
-module.exports = BooleanDialog;

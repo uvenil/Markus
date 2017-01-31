@@ -1,10 +1,33 @@
+// @flow
 'use strict';
 
 import { extendObservable } from 'mobx';
+import Record from '../../data/Record';
 import Rx from 'rx-lite';
 import Config from '../../definitions/config.json';
 
 export default class TextEditorStore {
+    _changes            : any;
+    highlightActiveLine : boolean;
+    tabSize             : number;
+    useSoftTabs         : boolean;
+    wordWrap            : boolean;
+    showLineNumbers     : boolean;
+    showPrintMargin     : boolean;
+    printMarginColumn   : number;
+    showInvisibles      : boolean;
+    showFoldWidgets     : boolean;
+    showGutter          : boolean;
+    displayIndentGuides : boolean;
+    scrollPastEnd       : boolean;
+    record              : ?Record;
+    syntax              : string;
+    theme               : string;
+    fontFamily          : ?string;
+    textSize            : any;
+    cursorPosition      : string;
+    isOverwriteEnabled  : boolean;
+
     constructor() {
         this._changes = new Rx.Subject();
 
@@ -32,9 +55,7 @@ export default class TextEditorStore {
         });
     }
 
-    get changes() {
+    get changes() : any {
         return this._changes;
     }
 }
-
-module.exports = TextEditorStore;

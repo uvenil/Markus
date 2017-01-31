@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import ListPresenter from './ListPresenter';
@@ -12,11 +13,11 @@ export default class CategoryListPresenter extends ListPresenter {
      * Creates a new instance of CategoryListPresenter.
      * @param {Database} database
      */
-    constructor(database) {
+    constructor(database : Database) {
         super(database);
     }
 
-    refresh() {
+    refresh() : void {
         this.database.findCategories()
             .then(categories => {
                 this.store.items = [];
@@ -29,7 +30,7 @@ export default class CategoryListPresenter extends ListPresenter {
                         categoryStore.primaryText = category;
 
                         this.database.countByCategory(category)
-                            .then(count => categoryStore.secondaryText = count)
+                            .then(count => categoryStore.secondaryText = (count).toString())
                             .catch(error => EventUtils.broadcast('global.error', error));
 
                         this.store.items.push(categoryStore);
@@ -40,7 +41,7 @@ export default class CategoryListPresenter extends ListPresenter {
             }).catch(error => EventUtils.broadcast('global.error', error));
     }
 
-    notifyDataSetChanged() {
+    notifyDataSetChanged() : void {
         this.database.findCategories()
             .then(categories => {
                 //region Finds newly added categories
@@ -99,21 +100,19 @@ export default class CategoryListPresenter extends ListPresenter {
 
                 this.store.items.forEach(item => {
                     this.database.countByCategory(item.primaryText)
-                        .then(count => item.secondaryText = count)
+                        .then(count => item.secondaryText = (count).toString())
                         .catch(error => EventUtils.broadcast('global.error', error));
                 });
             }).catch(error => EventUtils.broadcast('global.error', error));
     }
 
-    initStore() {
+    initStore() : void {
         super.initStore();
 
         this.store.headerText = 'Categories';
     }
 
-    _sort() {
+    _sort() : void {
         this.store.items = sortBy(this.store.items, item => item.primaryText);
     }
 }
-
-module.exports = CategoryListPresenter;

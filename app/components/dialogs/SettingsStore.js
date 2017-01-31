@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import { extendObservable } from 'mobx';
@@ -6,6 +7,24 @@ import Constants from '../../utils/Constants';
 import Config from '../../definitions/config.json';
 
 export default class SettingsStore {
+    highlightCurrentLine : BooleanStore;
+    showLineNumbers      : BooleanStore;
+    tabSize2             : BooleanStore;
+    tabSize4             : BooleanStore;
+    tabSize8             : BooleanStore;
+    useSoftTabs          : BooleanStore;
+    wordWrap             : BooleanStore;
+    showPrintMargin      : BooleanStore;
+    printMarginColumn72  : BooleanStore;
+    printMarginColumn80  : BooleanStore;
+    printMarginColumn100 : BooleanStore;
+    printMarginColumn120 : BooleanStore;
+    showInvisibles       : BooleanStore;
+    showFoldWidgets      : BooleanStore;
+    showGutter           : BooleanStore;
+    showIndentGuides     : BooleanStore;
+    scrollPastLastLine   : BooleanStore;
+
     constructor() {
         extendObservable(this, {
             highlightCurrentLine : new BooleanStore(Config.defaultHighlightActiveLine),
@@ -28,5 +47,3 @@ export default class SettingsStore {
         });
     }
 }
-
-module.exports = SettingsStore;

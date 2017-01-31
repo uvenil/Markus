@@ -1,9 +1,12 @@
+// @flow
 'use strict';
 
 import { extendObservable } from 'mobx';
 import BooleanStore from '../BooleanStore';
 
 export default class PromptDialogStore extends BooleanStore {
+    value : string;
+
     constructor() {
         super();
 
@@ -12,5 +15,3 @@ export default class PromptDialogStore extends BooleanStore {
         });
     }
 }
-
-module.exports = PromptDialogStore;

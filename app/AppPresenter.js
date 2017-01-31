@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import FilterListPresenter from './components/lists/FilterListPresenter';
@@ -7,6 +8,7 @@ import NoteEditorPresenter from './components/text/NoteEditorPresenter';
 import AppStore from './AppStore';
 import BooleanStore from './components/BooleanStore';
 import BooleanDialogStore from './components/dialogs/BooleanDialogStore';
+import EditorSettingsDialogStore from './components/dialogs/EditorSettingsDialogStore';
 import PromptDialogStore from './components/dialogs/PromptDialogStore';
 import ListDialogStore from './components/dialogs/ListDialogStore';
 import ListItemStore from './components/lists/ListItemStore';
@@ -39,6 +41,17 @@ const DARK_THEMES = [ 'ambiance', 'chaos', 'clouds_midnight', 'cobalt', 'idle_fi
 const FONTS = EnvironmentUtils.isMacOS() ? require('./definitions/fonts/fonts.mac.json') : require('./definitions/fonts/fonts.win.json');
 
 export default class AppPresenter {
+    _store                 : AppStore;
+    _settings              : Settings;
+    _database              : Database;
+    _defaultSyntax         : string;
+    _filterListPresenter   : FilterListPresenter;
+    _categoryListPresenter : CategoryListPresenter;
+    _noteListPresenter     : NoteListPresenter;
+    _noteEditorPresenter   : NoteEditorPresenter;
+    _filterSelection       : any;
+    _categorySelection     : any;
+
     constructor() {
         this._store         = new AppStore();
         this._settings      = new Settings();
@@ -52,7 +65,7 @@ export default class AppPresenter {
 
         this._store.booleanDialog                 = new BooleanDialogStore();
         this._store.aboutDialog                   = new BooleanStore();
-        this._store.editorSettingsDialog          = new BooleanStore();
+        this._store.editorSettingsDialog          = new EditorSettingsDialogStore();
         this._store.currentSyntaxDialog           = new ListDialogStore();
         this._store.defaultSyntaxDialog           = new ListDialogStore();
         this._store.themeDialog                   = new ListDialogStore();
@@ -78,7 +91,15 @@ export default class AppPresenter {
 
         this._store.noteList.selectionChanges.subscribe(() => this.refreshNoteEditor()
             .then(() => {
-                if (this._store.noteList.selectedIndex > -1) document.getElementById('noteList').parentElement.focus();
+                if (this._store.noteList.selectedIndex > -1) {
+                    const noteList = document.getElementById('noteList');
+
+                    if (noteList) {
+                        const parentElement : any = noteList.parentElement;
+
+                        if (parentElement) parentElement.focus();
+                    }
+                }
             }));
 
         //region Setting dialogs
@@ -117,11 +138,11 @@ export default class AppPresenter {
         //endregion
     }
 
-    get store() {
+    get store() : AppStore {
         return this._store;
     }
 
-    init() {
+    init() : void {
         this._initSettings()
             .then(() => this._initDatabase())
             .then(() => this._initAutoSave())
@@ -134,7 +155,7 @@ export default class AppPresenter {
 
     //region Filter operations
 
-    handleFilterItemClick(index) {
+    handleFilterItemClick(index : number)  : void {
         if (this._store.filterList.selectedIndex !== index) {
             this._store.filterList.selectedIndex   = index;
             this._store.categoryList.selectedIndex = -1;
@@ -144,7 +165,7 @@ export default class AppPresenter {
         }
     }
 
-    handleFilterItemRightClick(index) {
+    handleFilterItemRightClick(index : number) : void {
         if (this._store.filterList.selectedIndex !== index) {
             this._store.filterList.selectedIndex   = index;
             this._store.categoryList.selectedIndex = -1;
@@ -242,7 +263,7 @@ export default class AppPresenter {
 
     //region Category operations
 
-    handleCategoryItemClick(index) {
+    handleCategoryItemClick(index : number) : void {
         if (this._store.categoryList.selectedIndex !== index) {
             this._store.filterList.selectedIndex   = -1;
             this._store.categoryList.selectedIndex = index;
@@ -252,7 +273,7 @@ export default class AppPresenter {
         }
     }
 
-    handleCategoryItemRightClick(index) {
+    handleCategoryItemRightClick(index : number) : void {
         if (this._store.categoryList.selectedIndex !== index) {
             this._store.filterList.selectedIndex   = -1;
             this._store.categoryList.selectedIndex = index;
@@ -372,7 +393,7 @@ export default class AppPresenter {
             }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
-    handleAddCategoryClick() {
+    handleAddCategoryClick() : void {
         this._store.addCategoryDialog.value        = '';
         this._store.addCategoryDialog.booleanValue = true;
     }
@@ -381,13 +402,11 @@ export default class AppPresenter {
 
     //region Note operations
 
-    handleNoteItemClick(index) {
-        if (this._store.noteList.selectedIndex !== index) {
-            this._store.noteList.selectedIndex = index;
-        }
+    handleNoteItemClick(index : number) : void {
+        if (this._store.noteList.selectedIndex !== index) this._store.noteList.selectedIndex = index;
     }
 
-    handleNoteItemRightClick(index) {
+    handleNoteItemRightClick(index : number) : void {
         if (this._store.noteList.selectedIndex !== index) {
             this._store.noteList.selectedIndex = index;
         }
@@ -418,11 +437,13 @@ export default class AppPresenter {
             type : 'separator'
         }));
 
-        if (this._store.filterList.selectedIndex === 2) {
+        const selectedItem = this._store.noteList.selectedItem;
+
+        if (selectedItem && this._store.filterList.selectedIndex === 2) {
             menu.append(new MenuItem({
                 label : 'Restore',
                 click : () => {
-                    this._database.unarchiveById(this._store.noteList.selectedItem.itemId)
+                    this._database.unarchiveById(selectedItem.itemId)
                         .then(() => {
                             this._noteListPresenter.refresh();
                             this._filterListPresenter.refresh();
@@ -445,14 +466,18 @@ export default class AppPresenter {
                 this._store.booleanDialog.booleanValue   = true;
 
                 this._store.booleanDialog.trueAction = () => {
-                    (this._store.filterList.selectedIndex === 2 ? this._database.removeById(this._store.noteList.selectedItem.itemId) : this._database.archiveById(this._store.noteList.selectedItem.itemId))
-                        .then(() => {
-                            this._noteListPresenter.refresh();
-                            this._filterListPresenter.refresh();
-                            this._categoryListPresenter.notifyDataSetChanged();
+                    const selectedItem = this._store.noteList.selectedItem;
 
-                            this.refreshNoteEditor();
-                        }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+                    if (selectedItem && selectedItem.itemId) {
+                        (this._store.filterList.selectedIndex === 2 ? this._database.removeById(selectedItem.itemId) : this._database.archiveById(selectedItem.itemId))
+                            .then(() => {
+                                this._noteListPresenter.refresh();
+                                this._filterListPresenter.refresh();
+                                this._categoryListPresenter.notifyDataSetChanged();
+
+                                this.refreshNoteEditor();
+                            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+                    }
                 };
             }
         }));
@@ -460,7 +485,7 @@ export default class AppPresenter {
         menu.popup(remote.getCurrentWindow());
     }
 
-    handleNotesSortingClick() {
+    handleNotesSortingClick() : void {
         const menu = new Menu();
 
         const appendMenuItem = (label, index) => {
@@ -480,14 +505,14 @@ export default class AppPresenter {
         menu.popup(remote.getCurrentWindow());
     }
 
-    handleAddNoteClick() {
+    handleAddNoteClick() : void {
         this._noteListPresenter.addNote(this._defaultSyntax)
             .then(() => {
                 this._store.noteList.selectedIndex = 0;
             }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
-    handleImportNotes() {
+    handleImportNotes() : void {
         if (this._store.filterList.selectedIndex > -1 || this._store.categoryList.selectedIndex > -1) {
             dialog.showOpenDialog(remote.getCurrentWindow(), {
                 title      : 'Import from a text file',
@@ -521,8 +546,10 @@ export default class AppPresenter {
         }
     }
 
-    handleExportNote() {
-        if (this._store.noteList.selectedIndex > -1) {
+    handleExportNote() : void {
+        const selectedItem = this._store.noteList.selectedItem;
+
+        if (selectedItem && this._store.noteList.selectedIndex > -1) {
             dialog.showSaveDialog(remote.getCurrentWindow(), {
                 title   : 'Export to a text file',
                 filters : [
@@ -535,7 +562,7 @@ export default class AppPresenter {
                 if (filename) {
                     fs.access(filename, fs.constants.F_OK, error => {
                         if (error) {
-                            AppPresenter._exportNote(filename, this._store.noteList.selectedItem.record.fullText);
+                            AppPresenter._exportNote(filename, selectedItem.record.fullText);
                         } else {
                             dialog.showMessageBox(remote.getCurrentWindow(), {
                                 type      : 'question',
@@ -545,7 +572,7 @@ export default class AppPresenter {
                                 defaultId : 0,
                                 cancelId  : 1
                             }, response => {
-                                if (response === 0) AppPresenter._exportNote(filename, this._store.noteList.selectedItem.record.fullText);
+                                if (response === 0) AppPresenter._exportNote(filename, selectedItem.record.fullText);
                             });
                         }
                     });
@@ -554,56 +581,54 @@ export default class AppPresenter {
         }
     }
 
-    handleExportNotes() {
-        let countPromise;
+    handleExportNotes() : void {
+        const selectedItem = this._store.categoryList.selectedItem;
 
-        if (this._store.filterList.selectedIndex === 0) {
-            countPromise = this._database.countAll();
-        } else if (this._store.filterList.selectedIndex === 1) {
-            countPromise = this._database.countByStarred();
-        } else if (this._store.filterList.selectedIndex === 2) {
-            countPromise = this._database.countByArchived();
-        } else if (this._store.categoryList.selectedIndex > -1) {
-            countPromise = this._database.countByCategory(this._store.categoryList.selectedItem.primaryText);
-        }
+        if (selectedItem) {
+            let countPromise;
 
-        if (countPromise) {
-            countPromise.then(count => {
-                if (count > 0) {
-                    let findPromise;
+            if (this._store.filterList.selectedIndex === 0) {
+                countPromise = this._database.countAll();
+            } else if (this._store.filterList.selectedIndex === 1) {
+                countPromise = this._database.countByStarred();
+            } else if (this._store.filterList.selectedIndex === 2) {
+                countPromise = this._database.countByArchived();
+            } else if (this._store.categoryList.selectedIndex > -1) {
+                countPromise = this._database.countByCategory(selectedItem.primaryText);
+            }
 
-                    if (this._store.filterList.selectedIndex === 0) {
-                        findPromise = this._database.findAll(this._store.notesSorting);
-                    } else if (this._store.filterList.selectedIndex === 1) {
-                        findPromise = this._database.findByStarred(this._store.notesSorting);
-                    } else if (this._store.filterList.selectedIndex === 2) {
-                        findPromise = this._database.findByArchived(this._store.notesSorting);
-                    } else if (this._store.categoryList.selectedIndex > -1) {
-                        findPromise = this._database.findByCategory(this._store.categoryList.selectedItem.primaryText, this._store.notesSorting);
+            if (countPromise) {
+                countPromise.then(count => {
+                    if (count > 0) {
+                        let findPromise;
+
+                        if (this._store.filterList.selectedIndex === 0) {
+                            findPromise = this._database.findAll(this._store.notesSorting);
+                        } else if (this._store.filterList.selectedIndex === 1) {
+                            findPromise = this._database.findByStarred(this._store.notesSorting);
+                        } else if (this._store.filterList.selectedIndex === 2) {
+                            findPromise = this._database.findByArchived(this._store.notesSorting);
+                        } else if (this._store.categoryList.selectedIndex > -1) {
+                            findPromise = this._database.findByCategory(selectedItem.primaryText, this._store.notesSorting);
+                        }
+
+                        if (findPromise) {
+                            dialog.showOpenDialog(remote.getCurrentWindow(), {
+                                title      : 'Export text files to a directory',
+                                filters    : [
+                                    {
+                                        name       : 'All files',
+                                        extensions : [ '*' ]
+                                    }
+                                ],
+                                properties : [ 'openDirectory', 'createDirectory' ]
+                            }, directory => {
+                                if (directory && findPromise) findPromise.then(docs => docs.forEach(doc => AppPresenter._exportNote(Path.join(directory[0], doc._id + '.txt'), doc.fullText)));
+                            });
+                        }
                     }
-
-                    if (findPromise) {
-                        dialog.showOpenDialog(remote.getCurrentWindow(), {
-                            title      : 'Export text files to a directory',
-                            filters    : [
-                                {
-                                    name       : 'All files',
-                                    extensions : [ '*' ]
-                                }
-                            ],
-                            properties : [ 'openDirectory', 'createDirectory' ]
-                        }, directory => {
-                            if (directory) {
-                                promise.then(docs => {
-                                    docs.forEach(doc => {
-                                        AppPresenter._exportNote(Path.join(directory[0], doc._id + '.txt'), doc.fullText);
-                                    });
-                                });
-                            }
-                        });
-                    }
-                }
-            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+                }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+            }
         }
     }
 
@@ -611,68 +636,88 @@ export default class AppPresenter {
 
     //region Editor operation
 
-    handleStarClick() {
-        this._store.noteEditor.record.starred = !this._store.noteEditor.record.starred;
+    handleStarClick() : void {
+        const record : ?Record = this._store.noteEditor.record;
 
-        this._database.addOrUpdate(this._store.noteEditor.record.toDoc())
-            .then(() => this._filterListPresenter.refresh())
-            .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+        if (record) {
+            record.starred = !record.starred;
+
+            this._database.addOrUpdate(record.toDoc())
+                .then(() => this._filterListPresenter.refresh())
+                .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+        }
     }
 
-    handleArchiveClick() {
-        this._store.noteEditor.record.archived = !this._store.noteEditor.record.archived;
+    handleArchiveClick() : void {
+        const record : ?Record = this._store.noteEditor.record;
 
-        this._database.addOrUpdate(this._store.noteEditor.record.toDoc())
-            .then(() => this._filterListPresenter.refresh())
-            .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+        if (record) {
+            record.archived = !record.archived;
+
+            this._database.addOrUpdate(record.toDoc())
+                .then(() => this._filterListPresenter.refresh())
+                .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+        }
     }
 
-    handleSelectCategoryClick() {
-        this._database.findCategories()
-            .then(categories => {
-                this._store.selectCategoryDialog.list.items = [];
+    handleSelectCategoryClick() : void {
+        const record : ?Record = this._store.noteEditor.record;
 
-                categories.forEach(category => {
-                    const item = new ListItemStore();
+        if (record) {
+            this._database.findCategories()
+                .then(categories => {
+                    this._store.selectCategoryDialog.list.items = [];
 
-                    item.itemId      = category;
-                    item.primaryText = category;
-                    item.selected    = this._store.noteEditor.record.category ? this._store.noteEditor.record.category === category : false;
+                    categories.forEach(category => {
+                        const item = new ListItemStore();
 
-                    this._store.selectCategoryDialog.list.items.push(item);
-                });
+                        item.itemId      = category;
+                        item.primaryText = category;
+                        item.selected    = record.category ? record.category === category : false;
 
-                this._store.selectCategoryDialog.booleanValue = true;
-            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+                        this._store.selectCategoryDialog.list.items.push(item);
+                    });
+
+                    this._store.selectCategoryDialog.booleanValue = true;
+                }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+        }
     }
 
     /**
      * @param {number} index The category item index the user selects.
      */
-    handleSelectCategoryItemClick(index) {
-        if (this._store.selectCategoryDialog.list.selectedIndex !== index) {
-            this._store.selectCategoryDialog.list.selectedIndex = index;
+    handleSelectCategoryItemClick(index : number) : void {
+        if (this._store.selectCategoryDialog.list.selectedIndex !== index) this._store.selectCategoryDialog.list.selectedIndex = index;
+    }
+
+    handleSelectCategoryOkClick() : void {
+        const selectedItem = this._store.selectCategoryDialog.list.selectedItem;
+
+        if (selectedItem && this._store.selectCategoryDialog.list.selectedIndex > -1) {
+            const record : ?Record = this._store.noteEditor.record;
+
+            if (record) {
+                record.category = selectedItem.primaryText;
+                this._store.noteEditor.changes.onNext(record);
+
+                this._categoryListPresenter.notifyDataSetChanged();
+
+                this._store.selectCategoryDialog.booleanValue = false;
+            }
         }
     }
 
-    handleSelectCategoryOkClick() {
-        if (this._store.selectCategoryDialog.list.selectedIndex > -1) {
-            this._store.noteEditor.record.category = this._store.selectCategoryDialog.list.selectedItem.primaryText;
-            this._store.noteEditor.changes.onNext(this._store.noteEditor.record);
+    handleSelectCategoryNoneClick() : void {
+        const record : ?Record = this._store.noteEditor.record;
+
+        if (record) {
+            record.category = null;
+            this._store.noteEditor.changes.onNext(record);
 
             this._categoryListPresenter.notifyDataSetChanged();
 
             this._store.selectCategoryDialog.booleanValue = false;
         }
-    }
-
-    handleSelectCategoryNoneClick() {
-        this._store.noteEditor.record.category = null;
-        this._store.noteEditor.changes.onNext(this._store.noteEditor.record);
-
-        this._categoryListPresenter.notifyDataSetChanged();
-
-        this._store.selectCategoryDialog.booleanValue = false;
     }
 
     //endregion
@@ -681,30 +726,34 @@ export default class AppPresenter {
 
     //region Refresh operations
 
-    refreshFilterList() {
+    refreshFilterList() : void {
         this._filterListPresenter.refresh();
 
         this._store.filterList.selectedIndex = 0;
         this._store.noteList.selectedIndex   = -1;
     }
 
-    refreshCategoryList() {
+    refreshCategoryList() : void {
         this._categoryListPresenter.refresh();
 
         this._store.noteList.selectedIndex = -1;
     }
 
-    refreshNoteList() {
+    refreshNoteList() : void {
         this._noteListPresenter.refresh();
 
         this.refreshNoteEditor().catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
-    refreshNoteEditor() {
+    refreshNoteEditor() : Promise<*> {
         return new Promise((resolve, reject) => {
-            this._noteEditorPresenter.load(this._store.noteList.selectedItemId)
+            const itemId = this._store.noteList.selectedItemId;
+
+            this._noteEditorPresenter.load(itemId)
                 .then(() => {
-                    if (this._store.noteList.selectedItemId) this._store.currentSyntaxDialog.list.selectedIndex = indexOf(SyntaxCodes.items, this._store.noteEditor.record.syntax);
+                    const record : ?Record = this._store.noteEditor.record;
+
+                    if (itemId && record) this._store.currentSyntaxDialog.list.selectedIndex = indexOf(SyntaxCodes.items, record.syntax);
 
                     resolve();
                 }).catch(error => reject(error));
@@ -719,7 +768,7 @@ export default class AppPresenter {
      * Adds a new category.
      * @param {String} category
      */
-    addCategory(category) {
+    addCategory(category : string) : void {
         if (isEmpty(category)) {
             EventUtils.broadcast(EVENT_ERROR, 'Please enter the name of the new category');
         } else {
@@ -737,7 +786,7 @@ export default class AppPresenter {
      * @param {String} oldCategory
      * @param {String} newCategory
      */
-    updateCategory(oldCategory, newCategory) {
+    updateCategory(oldCategory : string, newCategory : string) : void {
         this._database.updateCategory(oldCategory, newCategory)
             .then(() => {
                 this._store.updateCategoryDialog.booleanValue = false;
@@ -750,7 +799,7 @@ export default class AppPresenter {
      * Filters the note list by the specified keyword.
      * @param {String} keyword
      */
-    filterNoteList(keyword) {
+    filterNoteList(keyword : string) : void {
         this._noteListPresenter.keyword = keyword;
 
         this._store.noteList.selectedIndex = -1;
@@ -764,7 +813,7 @@ export default class AppPresenter {
      * Shows or hides filter list view.
      * @param {bool} show
      */
-    showFilterList(show) {
+    showFilterList(show : boolean) : void {
         this._store.filterListShown = show;
 
         this._updateMenu();
@@ -774,7 +823,7 @@ export default class AppPresenter {
      * Shows or hides note list view.
      * @param {bool} show
      */
-    showNoteList(show) {
+    showNoteList(show : boolean) : void {
         this._store.noteListShown = show;
 
         this._updateMenu();
@@ -783,7 +832,7 @@ export default class AppPresenter {
     /**
      * @param {String} syntax
      */
-    changeCurrentSyntax(syntax) {
+    changeCurrentSyntax(syntax : string) : void {
         this._store.noteEditor.syntax = syntax;
 
         if (this._store.noteEditor.record) {
@@ -796,14 +845,14 @@ export default class AppPresenter {
     /**
      * @param {String} syntax
      */
-    changeDefaultSyntax(syntax) {
+    changeDefaultSyntax(syntax : string) : void {
         this._settings.set('defaultSyntax', syntax).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
     /**
      * @param {String} theme
      */
-    changeTheme(theme) {
+    changeTheme(theme : string) : void {
         this._store.noteEditor.theme = theme;
 
         this._updateTheme();
@@ -815,14 +864,14 @@ export default class AppPresenter {
     /**
      * @param {String} font
      */
-    changeFont(font) {
+    changeFont(font : string) : void {
         AppPresenter._updateFont(font);
 
         this._settings.set('font', font)
             .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
-    changeSettings(data) {
+    changeSettings(data : any) : void {
         if (data.name === 'highlightActiveLine') {
             this._store.noteEditor.highlightActiveLine = data.value;
         } else if (data.name === 'tabSize') {
@@ -858,11 +907,11 @@ export default class AppPresenter {
 
     //region Debug operations
 
-    resetDatabase() {
+    resetDatabase() : void {
         this._database.removeAll();
     }
 
-    resetSettings() {
+    resetSettings() : void {
         this._settings.clear()
             .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
@@ -871,7 +920,7 @@ export default class AppPresenter {
 
     //region Private methods
 
-    _initSettings() {
+    _initSettings() : Promise<*> {
         return new Promise((resolve, reject) => {
             Promise.all([
                 this._settings.get('filterListShown',     true),
@@ -994,7 +1043,7 @@ export default class AppPresenter {
         });
     }
 
-    _initDatabase() {
+    _initDatabase() : Promise<*> {
         return new Promise((resolve, reject) => this._database.load(Config.databaseName)
             .then(() => {
                 this.refreshFilterList();
@@ -1005,14 +1054,19 @@ export default class AppPresenter {
             }).catch(error => reject(error)));
     }
 
-    _initAutoSave() {
-        this._store.noteEditor.changes.subscribe(record => this._database.findById(this._store.noteList.selectedItemId)
+    _initAutoSave() : void {
+        this._store.noteEditor.changes.subscribe(record => {
+            const selectedItem   = this._store.noteList.selectedItem;
+            const selectedItemId = this._store.noteList.selectedItemId;
+
+            if (selectedItem && selectedItemId) this._database.findById(selectedItemId)
             .then(() => this._database.addOrUpdate(record.toDoc()))
-            .then(doc => this._store.noteList.selectedItem.update(Record.fromDoc(doc)))
-            .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString())));
+            .then(doc => selectedItem.update(Record.fromDoc(doc)))
+            .catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+        });
     }
 
-    _updateMenu() {
+    _updateMenu() : Promise<*> {
         return new Promise(resolve => {
             const viewMenu = Menu.getApplicationMenu().items[EnvironmentUtils.isMacOS() ? 3 : 2];
 
@@ -1023,11 +1077,11 @@ export default class AppPresenter {
         });
     }
 
-    _updateTheme() {
+    _updateTheme() : void {
         this._store.theme = indexOf(DARK_THEMES, this._store.noteEditor.theme) > -1 ? 'dark' : 'light';
     }
 
-    static _updateFont(font) {
+    static _updateFont(font : string) : void {
         EventUtils.broadcast('NoteEditor.font.change', font);
     }
 
@@ -1035,27 +1089,31 @@ export default class AppPresenter {
      * @param {number} sorting
      * @private
      */
-    _updateNotesSorting(sorting) {
+    _updateNotesSorting(sorting : number) : void {
         this._store.notesSorting        = sorting;
         this._noteListPresenter.sorting = sorting;
 
         this._settings.set('notesSorting', sorting).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
     }
 
-    _duplicateNote() {
-        const now = Date.now();
-        const doc = this._store.noteList.selectedItem.record.toDoc();
+    _duplicateNote() : void {
+        const selectedItem = this._store.noteList.selectedItem;
 
-        doc._id           = undefined;
-        doc.lastUpdatedAt = now;
-        doc.createdAt     = now;
+        if (selectedItem) {
+            const now = Date.now();
+            const doc = selectedItem.record.toDoc();
 
-        this._database.addOrUpdate(doc)
-            .then(() => {
-                this._filterListPresenter.refresh();
-                this._categoryListPresenter.notifyDataSetChanged();
-                this._noteListPresenter.refresh();
-            }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+            doc._id           = undefined;
+            doc.lastUpdatedAt = now;
+            doc.createdAt     = now;
+
+            this._database.addOrUpdate(doc)
+                .then(() => {
+                    this._filterListPresenter.refresh();
+                    this._categoryListPresenter.notifyDataSetChanged();
+                    this._noteListPresenter.refresh();
+                }).catch(error => EventUtils.broadcast(EVENT_ERROR, error.toString()));
+        }
     }
 
     /**
@@ -1064,7 +1122,7 @@ export default class AppPresenter {
      * @param {String} fullText
      * @private
      */
-    static _exportNote(filename, fullText) {
+    static _exportNote(filename : string, fullText : string) : void {
         fs.writeFile(filename, fullText, {
             encoding : 'utf-8',
             flag     : 'w'
@@ -1073,11 +1131,9 @@ export default class AppPresenter {
         });
     }
 
-    static _clearCache() {
+    static _clearCache() : void {
         Rx.Observable.interval(CLEAR_CACHE_INTERVAL).subscribe(() => remote.getCurrentWindow().webContents.session.clearCache(() => console.trace('Cache cleared')));
     }
 
     //endregion
 }
-
-module.exports = AppPresenter;

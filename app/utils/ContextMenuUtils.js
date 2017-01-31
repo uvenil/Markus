@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import isEmpty from 'lodash.isempty';
@@ -13,8 +14,11 @@ const showTextBoxContextMenu = () => {
 
     if (window.getSelection) {
         text = window.getSelection().toString();
-    } else if (document.selection && document.selection.type !== 'Control') {
-        text = document.selection.createRange().text;
+    } else {
+        const doc : any       = document;
+        const selection : any = doc.selection;
+
+        if (selection && selection.type !== 'Control') text = selection.createRange().text;
     }
 
     const hasSelectedText = !isNil(text) && !isEmpty(text);

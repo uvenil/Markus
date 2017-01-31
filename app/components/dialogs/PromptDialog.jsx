@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import React from 'react';
@@ -10,17 +11,17 @@ import Constants from '../../utils/Constants';
 
 @observer
 export default class PromptDialog extends React.Component {
-    constructor(props) {
+    _handleEnter : Function;
+
+    constructor(props : any) {
         super(props);
 
         this._handleEnter = value => {
-            if (this.props.onEnter) {
-                this.props.onEnter(value);
-            }
+            if (this.props.onEnter) this.props.onEnter(value);
         };
     }
 
-    render() {
+    render() : any {
         return (
             <Dialog
                 title={this.props.title}
@@ -55,5 +56,3 @@ PromptDialog.propTypes = {
     label   : React.PropTypes.string,
     onEnter : React.PropTypes.func
 };
-
-module.exports = PromptDialog;

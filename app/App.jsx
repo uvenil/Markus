@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import React from 'react';
@@ -29,7 +30,7 @@ import Settings from './utils/Settings';
 import EventUtils from './utils/EventUtils';
 import EnvironmentUtils from './utils/EnvironmentUtils';
 import Constants from './utils/Constants';
-import { ShortcutManager } from 'react-shortcuts';
+import ShortcutManager from 'react-shortcuts/lib/shortcut-manager';
 import SyntaxNames from './definitions/syntax/syntax-names.json';
 import SyntaxCodes from './definitions/syntax/syntax-codes.json';
 import ThemeCodes from './definitions/themes/theme-codes.json';
@@ -79,7 +80,14 @@ const MUI_DARK_THEME = getMuiTheme({
 
 @observer
 export default class App extends React.Component {
-    constructor(props) {
+    _events                      : string[];
+    _settings                    : Settings;
+    _handleError                 : Function;
+    _handleFilterListWidthChange : Function;
+    _handleNoteListWidthChange   : Function;
+    _handleNewNote               : Function;
+
+    constructor(props : any) {
         super(props);
 
         this._events   = [];
@@ -103,9 +111,7 @@ export default class App extends React.Component {
         };
 
         this._handleNewNote = () => {
-            if (this.props.store.addNoteEnabled) {
-                this.props.presenter.handleAddNoteClick();
-            }
+            if (this.props.store.addNoteEnabled) this.props.presenter.handleAddNoteClick();
         };
     }
 
@@ -113,7 +119,7 @@ export default class App extends React.Component {
         return { shortcuts : this.props.shortcuts };
     }
 
-    componentDidMount() {
+    componentDidMount() : void {
         this._events.push(EventUtils.register('global.error', message => this._handleError(message)));
         this._events.push(EventUtils.register('dev.database.reset', () => this.props.presenter.resetDatabase()));
         this._events.push(EventUtils.register('dev.settings.reset', () => this.props.presenter.resetSettings()));
@@ -130,11 +136,11 @@ export default class App extends React.Component {
         this.props.presenter.init();
     }
 
-    componentWillUnmount() {
+    componentWillUnmount() : void {
         this._events.forEach(subscription => EventUtils.unregister(subscription));
     }
 
-    render() {
+    render() : any {
         const sorting  = this.props.store.notesSorting;
         const muiTheme = this.props.store.theme === 'dark' ? MUI_DARK_THEME : MUI_LIGHT_THEME;
 
@@ -494,5 +500,3 @@ App.propTypes = {
 App.childContextTypes = {
     shortcuts : React.PropTypes.object
 };
-
-module.exports = App;

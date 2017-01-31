@@ -1,19 +1,24 @@
+// @flow
 'use strict';
 
 export default class EnvironmentUtils {
-    static isMacOS() {
-        return process.platform === 'darwin';
+    static isMacOS() : boolean {
+        const p : any = process;
+        return p.platform === 'darwin';
     }
 
-    static isWindows() {
-        return process.platform === 'win32';
+    static isWindows() : boolean {
+        const p : any = process;
+        return p.platform === 'win32';
     }
 
-    static isLinux() {
-        return process.platform === 'linux';
+    static isLinux() : boolean {
+        const p : any = process;
+        return p.platform === 'linux';
     }
 
-    static isDev() {
-        return process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath);
+    static isDev() : boolean {
+        const p : any = process;
+        return p.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(p.execPath) || /[\\/]electron[\\/]/.test(p.execPath);
     }
 }

@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import React from 'react';
@@ -9,7 +10,14 @@ import assign from 'lodash.assign';
 import isEmpty from 'lodash.isempty';
 
 class SearchField extends React.Component {
-    constructor(props) {
+    static defaultProps : any;
+
+    textBoxId     : string;
+    clearButtonId : string;
+    _handleChange : Function;
+    _handleClear  : Function;
+
+    constructor(props : any) {
         super(props);
 
         this.textBoxId     = Unique.nextString('SearchField_textBoxId');
@@ -18,9 +26,7 @@ class SearchField extends React.Component {
         this._handleChange = value => {
             this.refs[this.clearButtonId].style.display = isEmpty(value) ? 'none' : 'block';
 
-            if (this.props.onChange) {
-                this.props.onChange(value);
-            }
+            if (this.props.onChange) this.props.onChange(value);
         };
 
         this._handleClear = () => {
@@ -33,7 +39,7 @@ class SearchField extends React.Component {
         };
     }
 
-    render() {
+    render() : any {
         const style = { width : '100%', position : 'relative', pointerEvents : this.props.disabled ? 'none' : 'auto' };
 
         return (
@@ -51,9 +57,7 @@ class SearchField extends React.Component {
                     style={{ width : 'calc(100% - ' + (Constants.PADDING_X1 * 2 + Constants.PADDING_X2 * 2) + 'px)', paddingLeft : Constants.PADDING_X1 + Constants.PADDING_X2, paddingRight : Constants.PADDING_X1 + Constants.PADDING_X2, paddingTop : Constants.PADDING_X0, paddingBottom : Constants.PADDING_X0, WebkitUserSelect : 'none', color : this.props.muiTheme.palette.textColor, border : 'none', outline : 'none' }}
                     onChange={event => this._handleChange(event.target.value)}
                     onMouseDown={event => {
-                        if (event.nativeEvent.button === 2) {
-                            showTextBoxContextMenu();
-                        }
+                        if (event.nativeEvent.button === 2) showTextBoxContextMenu();
                     }} />
                 <i
                     id={this.clearButtonId}

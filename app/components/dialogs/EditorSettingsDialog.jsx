@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import React from 'react';
@@ -13,11 +14,11 @@ import Constants from '../../utils/Constants';
 
 @observer
 export default class EditorSettingsDialog extends React.Component {
-    constructor(props) {
+    constructor(props : any) {
         super(props);
     }
 
-    render() {
+    render() : any {
         return (
             <Dialog
                 title="Editor"
@@ -219,5 +220,3 @@ export default class EditorSettingsDialog extends React.Component {
 EditorSettingsDialog.propTypes = {
     store : React.PropTypes.instanceOf(EditorSettingsDialogStore)
 };
-
-module.exports = EditorSettingsDialog;

@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import React from 'react';
@@ -19,7 +20,16 @@ require('brace/ext/whitespace');
 
 @observer
 class NoteEditor extends React.Component {
-    constructor(props) {
+    _editorId       : string;
+    _placeHolderId  : string;
+    _events         : string[];
+    _handleChange   : Function;
+    _init           : Function;
+    _changeSettings : Function;
+    _changeFont     : Function;
+    _handleRefresh  : Function;
+
+    constructor(props : any) {
         super(props);
 
         this._editorId      = Unique.nextString();
@@ -113,18 +123,18 @@ class NoteEditor extends React.Component {
         };
     }
 
-    componentDidMount() {
+    componentDidMount() : void {
         this._events.push(EventUtils.register('NoteEditor.init', data => this._init(data)));
         this._events.push(EventUtils.register('NoteEditor.settings.change', data => this._changeSettings(data)));
         this._events.push(EventUtils.register('NoteEditor.font.change', font => this._changeFont(font)));
         this._events.push(EventUtils.register('NoteEditor.refresh', () => this._handleRefresh()));
     }
 
-    componentWillUnmount() {
+    componentWillUnmount() : void {
         this._events.forEach(event => EventUtils.unregister(event));
     }
 
-    render() {
+    render() : any {
         const syntax = this.props.store.record && this.props.store.record.syntax ? this.props.store.record.syntax : this.props.store.syntax;
 
         require('brace/mode/' + syntax);

@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import EventUtils from './EventUtils';
@@ -63,5 +64,3 @@ export default function createWindowMenu() {
 
     Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
-
-module.exports = createWindowMenu;

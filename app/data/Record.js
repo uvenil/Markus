@@ -1,10 +1,23 @@
+// @flow
 'use strict';
 
 import { extendObservable } from 'mobx';
 import ListItemStore from '../components/lists/ListItemStore';
 
 export default class Record {
-    constructor(title, description, fullText, syntax, lastUpdatedAt, createdAt) {
+    _id            : ?string;
+    title          : string;
+    description    : string;
+    fullText       : string;
+    searchableText : string;
+    syntax         : string;
+    category       : ?string;
+    starred        : boolean;
+    archived       : boolean;
+    lastUpdatedAt  : number;
+    createdAt      : number;
+
+    constructor(title : ?string, description : string, fullText : ?string, syntax : string, lastUpdatedAt : number, createdAt : number) {
         extendObservable(this, {
             title          : title,
             description    : description,
@@ -35,7 +48,7 @@ export default class Record {
      * @param {String} fullText
      * @returns {Record}
      */
-    static fromText(syntax, fullText) {
+    static fromText(syntax : string, fullText : ?string) : Record {
         const now = Date.now();
 
         if (fullText && fullText.length > 0 && fullText.indexOf('\n') > -1) {
@@ -53,8 +66,7 @@ export default class Record {
                     line1 = lines[1];
 
                     if (lines.length > 2) {
-                        line2 = lines[2];
-
+                        line2       = lines[2];
                         description = line1 + '\n' + line2;
                     } else {
                         description = line1;
@@ -94,7 +106,7 @@ export default class Record {
      * Converts this record to a ListItemStore.
      * @returns {ListItemStore}
      */
-    toListItemStore() {
+    toListItemStore() : ListItemStore {
         return new ListItemStore().update(this);
     }
 
@@ -102,7 +114,7 @@ export default class Record {
      * Updates this record using the given full text.
      * @param {String} fullText The full text to update the specified record.
      */
-    update(fullText) {
+    update(fullText : string) {
         const record = Record.fromText(this.syntax, fullText);
 
         this.title          = record.title;
@@ -112,5 +124,3 @@ export default class Record {
         this.lastUpdatedAt  = Date.now();
     }
 }
-
-module.exports = Record;

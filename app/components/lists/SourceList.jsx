@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import React from 'react';
@@ -11,11 +12,11 @@ import Constants from '../../utils/Constants';
 
 @observer
 class SourceList extends React.Component {
-    constructor(props) {
+    constructor(props : any) {
         super(props);
     }
 
-    render() {
+    render() : any {
         return (
             <List
                 header={this.props.store.headerText}

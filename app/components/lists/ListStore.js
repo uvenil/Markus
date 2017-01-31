@@ -1,10 +1,16 @@
+// @flow
 'use strict';
 
 import { extendObservable, computed } from 'mobx';
+import ListItemStore from './ListItemStore.jsx';
 import Rx from 'rx-lite';
 import isEmpty from 'lodash.isempty';
 
 export default class ListStore {
+    headerText        : string;
+    items             : ListItemStore[];
+    _selectionChanges : any;
+
     constructor() {
         extendObservable(this, {
             headerText : '',
@@ -14,12 +20,12 @@ export default class ListStore {
         this._selectionChanges = new Rx.Subject();
     }
 
-    get selectionChanges() {
+    get selectionChanges() : any {
         return this._selectionChanges;
     }
 
     @computed
-    get isEmpty() {
+    get isEmpty() : boolean {
         return isEmpty(this.items);
     }
 
@@ -28,7 +34,7 @@ export default class ListStore {
      * @returns {number} Count of items.
      */
     @computed
-    get count() {
+    get count() : number {
         return this.items.length;
     }
 
@@ -37,11 +43,9 @@ export default class ListStore {
      * @returns {number} The index of the selected item.
      */
     @computed
-    get selectedIndex() {
+    get selectedIndex() : number {
         for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].selected) {
-                return i;
-            }
+            if (this.items[i].selected) return i;
         }
 
         return -1;
@@ -51,10 +55,8 @@ export default class ListStore {
      * Selects the item at the specific index
      * @param {number} index The index of the item to select, or -1 if no item is to be selected.
      */
-    set selectedIndex(index) {
-        for (let i = 0; i < this.items.length; i++) {
-            this.items[i].selected = i === index;
-        }
+    set selectedIndex(index : number) : void {
+        for (let i = 0; i < this.items.length; i++) this.items[i].selected = i === index;
 
         this._selectionChanges.onNext(index);
     }
@@ -64,11 +66,9 @@ export default class ListStore {
      * @returns {String|undefined} The ID of the selected item.
      */
     @computed
-    get selectedItemId() {
+    get selectedItemId() : ?string {
         for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].selected) {
-                return this.items[i].itemId;
-            }
+            if (this.items[i].selected) return this.items[i].itemId;
         }
 
         return undefined;
@@ -78,16 +78,12 @@ export default class ListStore {
      * Selects the item with the specific ID.
      * @param {String|undefined} itemId The ID of the item to select, or undefined if no item is to be selected.
      */
-    set selectedItemId(itemId) {
+    set selectedItemId(itemId : ?string) : void {
         for (let i = 0; i < this.items.length; i++) {
             if (this.items[i].itemId === itemId) {
-                if (!this.items[i].selected) {
-                    this.items[i].selected = true;
-                }
+                if (!this.items[i].selected) this.items[i].selected = true;
             } else {
-                if (this.items[i].selected) {
-                    this.items[i].selected = false;
-                }
+                if (this.items[i].selected) this.items[i].selected = false;
             }
         }
     }
@@ -96,7 +92,7 @@ export default class ListStore {
      * Returns the currently selected item.
      * @returns {ListItemStore|undefined}
      */
-    get selectedItem() {
+    get selectedItem() : ?ListItemStore {
         const itemId = this.selectedItemId;
 
         return itemId ? this.getItem(itemId) : undefined;
@@ -107,15 +103,11 @@ export default class ListStore {
      * @param {String} itemId
      * @returns {ListItemStore|undefined}
      */
-    getItem(itemId) {
+    getItem(itemId : string) : ?ListItemStore {
         for (let i = 0; i < this.items.length; i++) {
-            if (this.items[i].itemId === itemId) {
-                return this.items[i];
-            }
+            if (this.items[i].itemId === itemId) return this.items[i];
         }
 
         return undefined;
     }
 }
-
-module.exports = ListStore;

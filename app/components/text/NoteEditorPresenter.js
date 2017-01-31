@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import NoteEditorStore from './NoteEditorStore';
@@ -6,17 +7,19 @@ import Record from '../../data/Record';
 import EventUtils from '../../utils/EventUtils';
 
 export default class NoteEditorPresenter {
+    _database : Database;
+    _store    : NoteEditorStore;
+
     /**
      * Creates a new instance of NoteEditorPresenter.
      * @param {Database} database
      */
-    constructor(database) {
+    constructor(database : Database) {
         this._database = database;
-
-        this._store = new NoteEditorStore();
+        this._store    = new NoteEditorStore();
     }
 
-    get store() {
+    get store() : NoteEditorStore {
         return this._store;
     }
 
@@ -24,7 +27,7 @@ export default class NoteEditorPresenter {
      * @param {String|undefined} [recordId]
      * @return {Promise}
      */
-    load(recordId) {
+    load(recordId : ?string) : Promise<*> {
         return new Promise((resolve, reject) => {
             if (recordId) {
                 this._database.findById(recordId)
@@ -45,5 +48,3 @@ export default class NoteEditorPresenter {
         });
     }
 }
-
-module.exports = NoteEditorPresenter;

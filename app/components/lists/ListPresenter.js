@@ -1,14 +1,18 @@
+// @flow
 'use strict';
 
 import ListStore from './ListStore';
 import Database from '../../data/Database';
 
 export default class ListPresenter {
+    database : Database;
+    store    : ListStore;
+
     /**
      * Creates a new instance of FilterListPresenter.
      * @param {Database} database
      */
-    constructor(database) {
+    constructor(database : Database) {
         this.database = database;
 
         this.initStore();
@@ -17,25 +21,21 @@ export default class ListPresenter {
     /**
      * @returns {number}
      */
-    get selectedItemCount() {
+    get selectedItemCount() : number {
         const selectedItem = this.store.selectedItem;
 
-        if (selectedItem) {
-            return parseInt(selectedItem.secondaryText);
-        }
+        if (selectedItem) return parseInt(selectedItem.secondaryText);
 
         return 0;
     }
 
-    refresh() {
+    refresh() : void {
     }
 
-    notifyDataSetChanged() {
+    notifyDataSetChanged() : void {
     }
 
-    initStore() {
+    initStore() : void {
         this.store = new ListStore();
     }
 }
-
-module.exports = ListPresenter;

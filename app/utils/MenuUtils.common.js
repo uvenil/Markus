@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import EventUtils from './EventUtils';
@@ -6,7 +7,7 @@ import Constants from './Constants';
 
 const { remote } = require('electron');
 
-const createEditMenu = () => {
+const createEditMenu : any = () => {
     return {
         label   : 'Edit',
         submenu : [
@@ -48,7 +49,7 @@ const createEditMenu = () => {
     };
 };
 
-const createViewMenu = () => {
+const createViewMenu : any = () => {
     return {
         label   : 'View',
         submenu : [
@@ -99,7 +100,7 @@ const createViewMenu = () => {
     };
 };
 
-const createDeveloperMenu = () => {
+const createDeveloperMenu : any = () => {
     return {
         label   : 'Developer',
         submenu : [

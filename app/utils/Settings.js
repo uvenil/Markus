@@ -1,6 +1,9 @@
+// @flow
 'use strict';
 
 export default class Settings {
+    _storage : any;
+
     constructor() {
         this._storage = require('electron-json-storage');
     }
@@ -11,7 +14,7 @@ export default class Settings {
      * @param {object} [defaultValue] The default value to return if no value is associated with the specific key.
      * @returns {Promise}
      */
-    get(key, defaultValue) {
+    get(key : string, defaultValue : any) : Promise<any> {
         return new Promise((resolve, reject) => {
             this.contains(key)
                 .then(hasKey => {
@@ -40,7 +43,7 @@ export default class Settings {
      * @param {object} data The value associated with the specific key to set.
      * @returns {Promise}
      */
-    set(key, data) {
+    set(key : string, data : any) : Promise<*> {
         return new Promise((resolve, reject) => {
             this._storage.set(key, data, error => {
                 if (error) {
@@ -57,7 +60,7 @@ export default class Settings {
      * @param {String} key The specific value to remove.
      * @returns {Promise}
      */
-    remove(key) {
+    remove(key : string) : Promise<*> {
         return new Promise((resolve, reject) => {
             this._storage.remove(key, error => {
                 if (error) {
@@ -73,7 +76,7 @@ export default class Settings {
      * Clears all keys.
      * @returns {Promise}
      */
-    clear() {
+    clear() : Promise<*> {
         return new Promise((resolve, reject) => {
             this._storage.clear(error => {
                 if (error) {
@@ -90,7 +93,7 @@ export default class Settings {
      * @param {String} key The specific key to check for existence.
      * @returns {Promise}
      */
-    contains(key) {
+    contains(key : string) : Promise<boolean> {
         return new Promise((resolve, reject) => {
             this._storage.has(key, (error, hasKey) => {
                 if (error) {
@@ -106,7 +109,7 @@ export default class Settings {
      * Gets all the keys.
      * @returns {Promise}
      */
-    keys() {
+    keys() : Promise<string[]> {
         return new Promise((resolve, reject) => {
             this._storage.keys((error, keys) => {
                 if (error) {
@@ -118,5 +121,3 @@ export default class Settings {
         });
     }
 }
-
-module.exports = Settings;

@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import React from 'react';
@@ -7,7 +8,7 @@ import FontIcon from 'material-ui/FontIcon';
 import Constants from '../../utils/Constants';
 import assign from 'lodash.assign';
 
-const Button = props => {
+const Button = (props : any) => {
     const icon = props.icon ?
         <FontIcon
             className={'fa fa-fw fa-' + props.icon}

@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import React from 'react';
@@ -8,14 +9,25 @@ import Text from '../text/Text.jsx';
 import { observer } from 'mobx-react';
 import Unique from '../../utils/Unique';
 import Constants from '../../utils/Constants';
-import { Shortcuts } from 'react-shortcuts';
+import Shortcuts from 'react-shortcuts/lib/component/shortcuts';
 
 @observer
 class NoteList extends React.Component {
-    constructor(props) {
+    _focus           : Function;
+    _handleShortcuts : Function;
+
+    constructor(props : any) {
         super(props);
 
-        this._focus = () => document.getElementById('noteList').parentElement.focus();
+        this._focus = () => {
+            const noteList = document.getElementById('noteList');
+
+            if (noteList) {
+                const parentElement : any = noteList.parentElement;
+
+                if (parentElement) parentElement.focus();
+            }
+        };
 
         this._handleShortcuts = action => {
             switch (action) {
@@ -40,7 +52,7 @@ class NoteList extends React.Component {
         };
     }
 
-    render() {
+    render() : any {
         return (
             <Shortcuts
                 name="listItem"

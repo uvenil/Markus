@@ -1,10 +1,43 @@
+// @flow
 'use strict';
 
 import { extendObservable, computed } from 'mobx';
+import BooleanStore from './components/BooleanStore';
+import BooleanDialogStore from './components/dialogs/BooleanDialogStore';
+import EditorSettingsDialogStore from './components/dialogs/EditorSettingsDialogStore';
+import ListDialogStore from './components/dialogs/ListDialogStore';
+import PromptDialogStore from './components/dialogs/PromptDialogStore';
+import ListStore from './components/lists/ListStore';
+import NoteEditorStore from './components/text/NoteEditorStore';
 import Constants from './utils/Constants';
 import Config from './definitions/config.json';
 
 export default class AppStore {
+    theme                : string;
+    drawerOpened         : boolean;
+    snackbarOpened       : boolean;
+    snackbarMessage      : string;
+    booleanDialog        : BooleanDialogStore;
+    aboutDialog          : BooleanStore;
+    editorSettingsDialog : EditorSettingsDialogStore;
+    currentSyntaxDialog  : ListDialogStore;
+    defaultSyntaxDialog  : ListDialogStore;
+    themeDialog          : ListDialogStore;
+    fontDialog           : ListDialogStore;
+    filterListShown      : boolean;
+    noteListShown        : boolean;
+    filterListWidth      : number;
+    noteListWidth        : number;
+    filterList           : ListStore;
+    categoryList         : ListStore;
+    noteList             : ListStore;
+    noteEditor           : NoteEditorStore;
+    addNoteEnabled       : boolean;
+    addCategoryDialog    : PromptDialogStore;
+    updateCategoryDialog : PromptDialogStore;
+    selectCategoryDialog : ListDialogStore;
+    notesSorting         : number;
+
     constructor() {
         extendObservable(this, {
             theme                : 'light',
@@ -35,9 +68,7 @@ export default class AppStore {
     }
 
     @computed
-    get hasSourceSelected() {
+    get hasSourceSelected() : boolean {
         return (this.filterList && this.filterList.selectedIndex > -1) || (this.categoryList && this.categoryList.selectedIndex > -1);
     }
 }
-
-module.exports = AppStore;

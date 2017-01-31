@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import EnvironmentUtils from './EnvironmentUtils';
@@ -12,7 +13,7 @@ export default class EventUtils {
      * @param {function} handler The handler to invoke upon receiving the specified event.
      * @return {String} The token that represents this event registration.
      */
-    static register(eventName, handler) {
+    static register(eventName : string, handler : Function) : string {
         return PubSub.subscribe(eventName, (eventName, data) => handler(data));
     }
 
@@ -20,7 +21,7 @@ export default class EventUtils {
      * Un-registers the previous event registration specified by the token.
      * @param {String} token The token that represents the event registration to un-register.
      */
-    static unregister(token) {
+    static unregister(token : string) : void {
         PubSub.unsubscribe(token);
     }
 
@@ -29,9 +30,7 @@ export default class EventUtils {
      * @param {String} eventName The name of the event to broadcast.
      * @param {*} [data] The data, if any, associated with this broadcast.
      */
-    static broadcast(eventName, data) {
+    static broadcast(eventName : string, data : any) : ?boolean {
         PubSub.publish(eventName, data);
     }
 }
-
-module.exports = EventUtils;

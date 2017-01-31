@@ -1,6 +1,7 @@
+// @flow
 'use strict';
 
-import FilterListViewPresenter from './FilterListPresenter';
+import FilterListPresenter from './FilterListPresenter';
 import CategoryListPresenter from './CategoryListPresenter';
 import ListStore from './ListStore';
 import Database from '../../data/Database';
@@ -14,13 +15,22 @@ import reverse from 'lodash.reverse';
 import sortBy from 'lodash.sortby';
 
 export default class NoteListPresenter {
+    static DEFAULT_SORTING : number;
+
+    _filterListPresenter   : FilterListPresenter;
+    _categoryListPresenter : CategoryListPresenter;
+    _store                 : ListStore;
+    _database              : Database;
+    _sorting               : number;
+    _keyword               : ?string;
+
     /**
      * Creates a new instance of NoteListPresenter.
      * @param {FilterListPresenter} filterListPresenter
      * @param {CategoryListPresenter} categoryListPresenter
      * @param {Database} database
      */
-    constructor(filterListPresenter, categoryListPresenter, database) {
+    constructor(filterListPresenter : FilterListPresenter, categoryListPresenter : CategoryListPresenter, database : Database) {
         this._filterListPresenter   = filterListPresenter;
         this._categoryListPresenter = categoryListPresenter;
         this._store                 = new ListStore();
@@ -35,7 +45,7 @@ export default class NoteListPresenter {
         });
     }
 
-    get store() {
+    get store() : ListStore {
         return this._store;
     }
 
@@ -43,7 +53,7 @@ export default class NoteListPresenter {
      * Updates the list sorting.
      * @param {number} sorting
      */
-    set sorting(sorting) {
+    set sorting(sorting : number) : void {
         this._sorting = sorting;
 
         switch (sorting) {
@@ -93,13 +103,13 @@ export default class NoteListPresenter {
      * Filters the list with the specified keyword.
      * @param {String} keyword
      */
-    set keyword(keyword) {
+    set keyword(keyword : string) : void {
         this._keyword = keyword;
 
         this.refresh();
     }
 
-    refresh() {
+    refresh() : void {
         this._store.selectedItemId = undefined;
 
         const selectedFilterItemId   = this._filterListPresenter.store.selectedItemId;
@@ -107,14 +117,16 @@ export default class NoteListPresenter {
 
         let promise;
 
-        if (selectedFilterItemId === FilterListViewPresenter.FILTER_EVERYTHING_ID) {
+        if (selectedFilterItemId === FilterListPresenter.FILTER_EVERYTHING_ID) {
             promise = this._database.findAll(this._sorting, this._keyword);
-        } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_STARRED_ID) {
+        } else if (selectedFilterItemId === FilterListPresenter.FILTER_STARRED_ID) {
             promise = this._database.findByStarred(this._sorting, this._keyword);
-        } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_ARCHIVED_ID) {
+        } else if (selectedFilterItemId === FilterListPresenter.FILTER_ARCHIVED_ID) {
             promise = this._database.findByArchived(this._sorting, this._keyword);
         } else if (selectedCategoryItemId) {
-            promise = this._database.findByCategory(this._categoryListPresenter.store.selectedItem.primaryText, this._sorting, this._keyword);
+            const selectedItem = this._categoryListPresenter.store.selectedItem;
+
+            if (selectedItem) promise = this._database.findByCategory(selectedItem.primaryText, this._sorting, this._keyword);
         }
 
         this._store.items = [];
@@ -126,42 +138,51 @@ export default class NoteListPresenter {
      * Adds a new note to the list.
      * @return {Promise}
      */
-    addNote(syntax) {
+    addNote(syntax : string) : Promise<Record> {
         const selectedFilterItemId = this._filterListPresenter.store.selectedItemId;
-        const selectedCategoryItem = this._categoryListPresenter.store.selectedItem.primaryText;
+        const selectedItem         = this._categoryListPresenter.store.selectedItem;
+        const selectedCategoryItem = selectedItem ? selectedItem.primaryText : undefined;
 
         if (selectedFilterItemId || selectedCategoryItem) {
             const record = Record.fromText(syntax, '');
             record.title = Config.defaultNoteTitle;
 
-            if (selectedFilterItemId === FilterListViewPresenter.FILTER_EVERYTHING_ID) {
+            if (selectedFilterItemId === FilterListPresenter.FILTER_EVERYTHING_ID) {
                 record.starred  = false;
                 record.archived = false;
 
-                this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_EVERYTHING_ID).secondaryText = 1 + parseInt(this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_EVERYTHING_ID).secondaryText);
+                const item = this._filterListPresenter.store.getItem(FilterListPresenter.FILTER_EVERYTHING_ID);
+
+                if (item) item.secondaryText = (1 + parseInt(item.secondaryText)).toString();
 
                 // Force refresh
                 this._filterListPresenter.store.items = this._filterListPresenter.store.items;
-            } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_STARRED_ID) {
+            } else if (selectedFilterItemId === FilterListPresenter.FILTER_STARRED_ID) {
                 record.starred  = true;
                 record.archived = false;
 
-                this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_STARRED_ID).secondaryText = 1 + parseInt(this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_STARRED_ID).secondaryText);
+                const item = this._filterListPresenter.store.getItem(FilterListPresenter.FILTER_STARRED_ID);
+
+                if (item) item.secondaryText = (1 + parseInt(item.secondaryText)).toString();
 
                 // Force refresh
                 this._filterListPresenter.store.items = this._filterListPresenter.store.items;
-            } else if (selectedFilterItemId === FilterListViewPresenter.FILTER_ARCHIVED_ID) {
+            } else if (selectedFilterItemId === FilterListPresenter.FILTER_ARCHIVED_ID) {
                 record.starred  = false;
                 record.archived = true;
 
-                this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_ARCHIVED_ID).secondaryText = 1 + parseInt(this._filterListPresenter.store.getItem(FilterListViewPresenter.FILTER_ARCHIVED_ID).secondaryText);
+                const item = this._filterListPresenter.store.getItem(FilterListPresenter.FILTER_ARCHIVED_ID);
+
+                if (item) item.secondaryText = (1 + parseInt(item.secondaryText)).toString();
 
                 // Force refresh
                 this._filterListPresenter.store.items = this._filterListPresenter.store.items;
             } else if (selectedCategoryItem) {
                 record.category = selectedCategoryItem;
 
-                this._categoryListPresenter.store.selectedItem.secondaryText = 1 + parseInt(this._categoryListPresenter.store.selectedItem.secondaryText);
+                const item = this._categoryListPresenter.store.selectedItem;
+
+                if (item) item.secondaryText = (1 + parseInt(item.secondaryText)).toString();
 
                 // Force refresh
                 this._categoryListPresenter.store.items = this._categoryListPresenter.store.items;
@@ -182,5 +203,3 @@ export default class NoteListPresenter {
 }
 
 NoteListPresenter.DEFAULT_SORTING = Config.defaultNotesSorting;
-
-module.exports = NoteListPresenter;

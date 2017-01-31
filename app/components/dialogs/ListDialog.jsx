@@ -1,3 +1,4 @@
+// @flow
 'use strict';
 
 import React from 'react';
@@ -9,21 +10,31 @@ import Text from '../text/Text.jsx';
 import List from '../lists/List.jsx';
 import ListDialogStore from './ListDialogStore';
 import Constants from '../../utils/Constants';
-import { Shortcuts } from 'react-shortcuts';
+import Shortcuts from 'react-shortcuts/lib/component/shortcuts';
 
 @observer
 class ListDialog extends React.Component {
-    constructor(props) {
+    _focus           : Function;
+    _handleItemClick : Function;
+    _handleShortcuts : Function;
+
+    constructor(props : any) {
         super(props);
 
-        this._focus = () => document.getElementById(this.props.id).parentElement.focus();
+        this._focus = () => {
+            const element = document.getElementById(this.props.id);
+
+            if (element) {
+                const parentElement : any = element.parentElement;
+
+                if (parentElement) parentElement.focus();
+            }
+        };
 
         this._handleItemClick = index => {
             window.setTimeout(() => this._focus(), 100);
 
-            if (this.props.onItemClick) {
-                this.props.onItemClick(index);
-            }
+            if (this.props.onItemClick) this.props.onItemClick(index);
         };
 
         this._handleShortcuts = action => {
@@ -49,7 +60,7 @@ class ListDialog extends React.Component {
         };
     }
 
-    render() {
+    render() : any {
         const renderListItem = item => {
             return (
                 <div
