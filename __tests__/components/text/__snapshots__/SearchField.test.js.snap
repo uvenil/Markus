@@ -1,4 +1,6 @@
-exports[`test renders correctly 1`] = `
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
 <div
   className={undefined}
   style={
@@ -7,7 +9,8 @@ exports[`test renders correctly 1`] = `
       "position": "relative",
       "width": "100%",
     }
-  }>
+  }
+>
   <i
     className="fa fa-fw fa-search"
     style={
@@ -19,7 +22,8 @@ exports[`test renders correctly 1`] = `
         "position": "absolute",
         "top": 12,
       }
-    } />
+    }
+  />
   <input
     id="SearchField_textBoxId"
     onChange={[Function]}
@@ -38,7 +42,8 @@ exports[`test renders correctly 1`] = `
         "width": "calc(100% - 48px)",
       }
     }
-    type="text" />
+    type="text"
+  />
   <i
     className="fa fa-fw fa-times-circle"
     id="SearchField_clearButtonId"
@@ -53,6 +58,7 @@ exports[`test renders correctly 1`] = `
         "right": 12,
         "top": 12,
       }
-    } />
+    }
+  />
 </div>
 `;
