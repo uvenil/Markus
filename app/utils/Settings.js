@@ -39,7 +39,7 @@ export default class Settings {
 
     /**
      * Sets the value associated with the specific key.
-     * @param {String} key The key associated with the specific key.
+     * @param {String} key The key associated with the specific value.
      * @param {object} data The value associated with the specific key to set.
      * @returns {Promise}
      */

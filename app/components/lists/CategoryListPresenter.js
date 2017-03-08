@@ -2,7 +2,7 @@
 'use strict';
 
 import ListPresenter from './ListPresenter';
-import ListItemStore from './ListItemStore';
+import ListItemStore from './ListItemStore.jsx';
 import Database from '../../data/Database';
 import EventUtils from '../../utils/EventUtils';
 import Unique from '../../utils/Unique';
@@ -52,14 +52,10 @@ export default class CategoryListPresenter extends ListPresenter {
                     let found = false;
 
                     for (let i = 0; i < this.store.items.length; i++) {
-                        if (category === this.store.items[i].primaryText) {
-                            found = true;
-                        }
+                        if (category === this.store.items[i].primaryText) found = true;
                     }
 
-                    if (!found) {
-                        newCategories.push(category);
-                    }
+                    if (!found) newCategories.push(category);
                 });
 
                 //endregion
@@ -72,9 +68,7 @@ export default class CategoryListPresenter extends ListPresenter {
                     let found = false;
 
                     categories.forEach(category => {
-                        if (category === this.store.items[index].primaryText) {
-                            found = true;
-                        }
+                        if (category === this.store.items[index].primaryText) found = true;
                     });
 
                     if (found) {

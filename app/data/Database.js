@@ -139,7 +139,7 @@ export default class Database {
 
     /**
      * Returns starred records in the order specified by the given sorting.
-     * @param {number} sorting
+     * @param {number} sorting The sorting order.
      * @param {String} [keyword] Filter the results by the matching keyword.
      * @returns {Promise}
      */
@@ -183,7 +183,7 @@ export default class Database {
 
     /**
      * Returns archived records in the order specified by the given sorting.
-     * @param {number} sorting
+     * @param {number} sorting The sorting order.
      * @param {String} [keyword] Filter the results by the matching keyword.
      * @returns {Promise}
      */
@@ -221,7 +221,7 @@ export default class Database {
     /**
      * Returns the records of the specified category.
      * @param {String} category The specific category of records to get.
-     * @param {number} sorting
+     * @param {number} sorting The sorting order.
      * @param {String} [keyword] Filter the results by the matching keyword.
      * @returns {Promise}
      */
@@ -481,7 +481,7 @@ export default class Database {
     }
 
     /**
-     * Archives all notes (except those starred and archived).
+     * Archives all notes (except those already archived).
      * @returns {Promise}
      */
     archiveByEverything() : Promise<*> {
@@ -572,7 +572,7 @@ export default class Database {
      * @param {String} id The unique ID of the note to un-archive.
      * @return {Promise}
      */
-    unarchiveById(id : ?string) : Promise<*> {
+    unarchiveById(id : string) : Promise<*> {
         return new Promise((resolve, reject) => {
             this._db.update({
                 _id      : id,

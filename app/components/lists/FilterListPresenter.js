@@ -2,7 +2,7 @@
 'use strict';
 
 import ListPresenter from './ListPresenter';
-import ListItemStore from './ListItemStore';
+import ListItemStore from './ListItemStore.jsx';
 import Database from '../../data/Database';
 import EventUtils from '../../utils/EventUtils';
 

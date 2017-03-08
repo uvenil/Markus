@@ -48,7 +48,7 @@ export default class Record {
      * @param {String} fullText
      * @returns {Record}
      */
-    static fromText(syntax : string, fullText : ?string) : Record {
+    static fromText(syntax : string, fullText : string) : Record {
         const now = Date.now();
 
         if (fullText && fullText.length > 0 && fullText.indexOf('\n') > -1) {
