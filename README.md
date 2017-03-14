@@ -1,6 +1,6 @@
 # Markus
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8d229a771e504bffb7c58a50c85b192a)](https://www.codacy.com/app/ayltai/artisan?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ayltai/artisan&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7cae33f07ea84076b6b3240228fbe2f1)](https://www.codacy.com/app/ayltai/Markus?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ayltai/Markus&amp;utm_campaign=Badge_Grade)
 
 Apps should be *beautiful*, *clean* and *intuitive*. Writing should be *efficient* and *effective*. Stay *organized*, use **Markus**, a note-taking app, hand crafted with ❤
 
