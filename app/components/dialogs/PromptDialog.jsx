@@ -3,23 +3,16 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import Dialog from 'material-ui/Dialog';
 import TextField from 'material-ui/TextField';
 import Button from '../buttons/Button.jsx';
 import PromptDialogStore from './PromptDialogStore';
-import Constants from '../../utils/Constants';
+import Constants from '../../Constants';
 
 @observer
-export default class PromptDialog extends React.Component {
-    _handleEnter : Function;
-
-    constructor(props : any) {
-        super(props);
-
-        this._handleEnter = value => {
-            if (this.props.onEnter) this.props.onEnter(value);
-        };
-    }
+class PromptDialog extends React.Component {
+    static propTypes : Object;
 
     render() : any {
         return (
@@ -29,15 +22,17 @@ export default class PromptDialog extends React.Component {
                 actions={[
                     <Button
                         label="Cancel"
-                        labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
+                        labelSize={Constants.FONT_SIZE_BUTTON_DIALOG}
                         height={Constants.BUTTON_HEIGHT_X1}
                         onTouchTap={() => this.props.store.booleanValue = false} />,
                     <Button
                         label="OK"
-                        labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
+                        labelSize={Constants.FONT_SIZE_BUTTON_DIALOG}
                         color="primary"
                         height={Constants.BUTTON_HEIGHT_X1}
-                        onTouchTap={() => this._handleEnter(this.props.store.value)} />
+                        onTouchTap={() => {
+                            if (this.props.onEnter) this.props.onEnter(this.props.store.value)
+                        }} />
                 ]}
                 onRequestClose={() => this.props.store.booleanValue = false}>
                 <TextField
@@ -51,8 +46,10 @@ export default class PromptDialog extends React.Component {
 }
 
 PromptDialog.propTypes = {
-    store   : React.PropTypes.instanceOf(PromptDialogStore),
+    store   : React.PropTypes.instanceOf(PromptDialogStore).isRequired,
     title   : React.PropTypes.string,
     label   : React.PropTypes.string,
     onEnter : React.PropTypes.func
 };
+
+export default muiThemeable()(PromptDialog);

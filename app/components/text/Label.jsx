@@ -3,10 +3,15 @@
 
 import React from 'react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import assign from 'lodash.assign';
+import merge from 'lodash.merge';
 
-const Label = props => {
-    const style = { WebkitUserSelect : 'none', cursor : 'default', color : props.muiTheme.palette.textColor, pointerEvents : props.disabled ? 'none' : 'auto' };
+const Label = (props : Object) => {
+    const style : Object = {
+        WebkitUserSelect : 'none',
+        cursor           : 'default',
+        color            : props.muiTheme.palette.textColor,
+        pointerEvents    : props.disabled ? 'none' : 'auto'
+    };
 
     const handleClick = event => {
         if (event.nativeEvent.button === 2) {
@@ -19,7 +24,7 @@ const Label = props => {
     return (
         <span
             className={props.className}
-            style={assign(style, props.style)}
+            style={merge(style, props.style)}
             onMouseDown={event => handleClick(event)}>
             {props.children}
         </span>

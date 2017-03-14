@@ -8,23 +8,23 @@ const { remote } = require('electron');
 const { Menu, MenuItem, clipboard } = remote;
 
 const showTextBoxContextMenu = () => {
-    const menu = new Menu();
+    const menu : Menu = new Menu();
 
-    let text = undefined;
+    let text : any;
 
     if (window.getSelection) {
         text = window.getSelection().toString();
     } else {
-        const doc : any       = document;
+        const doc       : any = document;
         const selection : any = doc.selection;
 
         if (selection && selection.type !== 'Control') text = selection.createRange().text;
     }
 
-    const hasSelectedText = !isNil(text) && !isEmpty(text);
+    const hasSelectedText : boolean = !isNil(text) && !isEmpty(text);
 
     text = clipboard.readText();
-    const hasCopiedText = !isNil(text) && !isEmpty(text);
+    const hasCopiedText : boolean = !isNil(text) && !isEmpty(text);
 
     menu.append(new MenuItem({
         role        : 'undo',

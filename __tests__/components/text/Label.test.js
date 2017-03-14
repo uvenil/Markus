@@ -8,11 +8,11 @@ import lightBaseTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import Label from '../../../app/components/text/Label.jsx';
 
 it('renders correctly', () => {
-    const label = Renderer.create(
+    const component = Renderer.create(
         <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
             <Label style={{ fontWeight : 300 }}>Hello, World!</Label>
         </MuiThemeProvider>
     ).toJSON();
 
-    expect(label).toMatchSnapshot();
+    expect(component).toMatchSnapshot();
 });

@@ -4,15 +4,15 @@
 import React from 'react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Label from './Label.jsx';
-import assign from 'lodash.assign';
+import merge from 'lodash.merge';
 
-const Text = props => {
+const Text = (props : Object) => {
     const style = { display : 'block' };
 
     return (
         <Label
             className={props.className}
-            style={assign(style, props.style)}
+            style={merge(style, props.style)}
             onClick={props.onClick}
             onRightClick={props.onRightClick}>
             {props.children}

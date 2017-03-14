@@ -2,73 +2,64 @@
 'use strict';
 
 import { extendObservable, computed } from 'mobx';
+import EditorStore from './components/text/EditorStore';
+import ChippedTextFieldStore from './components/text/ChippedTextFieldStore';
+import ListStore from './components/lists/ListStore';
 import BooleanStore from './components/BooleanStore';
 import BooleanDialogStore from './components/dialogs/BooleanDialogStore';
-import EditorSettingsDialogStore from './components/dialogs/EditorSettingsDialogStore';
 import ListDialogStore from './components/dialogs/ListDialogStore';
-import PromptDialogStore from './components/dialogs/PromptDialogStore';
-import ListStore from './components/lists/ListStore';
-import NoteEditorStore from './components/text/NoteEditorStore';
-import Constants from './utils/Constants';
-import Config from './definitions/config.json';
+import EditorSettingsDialogStore from './components/dialogs/EditorSettingsDialogStore';
+import Constants from './Constants';
 
 export default class AppStore {
-    theme                : string;
-    drawerOpened         : boolean;
-    snackbarOpened       : boolean;
-    snackbarMessage      : string;
-    booleanDialog        : BooleanDialogStore;
-    aboutDialog          : BooleanStore;
-    editorSettingsDialog : EditorSettingsDialogStore;
-    currentSyntaxDialog  : ListDialogStore;
-    defaultSyntaxDialog  : ListDialogStore;
-    themeDialog          : ListDialogStore;
-    fontDialog           : ListDialogStore;
-    filterListShown      : boolean;
-    noteListShown        : boolean;
-    filterListWidth      : number;
-    noteListWidth        : number;
-    filterList           : ListStore;
-    categoryList         : ListStore;
-    noteList             : ListStore;
-    noteEditor           : NoteEditorStore;
-    addNoteEnabled       : boolean;
-    addCategoryDialog    : PromptDialogStore;
-    updateCategoryDialog : PromptDialogStore;
-    selectCategoryDialog : ListDialogStore;
-    notesSorting         : number;
+    theme           : string;
+    message         : string;
+    messageShown    : boolean;
+    drawerOpened    : boolean;
+    masterListWidth : number;
+    masterListShown : boolean;
+    detailListWidth : number;
+    detailListShown : boolean;
+    shortcutList    : ListStore;
+    hashTagList     : ListStore;
+    detailList      : ListStore;
+    editor          : EditorStore;
+    hashTags        : ChippedTextFieldStore;
+    addNoteEnabled  : boolean;
+    sorting         : Object;
+    booleanDialog   : BooleanDialogStore;
+    themeDialog     : ListDialogStore;
+    fontDialog      : ListDialogStore;
+    editorSettings  : EditorSettingsDialogStore;
+    aboutDialog     : BooleanStore;
 
     constructor() {
         extendObservable(this, {
-            theme                : 'light',
-            drawerOpened         : false,
-            snackbarOpened       : false,
-            snackbarMessage      : '',
-            booleanDialog        : undefined,
-            aboutDialog          : undefined,
-            editorSettingsDialog : undefined,
-            currentSyntaxDialog  : undefined,
-            defaultSyntaxDialog  : undefined,
-            themeDialog          : undefined,
-            fontDialog           : undefined,
-            filterListShown      : true,
-            noteListShown        : true,
-            filterListWidth      : Constants.SOURCE_LIST_MIN_WIDTH,
-            noteListWidth        : Constants.NOTE_LIST_MIN_WIDTH,
-            filterList           : undefined,
-            categoryList         : undefined,
-            noteList             : undefined,
-            noteEditor           : undefined,
-            addNoteEnabled       : false,
-            addCategoryDialog    : undefined,
-            updateCategoryDialog : undefined,
-            selectCategoryDialog : undefined,
-            notesSorting         : Config.defaultNotesSorting
+            theme           : 'light',
+            message         : '',
+            messageShown    : false,
+            drawerOpened    : false,
+            masterListWidth : Constants.MASTER_LIST_MIN_WIDTH,
+            masterListShown : true,
+            detailListWidth : Constants.DETAIL_LIST_MIN_WIDTH,
+            detailListShown : true,
+            shortcutList    : null,
+            hashTagList     : null,
+            detailList      : null,
+            editor          : null,
+            hashTags        : null,
+            addNoteEnabled  : false,
+            sorting         : Constants.SORTING_DEFAULT,
+            booleanDialog   : null,
+            themeDialog     : null,
+            fontDialog      : null,
+            editorSettings  : null,
+            aboutDialog     : null
         });
     }
 
     @computed
     get hasSourceSelected() : boolean {
-        return (this.filterList && this.filterList.selectedIndex > -1) || (this.categoryList && this.categoryList.selectedIndex > -1);
+        return (this.shortcutList && this.shortcutList.selectedIndex > -1) || (this.hashTagList && this.hashTagList.selectedIndex > -1);
     }
 }

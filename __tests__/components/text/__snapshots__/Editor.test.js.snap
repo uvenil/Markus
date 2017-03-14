@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<div
+  style={
+    Object {
+      "height": "calc(100vh - 29px)",
+      "width": "100%",
+    }
+  }
+>
+  <div
+    style={
+      Object {
+        "display": "none",
+        "width": "100%",
+      }
+    }
+  >
+    <div
+      id="brace-editor"
+      style={
+        Object {
+          "borderRightColor": "#e0e0e0",
+          "borderRightStyle": "solid",
+          "borderRightWidth": 1,
+          "display": "table-cell",
+          "height": "calc(100vh - 66px)",
+          "width": "50%",
+        }
+      }
+    />
+    <div
+      style={
+        Object {
+          "color": "rgba(0, 0, 0, 0.87)",
+          "display": "table-cell",
+          "paddingLeft": 8,
+          "paddingRight": 8,
+          "width": "50%",
+        }
+      }
+    >
+      <div />
+    </div>
+  </div>
+  <div
+    style={
+      Object {
+        "backgroundColor": "#bdbdbd",
+        "display": "block",
+        "height": "calc(100vh - 29px)",
+        "width": "100%",
+      }
+    }
+  />
+</div>
+`;

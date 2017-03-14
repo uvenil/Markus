@@ -7,7 +7,7 @@ import { createEditMenu, createViewMenu, createDeveloperMenu } from './MenuUtils
 
 const { app, Menu } = require('electron').remote;
 
-export default function createWindowMenu() {
+const createWindowMenu = () : void => {
     const template = [];
 
     template.push({
@@ -15,9 +15,7 @@ export default function createWindowMenu() {
         submenu : [
             {
                 label : 'About ' + app.getName(),
-                click : (item, win) => {
-                    if (win) EventUtils.broadcast('app.aboutDialog.visibility');
-                }
+                click : () : boolean => EventUtils.broadcast('app.about.show')
             },
             {
                 type : 'separator'
@@ -54,30 +52,23 @@ export default function createWindowMenu() {
         submenu : [
             {
                 label : 'New note',
-                click : (item, win) => {
-                    if (win) EventUtils.broadcast('app.note.new');
-                }
+                click : () : boolean => EventUtils.broadcast('app.note.add')
             },
             {
                 type : 'separator'
             },
             {
                 label : 'Import notes…',
-                click : (item, win) => {
-                    if (win) EventUtils.broadcast('app.note.import');
-                }
+                click : () : boolean => EventUtils.broadcast('app.note.import')
             },
             {
                 label : 'Export notes…',
-                click : (item, win) => {
-                    if (win) EventUtils.broadcast('app.note.export');
-                }
+                click : () : boolean => EventUtils.broadcast('app.note.export')
             }
         ]
     });
 
     template.push(createEditMenu());
-
     template.push(createViewMenu());
 
     if (EnvironmentUtils.isDev()) template.push(createDeveloperMenu());
@@ -110,4 +101,6 @@ export default function createWindowMenu() {
     });
 
     Menu.setApplicationMenu(Menu.buildFromTemplate(template));
-}
+};
+
+export default createWindowMenu;

@@ -3,17 +3,20 @@
 
 import RandomString from 'randomstring';
 
-export default class Unique {
+const Unique = {
     /**
-     * Returns a random string of length specified optionally.
-     * @param {number|String} [length=4]
+     * Returns a random string of the specified length, or returns the given string.
+     * @param {number|string} [lengthOrMockString=4] The length of the string to generate, or the string to return.
+     * @return {string}
      */
-    static nextString(length : any) : string {
-        if (typeof length === 'string') return length;
+    nextString : function(lengthOrMockString : ?number|?string) : string {
+        if (typeof lengthOrMockString === 'string') return lengthOrMockString;
 
         return RandomString.generate({
-            length  : length !== undefined ? length : 4,
+            length  : lengthOrMockString ? lengthOrMockString : 4,
             charset : 'alphabetic'
         });
     }
-}
+};
+
+export default Unique;

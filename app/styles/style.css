@@ -6,6 +6,10 @@ body {
     font-family : -apple-system, BlinkMacSystemFont, system, Arial, sans-serif;
 }
 
+button > div > div {
+    height : 36px !important;
+}
+
 ::-webkit-scrollbar {
     width              : 7px;
     height             : 7px;
@@ -18,13 +22,17 @@ body {
     -webkit-box-shadow : 0 0 1px rgba(127, 127, 127, 0.15);
 }
 
-.draggable-region {
-    cursor             : -webkit-grab;
-    -webkit-app-region : drag;
+.fa {
+    font-size : 14px !important;
 }
 
 .no-outline {
     outline : none;
+}
+
+.draggable-region {
+    cursor             : -webkit-grab;
+    -webkit-app-region : drag;
 }
 
 .draggable-region:active {

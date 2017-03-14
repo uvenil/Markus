@@ -4,10 +4,9 @@
 import React from 'react';
 import { extendObservable } from 'mobx';
 import Record from '../../data/Record.js';
-import moment from 'moment';
-import Unique from '../../utils/Unique';
-import Config from '../../definitions/config.json';
+import DateUtils from '../../utils/DateUtils';
 import isEmpty from 'lodash.isempty';
+import Config from '../../definitions/config.json';
 
 export default class ListItemStore {
     itemId        : ?string;
@@ -32,26 +31,19 @@ export default class ListItemStore {
         });
     }
 
-    /**
-     * Updates this store using the specific record.
-     * @param {Record} record The record to update this store.
-     * @return {ListItemStore} The current object.
-     */
-    update(record : Record) : ListItemStore {
+    update(record : Record) : void {
         this.itemId       = record._id;
-        this.primaryText  = isEmpty(record.title) ? Config.defaultNoteTitle : record.title;
-        this.tertiaryText = moment(record.lastUpdatedAt).fromNow();
-        this.tooltip      = 'Modified: ' + moment(record.lastUpdatedAt).format('LLLL') + '\nCreated: ' + moment(record.createdAt).format('LLLL');
+        this.primaryText  = isEmpty(record.title) ? Config.defaultTitle : record.title;
+        this.tertiaryText = DateUtils.fromNow(record.lastUpdatedAt);
+        this.tooltip      = 'Modified: ' + new Date(record.lastUpdatedAt).toLocaleDateString() + '/nCreated: ' + new Date(record.createdAt).toLocaleDateString();
         this.record       = record;
 
-        if (record.description && record.description.indexOf('\n') > -1) {
+        if (record.description && record.description.indexOf('\n') >= 0) {
             const lines = record.description.split('\n');
 
-            this.secondaryText = <span key={Unique.nextString()}>{lines[0]}<br />{lines[1]}</span>;
+            this.secondaryText = <span>{lines[0]}<br />{lines[1]}</span>;
         } else {
             this.secondaryText = record.description;
         }
-
-        return this;
     }
 }

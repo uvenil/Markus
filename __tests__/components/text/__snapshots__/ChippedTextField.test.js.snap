@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly 1`] = `
+<div
+  id="ChippedTextField_container"
+  style={
+    Object {
+      "display": "flex",
+      "flexFlow": "row",
+      "position": "absolute",
+      "width": "100%",
+    }
+  }
+>
+  <input
+    id="ChippedTextField_textBoxId"
+    onChange={[Function]}
+    onMouseDown={[Function]}
+    placeholder="#hashtag"
+    style={
+      Object {
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "border": "none",
+        "height": 16,
+        "margin": 8,
+        "outline": "none",
+        "width": 120,
+      }
+    }
+    type="text"
+  />
+  <div
+    style={
+      Object {
+        "display": "flex",
+        "flexFlow": "row",
+        "overflowX": "scroll",
+      }
+    }
+  />
+</div>
+`;

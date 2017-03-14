@@ -2,7 +2,15 @@
 'use strict';
 
 import { extendObservable } from 'mobx';
-import ListItemStore from '../components/lists/ListItemStore';
+import removeMarkdown from 'remove-markdown';
+
+const toArray = (values : any) : string[] => {
+    const array : string[] = [];
+
+    for (let i = 0; i < values.length; i++) array.push(values[i]);
+
+    return array;
+};
 
 export default class Record {
     _id            : ?string;
@@ -10,21 +18,19 @@ export default class Record {
     description    : string;
     fullText       : string;
     searchableText : string;
-    syntax         : string;
-    category       : ?string;
+    hashTags       : string[];
     starred        : boolean;
     archived       : boolean;
     lastUpdatedAt  : number;
     createdAt      : number;
 
-    constructor(title : ?string, description : string, fullText : ?string, syntax : string, lastUpdatedAt : number, createdAt : number) {
+    constructor(title : ?string, description : ?string, fullText : ?string, lastUpdatedAt : number, createdAt : number) {
         extendObservable(this, {
             title          : title,
             description    : description,
             fullText       : fullText,
-            searchableText : fullText ? fullText.toLowerCase() : fullText,
-            syntax         : syntax,
-            category       : null,
+            searchableText : fullText ? removeMarkdown(fullText) : fullText,
+            hashTags       : [],
             starred        : false,
             archived       : false,
             lastUpdatedAt  : lastUpdatedAt,
@@ -32,69 +38,55 @@ export default class Record {
         });
     }
 
-    static fromDoc(doc) {
-        const record = new Record(doc.title, doc.description, doc.fullText, doc.syntax, doc.lastUpdatedAt, doc.createdAt);
+    static fromDoc(doc : Object) : Record {
+        const record = new Record(doc.title, doc.description, doc.fullText, doc.lastUpdatedAt, doc.createdAt);
 
-        record._id      = doc._id;
-        record.category = doc.category;
-        record.starred  = doc.starred;
-        record.archived = doc.archived;
+        record._id            = doc._id;
+        record.searchableText = doc.fullText ? removeMarkdown(doc.fullText) : doc.fullText;
+        record.hashTags       = doc.hashTags;
+        record.starred        = doc.starred;
+        record.archived       = doc.archived;
 
         return record;
     }
 
-    /**
-     * Returns a record suitable for persistence.
-     * @param {String} fullText
-     * @returns {Record}
-     */
-    static fromText(syntax : string, fullText : string) : Record {
+    static fromText(fullText : string) : Record {
         const now = Date.now();
 
         if (fullText && fullText.length > 0 && fullText.indexOf('\n') > -1) {
             const lines = fullText.split('\n');
 
-            let title       = '';
-            let line1       = '';
-            let line2       = '';
-            let description = '';
+            let title;
+            let description;
 
             if (lines && lines.length > 0) {
                 title = lines[0];
 
                 if (lines.length > 1) {
-                    line1 = lines[1];
-
                     if (lines.length > 2) {
-                        line2       = lines[2];
-                        description = line1 + '\n' + line2;
+                        description = lines[1] + '\n' + lines[2];
                     } else {
-                        description = line1;
+                        description = lines[1];
                     }
                 }
             } else {
                 title = fullText;
             }
 
-            return new Record(title, description, fullText, syntax, now, now);
+            return new Record(title, description, fullText, now, now);
         }
 
-        return new Record(fullText, '', fullText, syntax, now, now);
+        return new Record(fullText, undefined, fullText, now, now);
     }
 
-    /**
-     * Converts to a plain JavaScript object suitable for database persistence.
-     * @returns {{_id: *, title: *, description: *, fullText: *, syntax: (*|Blocks.syntax), lastUpdatedAt: (number|*), createdAt: (*|number)}}
-     */
-    toDoc() {
+    toDoc() : Object {
         return {
             _id            : this._id,
             title          : this.title,
             description    : this.description,
             fullText       : this.fullText,
-            searchableText : this.fullText ? this.fullText.toLowerCase() : this.fullText,
-            syntax         : this.syntax,
-            category       : this.category,
+            searchableText : this.fullText ? removeMarkdown(this.fullText) : this.fullText,
+            hashTags       : toArray(this.hashTags),
             starred        : this.starred,
             archived       : this.archived,
             lastUpdatedAt  : this.lastUpdatedAt,
@@ -102,25 +94,13 @@ export default class Record {
         };
     }
 
-    /**
-     * Converts this record to a ListItemStore.
-     * @returns {ListItemStore}
-     */
-    toListItemStore() : ListItemStore {
-        return new ListItemStore().update(this);
-    }
-
-    /**
-     * Updates this record using the given full text.
-     * @param {String} fullText The full text to update the specified record.
-     */
-    update(fullText : string) {
-        const record = Record.fromText(this.syntax, fullText);
+    update(fullText : string) : void {
+        const record = Record.fromText(fullText);
 
         this.title          = record.title;
         this.description    = record.description;
         this.fullText       = record.fullText;
-        this.searchableText = record.fullText ? record.fullText.toLowerCase() : record.fullText;
+        this.searchableText = record.fullText ? removeMarkdown(record.fullText) : record.fullText;
         this.lastUpdatedAt  = Date.now();
     }
 }

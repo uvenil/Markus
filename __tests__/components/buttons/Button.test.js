@@ -11,7 +11,7 @@ it('renders correctly', () => {
     const button = Renderer.create(
         <MuiThemeProvider muiTheme={getMuiTheme(lightBaseTheme)}>
             <Button
-                label=""
+                label="Hello, World!"
                 icon="cog"
                 color="primary" />
         </MuiThemeProvider>

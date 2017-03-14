@@ -3,17 +3,16 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import Dialog from 'material-ui/Dialog';
 import Button from '../buttons/Button.jsx';
 import Text from '../text/Text.jsx';
 import BooleanDialogStore from './BooleanDialogStore';
-import Constants from '../../utils/Constants';
+import Constants from '../../Constants';
 
 @observer
-export default class BooleanDialog extends React.Component {
-    constructor(props : any) {
-        super(props);
-    }
+class BooleanDialog extends React.Component {
+    static propTypes : Object;
 
     render() : any {
         return (
@@ -23,7 +22,7 @@ export default class BooleanDialog extends React.Component {
                 actions={[
                     <Button
                         label={this.props.store.falseLabel}
-                        labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
+                        labelSize={Constants.FONT_SIZE_BUTTON_DIALOG}
                         color={this.props.store.falseLabelColor}
                         height={Constants.BUTTON_HEIGHT_X1}
                         onTouchTap={() => {
@@ -33,7 +32,7 @@ export default class BooleanDialog extends React.Component {
                         }} />,
                     <Button
                         label={this.props.store.trueLabel}
-                        labelSize={Constants.DIALOG_BUTTON_FONT_SIZE}
+                        labelSize={Constants.FONT_SIZE_BUTTON_DIALOG}
                         color={this.props.store.trueLabelColor}
                         height={Constants.BUTTON_HEIGHT_X1}
                         onTouchTap={() => {
@@ -50,5 +49,7 @@ export default class BooleanDialog extends React.Component {
 }
 
 BooleanDialog.propTypes = {
-    store : React.PropTypes.instanceOf(BooleanDialogStore)
+    store : React.PropTypes.instanceOf(BooleanDialogStore).isRequired
 };
+
+export default muiThemeable()(BooleanDialog);

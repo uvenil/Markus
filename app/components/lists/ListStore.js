@@ -9,7 +9,7 @@ import isEmpty from 'lodash.isempty';
 export default class ListStore {
     headerText        : string;
     items             : ListItemStore[];
-    _selectionChanges : any;
+    _selectionChanges : Rx.Subject;
 
     constructor() {
         extendObservable(this, {
@@ -20,18 +20,22 @@ export default class ListStore {
         this._selectionChanges = new Rx.Subject();
     }
 
-    get selectionChanges() : any {
+    get selectionChanges() : Rx.Subject {
         return this._selectionChanges;
     }
 
+    /**
+     * Returns true if there is no items; otherwise, returns false.
+     * @return {boolean}
+     */
     @computed
     get isEmpty() : boolean {
         return isEmpty(this.items);
     }
 
     /**
-     * How many items are in the data set represented by this store.
-     * @returns {number} Count of items.
+     * Gets the total number of items.
+     * @return {number}
      */
     @computed
     get count() : number {
@@ -39,8 +43,8 @@ export default class ListStore {
     }
 
     /**
-     * The index of the selected item, or -1 if no item is selected.
-     * @returns {number} The index of the selected item.
+     * Gets the index of the currently selected item, or -1 if no item is selected.
+     * @return {number}
      */
     @computed
     get selectedIndex() : number {
@@ -52,8 +56,8 @@ export default class ListStore {
     }
 
     /**
-     * Selects the item at the specific index
-     * @param {number} index The index of the item to select, or -1 if no item is to be selected.
+     * Sets the item at the specified index as selected.
+     * @param {number} index
      */
     set selectedIndex(index : number) : void {
         for (let i = 0; i < this.items.length; i++) this.items[i].selected = i === index;
@@ -62,8 +66,8 @@ export default class ListStore {
     }
 
     /**
-     * The ID of the selected item, or undefined if no item is selected.
-     * @returns {String|undefined} The ID of the selected item.
+     * Gets the item ID of the currently selected item, or undefined if no item is selected.
+     * @return {string|undefined}
      */
     @computed
     get selectedItemId() : ?string {
@@ -75,8 +79,8 @@ export default class ListStore {
     }
 
     /**
-     * Selects the item with the specific ID.
-     * @param {String|undefined} itemId The ID of the item to select, or undefined if no item is to be selected.
+     * Sets the item with the specified item ID as selected, or de-select all items if no item ID is specified.
+     * @param {string|undefined} itemId The item ID of the item to be selected, or -1 to de-select all items.
      */
     set selectedItemId(itemId : ?string) : void {
         for (let i = 0; i < this.items.length; i++) {
@@ -89,8 +93,8 @@ export default class ListStore {
     }
 
     /**
-     * Returns the currently selected item.
-     * @returns {ListItemStore|undefined}
+     * Gets the currently selected item, or undefined if no item is selected.
+     * @return {ListItemStore|undefined}
      */
     get selectedItem() : ?ListItemStore {
         const itemId = this.selectedItemId;
@@ -99,9 +103,9 @@ export default class ListStore {
     }
 
     /**
-     * Returns the item of the store with the specific ID.
-     * @param {String} itemId
-     * @returns {ListItemStore|undefined}
+     * Gets the item with the specified item ID.
+     * @param {string} itemId The item ID of the item to get.
+     * @return {ListItemStore|undefined}
      */
     getItem(itemId : string) : ?ListItemStore {
         for (let i = 0; i < this.items.length; i++) {

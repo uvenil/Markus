@@ -3,11 +3,11 @@
 
 import EventUtils from './EventUtils';
 import EnvironmentUtils from './EnvironmentUtils';
-import Constants from './Constants';
+import Constants from '../Constants';
 
 const { remote } = require('electron');
 
-const createEditMenu : any = () => {
+const createEditMenu = () : Object => {
     return {
         label   : 'Edit',
         submenu : [
@@ -49,46 +49,36 @@ const createEditMenu : any = () => {
     };
 };
 
-const createViewMenu : any = () => {
+const createViewMenu = () : Object => {
     return {
         label   : 'View',
         submenu : [
             {
-                label : 'Show filter list',
+                label : 'Show master list',
                 type  : 'checkbox',
-                click : (item, win) => {
-                    if (win) EventUtils.broadcast('ui.filterList.visibility', item.checked);
-                }
+                click : (item) : boolean => EventUtils.broadcast('app.list.master.show', item.checked)
             },
             {
-                label : 'Show note list',
+                label : 'Show detail list',
                 type  : 'checkbox',
-                click : (item, win) => {
-                    if (win) EventUtils.broadcast('ui.categoryList.visibility', item.checked);
-                }
+                click : (item) : boolean => EventUtils.broadcast('app.list.detail.show', item.checked)
             },
             {
                 type : 'separator'
             },
             {
                 role  : 'zoomin',
-                click : (item, win) => {
-                    if (win) remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + Constants.ZOOM_FACTOR_STEP));
-                }
+                click : () : void => remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => {
+                    if (zoomFactor > Constants.ZOOM_FACTOR_STEP) remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor + Constants.ZOOM_FACTOR_STEP);
+                })
             },
             {
                 role  : 'zoomout',
-                click : (item, win) => {
-                    if (win) remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - Constants.ZOOM_FACTOR_STEP));
-                }
+                click : () : void => remote.getCurrentWindow().webContents.getZoomFactor(zoomFactor => remote.getCurrentWindow().webContents.setZoomFactor(zoomFactor - Constants.ZOOM_FACTOR_STEP))
             },
             {
                 role  : 'resetzoom',
-                click : (item, win) => {
-                    if (win) {
-                        remote.getCurrentWindow().webContents.setZoomFactor(1);
-                    }
-                }
+                click : () : void => remote.getCurrentWindow().webContents.setZoomFactor(1)
             },
             {
                 type : 'separator'
@@ -100,38 +90,30 @@ const createViewMenu : any = () => {
     };
 };
 
-const createDeveloperMenu : any = () => {
+const createDeveloperMenu = () : Object => {
     return {
         label   : 'Developer',
         submenu : [
             {
                 label       : 'Reload',
                 accelerator : 'CmdOrCtrl+R',
-                click       : (item, win) => {
-                    if (win) win.reload();
-                }
+                click       : (item, win) : boolean => win.reload()
             },
             {
                 label       : 'Toggle Developer Tools',
                 accelerator : EnvironmentUtils.isMacOS() ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-                click       : (item, win) => {
-                    if (win) win.webContents.toggleDevTools();
-                }
+                click       : (item, win) : void => win.webContents.toggleDevTools()
             },
             {
                 type : 'separator'
             },
             {
                 label : 'Reset settings',
-                click : (item, win) => {
-                    if (win) EventUtils.broadcast('dev.settings.reset');
-                }
+                click : () : boolean => EventUtils.broadcast('dev.settings.reset')
             },
             {
                 label : 'Reset database',
-                click : (item, win) => {
-                    if (win) EventUtils.broadcast('dev.database.reset');
-                }
+                click : () : boolean => EventUtils.broadcast('dev.database.reset')
             }
         ]
     };

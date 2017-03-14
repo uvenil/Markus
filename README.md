@@ -1,28 +1,19 @@
-# Artisan
+# Markus
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/8d229a771e504bffb7c58a50c85b192a)](https://www.codacy.com/app/ayltai/artisan?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ayltai/artisan&amp;utm_campaign=Badge_Grade)
 
-A note-taking app for programmers, hand crafted with ❤
+Apps should be *beautiful*, *clean* and *intuitive*. Writing should be *efficient* and *effective*. Stay *organized*, use **Markus**, a note-taking app, hand crafted with ❤
 
-<img src="https://raw.githubusercontent.com/ayltai/artisan/master/screenshots/screenshot_light.png" width="882" height="574" />
-<img src="https://raw.githubusercontent.com/ayltai/artisan/master/screenshots/screenshot_dark.png" width="882" height="574" />
+<img src="https://raw.githubusercontent.com/ayltai/Markus/master/screenshots/screenshot_light.png" width="882" height="574" />
+<img src="https://raw.githubusercontent.com/ayltai/Markus/master/screenshots/screenshot_dark.png" width="882" height="574" />
 
 ## Features
-
-### ❤ Code Editing
-Artisan is powered by the [Ace](https://ace.c9.io) code editor, support syntax highlighting for more than 120 languages, with over 20 themes, code folding, automatic indent, highlight matching parentheses, and many more!
-
-### ❤ Themes
-Artisan comes with over 20 themes for its code editor.
-
-### ❤ Auto-Save
-Artisan automatically and instantly saves your notes when they are modified. There is no "save" button in the app. Never worried about losing any changes.
-
-### ❤ Categories
-You can assign categories to your notes to better manage them.
-
-### ❤ Cloud Support
-Coming soon
+* Markdown
+* Live preview
+* Syntax highlighting
+* Over 20 themes
+* Auto save in real time
+* Hashtags
 
 ## Installation
 To install from source, you will need [`npm`](https://www.npmjs.com/) or [`yarn`](https://yarnpkg.com/).
@@ -30,7 +21,7 @@ To install from source, you will need [`npm`](https://www.npmjs.com/) or [`yarn`
 ### Install with `npm`
 Run this command from the app project directory:
 ```
-npm install
+npm i
 ```
 
 ### Install with `yarn`
@@ -53,16 +44,16 @@ npm start
 #### macOS
 Run this command from the app project directory:
 ```
-npm install -g electron-packager
-electron-packager . Artisan --platform=darwin --arch=x64 --icon=./app/images/artisan.icns --ignore=__tests__ --ignore=__mocks__ --ignore=screenshots --ignore=.idea --ignore=.gitignore --ignore=yarn.lock --ignore=.DS_Store
+npm i -g electron-packager
+electron-packager . Markus --platform=darwin --arch=x64 --icon=./app/images/logo.icns --ignore=__tests__ --ignore=__mocks__ --ignore=screenshots --ignore=.idea --ignore=.gitignore --ignore=yarn.lock --ignore=.DS_Store
 ```
-`Artisan-darwin-x64/Artisan.app` will be generated. Double-click to run it.
+`Markus-darwin-x64/Markus.app` will be generated. Double-click to run it.
 
 #### Windows
 Run this command from the app project directory:
 
 ```
-npm install -g electron-packager
-electron-packager . Artisan --platform=win32 --arch=x64 --icon=./app/images/artisan.ico --ignore=__tests__ --ignore=__mocks__ --ignore=screenshots --ignore=.idea --ignore=.gitignore --ignore=yarn.lock --ignore=.DS_Store
+npm i -g electron-packager
+electron-packager . Markus --platform=win32 --arch=x64 --icon=./app/images/logo.ico --ignore=__tests__ --ignore=__mocks__ --ignore=screenshots --ignore=.idea --ignore=.gitignore --ignore=yarn.lock --ignore=.DS_Store
 ```
-`Artisan-win32-x64` folder will be generated. Double-click `Artisan-win32-x64\Artisan.exe` to start the app.
+`Markus-win32-x64` folder will be generated. Double-click `Markus-win32-x64\Markus.exe` to start the app.

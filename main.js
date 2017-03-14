@@ -1,12 +1,13 @@
+// @flow
 'use strict';
 
 import { BrowserWindow, app, shell } from 'electron';
 import windowStateKeeper from 'electron-window-state';
 import EnvironmentUtils from './app/utils/EnvironmentUtils';
-import Constants from './app/utils/Constants';
+import Constants from './app/Constants';
 import Path from 'path';
 
-let win;
+let win : BrowserWindow;
 
 const createWindow = () => {
     const winStateKeeper = windowStateKeeper({
@@ -27,8 +28,8 @@ const createWindow = () => {
         show            : false,
         webPreferences  : {
             defaultEncoding          : 'UTF-8',
-            defaultFontSize          : Constants.DEFAULT_FONT_SIZE,
-            defaultMonospaceFontSize : Constants.DEFAULT_NOTE_EDITOR_FONT_SIZE,
+            defaultFontSize          : Constants.FONT_SIZE,
+            defaultMonospaceFontSize : Constants.FONT_SIZE_MONOSPACED,
             webaudio                 : false,
             webgl                    : false
         }
@@ -36,11 +37,11 @@ const createWindow = () => {
 
     winStateKeeper.manage(win);
 
-    win.once('ready-to-show', () => win.show());
-    win.on('close', () => win = null);
+    win.once('ready-to-show', () : void => win.show());
+    win.on('close', () : any => win = null);
     win.loadURL('file://' + Path.join(__dirname, 'app/index.html'));
 
-    win.webContents.on('will-navigate', (event, url) => {
+    win.webContents.on('will-navigate', (event, url) : void => {
         event.preventDefault();
 
         shell.openExternal(url);
@@ -49,10 +50,10 @@ const createWindow = () => {
 
 app.on('ready', createWindow);
 
-app.on('window-all-closed', () => {
+app.on('window-all-closed', () : void => {
     if (!EnvironmentUtils.isMacOS()) app.quit();
 });
 
-app.on('activate', () => {
+app.on('activate', () : void => {
     if (win === null) createWindow();
 });

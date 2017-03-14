@@ -1,24 +1,38 @@
 // @flow
 'use strict';
 
-export default class EnvironmentUtils {
-    static isMacOS() : boolean {
-        const p : any = process;
-        return p.platform === 'darwin';
-    }
+const EnvironmentUtils = {
+    /**
+     * Returns true if the current platform is Mac OS X or macOS; otherwise, returns false.
+     * @return {boolean}
+     */
+    isMacOS : function() : boolean {
+        return process.platform === 'darwin';
+    },
 
-    static isWindows() : boolean {
-        const p : any = process;
-        return p.platform === 'win32';
-    }
+    /**
+     * Returns true if the current platform is Windows; otherwise, returns false.
+     * @return {boolean}
+     */
+    isWindows : function() : boolean {
+        return process.platform === 'win32';
+    },
 
-    static isLinux() : boolean {
-        const p : any = process;
-        return p.platform === 'linux';
-    }
+    /**
+     * Returns true if the current platform is Linux; otherwise, returns false.
+     * @return {boolean}
+     */
+    isLinux : function() : boolean {
+        return process.platform === 'linux';
+    },
 
-    static isDev() : boolean {
-        const p : any = process;
-        return p.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(p.execPath) || /[\\/]electron[\\/]/.test(p.execPath);
+    /**
+     * Returns true if the current runtime is in development environment; otherwise, returns false.
+     * @return {*|boolean}
+     */
+    isDev : function() : boolean {
+        return process.defaultApp !== undefined || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath);
     }
-}
+};
+
+export default EnvironmentUtils;
