@@ -169,13 +169,14 @@ class Editor extends React.Component {
                         }}
                         onChange={value => this._handleChange(value)} />
                     {/* Preview */}
-                    <div style={{
-                        display      : this.props.store.previewShown ? 'table-cell' : 'none',
-                        width        : this.props.store.previewShown ? this.props.store.editorShown ? '50%' : '100%' : '0',
-                        paddingLeft  : Constants.PADDING_X1,
-                        paddingRight : Constants.PADDING_X1,
-                        color        : this.props.muiTheme.palette.textColor
-                    }}>
+                    <div
+                        style={{
+                            display      : this.props.store.previewShown ? 'table-cell' : 'none',
+                            width        : this.props.store.previewShown ? this.props.store.editorShown ? '50%' : '100%' : '0',
+                            paddingLeft  : Constants.PADDING_X1,
+                            paddingRight : Constants.PADDING_X1,
+                            color        : this.props.muiTheme.palette.textColor
+                        }}>
                         <ReactMarkdown
                             source={this.props.store.record ? this.props.store.record.fullText : undefined}
                             renderers={{

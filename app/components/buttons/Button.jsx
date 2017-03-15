@@ -14,7 +14,7 @@ const WEIGHT_MEDIUM : number = 400;
 const WEIGHT_HEAVY  : number = 500;
 
 const Button = (props: Object) => {
-    const icon = props.icon ?
+    const icon = props.icon ? (
         <FontIcon
             className={'fa fa-fw fa-' + props.icon}
             style={{
@@ -23,7 +23,8 @@ const Button = (props: Object) => {
                 fontSize      : Constants.FONT_SIZE,
                 fontWeight    : 400,
                 verticalAlign : 'inherit'
-            }} /> : undefined;
+            }} />
+        ): undefined;
 
     const style = {
         minWidth   : props.width,

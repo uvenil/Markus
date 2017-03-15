@@ -11,7 +11,7 @@ import { List, ListItem } from 'material-ui/List';
 import Snackbar from 'material-ui/Snackbar';
 import Subheader from 'material-ui/Subheader';
 import SplitPane from 'react-split-pane';
-import AppPresenter from './AppPresenter'
+import AppPresenter from './AppPresenter';
 import AppStore from './AppStore';
 import Button from './components/buttons/Button.jsx';
 import TabbedButtonBar from './components/buttons/TabbedButtonBar.jsx';
@@ -111,8 +111,8 @@ export default class App extends React.Component {
         this._events.push(EventUtils.register('app.note.add', () : void => AppUtils.handleAddNote(this.props.store, this.props.presenter)));
         this._events.push(EventUtils.register('app.note.import', () : void => AppUtils.handleImportNotes(this.props.store, this.props.presenter._database)));
         this._events.push(EventUtils.register('app.note.export', () : void => AppUtils.handleExportNotes(this.props.store, this.props.presenter._database)));
-        this._events.push(EventUtils.register('app.about.show', () => { this.props.store.aboutDialog.booleanValue = true }));
-        this._events.push(EventUtils.register('editor.settings.change', (data : Object) => { AppUtils.changeSettings(this.props.store, data) }));
+        this._events.push(EventUtils.register('app.about.show', () => this.props.store.aboutDialog.booleanValue = true));
+        this._events.push(EventUtils.register('editor.settings.change', (data : Object) => AppUtils.changeSettings(this.props.store, data)));
         this._events.push(EventUtils.register('dev.database.reset', () : void => this.props.presenter.resetDatabase()));
         this._events.push(EventUtils.register('dev.settings.reset', () : void => AppUtils.resetSettings()));
 
@@ -356,11 +356,11 @@ export default class App extends React.Component {
                                         <span style={{ marginRight : Constants.PADDING_X1 }} />
                                         <div
                                             style={{
-                                            margin       : 'auto',
-                                            paddingLeft  : Constants.PADDING_X1,
-                                            paddingRight : Constants.PADDING_X1,
-                                            flex         : '1 1 0',
-                                            textAlign    : 'right'
+                                                margin       : 'auto',
+                                                paddingLeft  : Constants.PADDING_X1,
+                                                paddingRight : Constants.PADDING_X1,
+                                                flex         : '1 1 0',
+                                                textAlign    : 'right'
                                         }}>
                                             {/* Overwrite status */}
                                             <Label>{this.props.store.editor.isOverwriteEnabled ? 'OVR' : ''}</Label>

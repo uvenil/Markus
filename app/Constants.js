@@ -51,8 +51,13 @@ const SORTINGS : Object[] = [
 
 const SORTING_DEFAULT = SORTINGS[3];
 
+const PRINT_MARGIN_COLUMNS_72  = 72;
+const PRINT_MARGIN_COLUMNS_80  = 80;
+const PRINT_MARGIN_COLUMNS_100 = 100;
+const PRINT_MARGIN_COLUMNS_120 = 120;
+
 const TAB_SIZES            = [ 2, 4, 8 ];
-const PRINT_MARGIN_COLUMNS = [ 72, 80, 100, 120 ];
+const PRINT_MARGIN_COLUMNS = [ PRINT_MARGIN_COLUMNS_72, PRINT_MARGIN_COLUMNS_80, PRINT_MARGIN_COLUMNS_100, PRINT_MARGIN_COLUMNS_120 ];
 
 const FONTS : Object = EnvironmentUtils.isMacOS() ? require('./definitions/fonts/fonts.mac.json') : require('./definitions/fonts/fonts.win.json');
 

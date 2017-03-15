@@ -25,10 +25,11 @@ class MasterList extends React.Component {
                 onItemClick={this.props.onItemClick}
                 onItemRightClick={this.props.onItemRightClick}>
                 {this.props.store.items.map((item : ListItemStore) => {
-                    const icon : any = item.icon ?
+                    const icon : any = item.icon ? (
                         <i
                             className={'fa fa-fw fa-' + item.icon}
-                            style={{ color : this.props.muiTheme.palette.textColor }} /> : '';
+                            style={{ color : this.props.muiTheme.palette.textColor }} />
+                        ): '';
 
                     return (
                         <div

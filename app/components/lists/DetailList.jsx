@@ -84,34 +84,37 @@ class DetailList extends React.Component {
                                     WebkitUserSelect : 'none',
                                     cursor           : 'pointer'
                                 }}>
-                                <Text style={{
-                                    lineHeight   : '1.7em',
-                                    whiteSpace   : 'nowrap',
-                                    overflow     : 'hidden',
-                                    textOverflow : 'ellipsis',
-                                    fontWeight   : 'bolder',
-                                    fontSize     : '115%',
-                                    cursor       : 'pointer'
-                                }}>{item.primaryText}</Text>
-                                <Text style={{
-                                    height          : '3.0em',
-                                    lineHeight      : '1.5em',
-                                    display         : '-webkit-box',
-                                    WebkitLineClamp : 2,
-                                    WebkitBoxOrient : 'vertical',
-                                    overflow        : 'hidden',
-                                    textOverflow    : 'ellipsis',
-                                    cursor          : 'pointer'
-                                }}>{item.secondaryText}</Text>
-                                <Text style={{
-                                    lineHeight   : '1.5em',
-                                    whiteSpace   : 'nowrap',
-                                    overflow     : 'hidden',
-                                    textOverflow : 'ellipsis',
-                                    fontWeight   : 'lighter',
-                                    fontSize     : '95%',
-                                    cursor       : 'pointer'
-                                }}>{item.tertiaryText}</Text>
+                                <Text
+                                    style={{
+                                        lineHeight   : '1.7em',
+                                        whiteSpace   : 'nowrap',
+                                        overflow     : 'hidden',
+                                        textOverflow : 'ellipsis',
+                                        fontWeight   : 'bolder',
+                                        fontSize     : '115%',
+                                        cursor       : 'pointer'
+                                    }}>{item.primaryText}</Text>
+                                <Text
+                                    style={{
+                                        height          : '3.0em',
+                                        lineHeight      : '1.5em',
+                                        display         : '-webkit-box',
+                                        WebkitLineClamp : 2,
+                                        WebkitBoxOrient : 'vertical',
+                                        overflow        : 'hidden',
+                                        textOverflow    : 'ellipsis',
+                                        cursor          : 'pointer'
+                                    }}>{item.secondaryText}</Text>
+                                <Text
+                                    style={{
+                                        lineHeight   : '1.5em',
+                                        whiteSpace   : 'nowrap',
+                                        overflow     : 'hidden',
+                                        textOverflow : 'ellipsis',
+                                        fontWeight   : 'lighter',
+                                        fontSize     : '95%',
+                                        cursor       : 'pointer'
+                                    }}>{item.tertiaryText}</Text>
                             </div>
                         );
                     })}

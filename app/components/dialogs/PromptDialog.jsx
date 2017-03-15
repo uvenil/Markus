@@ -31,7 +31,7 @@ class PromptDialog extends React.Component {
                         color="primary"
                         height={Constants.BUTTON_HEIGHT_X1}
                         onTouchTap={() => {
-                            if (this.props.onEnter) this.props.onEnter(this.props.store.value)
+                            if (this.props.onEnter) this.props.onEnter(this.props.store.value);
                         }} />
                 ]}
                 onRequestClose={() => this.props.store.booleanValue = false}>

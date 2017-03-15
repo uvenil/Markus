@@ -33,11 +33,13 @@ class EditorSettingsDialog extends React.Component {
                         onTouchTap={() => this.props.store.booleanValue = false} />
                 ]}
                 onRequestClose={() => this.props.store.booleanValue = false}>
-                <div style={{
-                    width     : '100%',
-                    fontSize  : Constants.FONT_SIZE_TEXT_DIALOG,
-                    display   : 'table',
-                    textAlign : 'center' }}>
+                <div
+                    style={{
+                        width     : '100%',
+                        fontSize  : Constants.FONT_SIZE_TEXT_DIALOG,
+                        display   : 'table',
+                        textAlign : 'center'
+                    }}>
                     {/* Highlight current line */}
                     <div
                         style={{
@@ -103,7 +105,7 @@ class EditorSettingsDialog extends React.Component {
                     {/* Tab size */}
                     <div
                         style={{
-                            width : '100%',
+                            width   : '100%',
                             display : 'table-row'
                         }}>
                         <Label

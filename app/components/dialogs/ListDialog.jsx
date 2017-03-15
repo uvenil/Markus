@@ -102,7 +102,7 @@ class ListDialog extends React.Component {
                 autoScrollBodyContent
                 open={this.props.store.booleanValue}
                 bodyStyle={{
-                    padding : 0,
+                    padding   : 0,
                     overflowX : 'hidden'
                 }}
                 actions={actions}

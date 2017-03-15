@@ -67,7 +67,7 @@ class ChippedTextField extends React.Component {
                 const value  : ?string  = cleanUp(chip.trim());
                 const values : string[] = toArray(this.props.store.chips);
 
-                if (value && value.length > 0 && indexOf(values, value) == -1) {
+                if (value && value.length > 0 && indexOf(values, value) === -1) {
                     values.push(value);
 
                     this.props.store.chips = sortBy(values);

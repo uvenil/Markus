@@ -6,7 +6,6 @@ import Dialog from 'material-ui/Dialog';
 import Button from '../components/buttons/Button.jsx';
 import ListDialog from '../components/dialogs/ListDialog.jsx';
 import EditorSettingsDialog from '../components/dialogs/EditorSettingsDialog.jsx';
-import EditorSettingsDialogStore from '../components/dialogs/EditorSettingsDialogStore';
 import Text from '../components/text/Text.jsx';
 import AppStore from '../AppStore';
 import Constants from '../Constants';
