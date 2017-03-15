@@ -32,14 +32,16 @@ export default class HashTagListPresenter extends MasterListPresenter {
     }
 
     refresh() : void {
-        this._database.findHashTags().then(hashTags => {
+        this._database.findHashTags().then((hashTags : string[]) => {
             this._store.items = [];
 
             if (hashTags && hashTags.length > 0) {
                 hashTags.forEach((hashTag : string, index : number) => {
                     const store = createItemStore(hashTag, index);
 
-                    this._database.countHashTagged(hashTag).then(count => store.secondaryText = (count).toString()).catch(error => EventUtils.broadcast('app.error', error));
+                    this._store.items.push(store);
+
+                    this._database.countHashTagged(hashTag).then((count : number) => store.secondaryText = (count).toString()).catch(error => EventUtils.broadcast('app.error', error));
                 });
 
                 this._sort();
@@ -48,12 +50,12 @@ export default class HashTagListPresenter extends MasterListPresenter {
     }
 
     notifyDataSetChanged() : void {
-        this._database.findHashTags().then(hashTags => {
+        this._database.findHashTags().then((hashTags : string[]) => {
             //region Finds newly added hash-tags
 
             const newHashTags = [];
 
-            hashTags.forEach(hashTag => {
+            hashTags.forEach((hashTag : string) => {
                 let found = false;
 
                 for (let i = 0; i < this._store.items.length; i++) {
@@ -72,7 +74,7 @@ export default class HashTagListPresenter extends MasterListPresenter {
             while (index < this._store.items.length) {
                 let found = false;
 
-                hashTags.forEach(hashTag => {
+                hashTags.forEach((hashTag : string) => {
                     if (hashTag === this._store.items[index].primaryText) found = true;
                 });
 
@@ -94,7 +96,7 @@ export default class HashTagListPresenter extends MasterListPresenter {
 
             this._sort();
 
-            this._store.items.forEach((item : ListItemStore) => this._database.countHashTagged(item.primaryText).then(count => item.secondaryText = (count).toString()).catch(error => EventUtils.broadcast('app.error', error)));
+            this._store.items.forEach((item : ListItemStore) => this._database.countHashTagged(item.primaryText).then((count : number) => item.secondaryText = (count).toString()).catch(error => EventUtils.broadcast('app.error', error)));
         }).catch(error => EventUtils.broadcast('app.error', error));
     }
 

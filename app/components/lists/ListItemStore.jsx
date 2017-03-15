@@ -10,7 +10,7 @@ import Config from '../../definitions/config.json';
 
 export default class ListItemStore {
     itemId        : ?string;
-    icon          : string;
+    icon          : ?string;
     primaryText   : string;
     secondaryText : any;
     tertiaryText  : string;
@@ -21,7 +21,7 @@ export default class ListItemStore {
     constructor() {
         extendObservable(this, {
             itemId        : undefined,
-            icon          : 'tag',
+            icon          : undefined,
             primaryText   : '',
             secondaryText : '',
             tertiaryText  : '',

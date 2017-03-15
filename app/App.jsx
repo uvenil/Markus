@@ -199,12 +199,14 @@ export default class App extends React.Component {
                                     {/* Shortcut list */}
                                     <MasterList
                                         store={this.props.store.shortcutList}
+                                        icon="tags"
                                         onItemClick={(index : number) => this.props.presenter.handleShortcutItemClick(index)}
                                         onItemRightClick={(index : number) => this.props.presenter.handleShortcutItemRightClick(index)} />
                                     {/* Hashtag list */}
                                     <div style={{ flex : '1 1 0' }}>
                                         <MasterList
                                             store={this.props.store.hashTagList}
+                                            icon="hashtag"
                                             onItemClick={(index : number) => this.props.presenter.handleHashTagItemClick(index)}
                                             onItemRightClick={(index : number) => this.props.presenter.handleHashTagItemRightClick(index)} />
                                     </div>
@@ -361,7 +363,7 @@ export default class App extends React.Component {
                                                 paddingRight : Constants.PADDING_X1,
                                                 flex         : '1 1 0',
                                                 textAlign    : 'right'
-                                        }}>
+                                            }}>
                                             {/* Overwrite status */}
                                             <Label>{this.props.store.editor.isOverwriteEnabled ? 'OVR' : ''}</Label>
                                             <span style={{ marginRight : Constants.PADDING_X1 }} />

@@ -284,7 +284,7 @@ export default class Database {
                             hashTags : []
                         };
 
-                        docs.forEach(doc => merge(merged, doc));
+                        docs.forEach((doc : Object) => merge(merged.hashTags, doc.hashTags));
 
                         resolve(sortBy(merged.hashTags));
                     }
@@ -301,7 +301,7 @@ export default class Database {
      * @return {Promise}
      */
     hasHashTag(hashTag : string) : Promise<boolean> {
-        return new Promise((resolve, reject) => this.findHashTags().then(hashTags => resolve(indexOf(hashTags, hashTag) >= 0)).catch(error => reject(error)));
+        return new Promise((resolve, reject) => this.findHashTags().then((hashTags : string[]) => resolve(indexOf(hashTags, hashTag) >= 0)).catch(error => reject(error)));
     }
 
     /**
@@ -341,7 +341,7 @@ export default class Database {
      * @return {Promise}
      */
     removeById(id : string) : Promise<Object> {
-        return new Promise((resolve, reject) => this.findById(id).then(doc => this._db.remove({
+        return new Promise((resolve, reject) => this.findById(id).then((doc : Object) => this._db.remove({
             _id : id
         }, {}, error => {
             if (error) {

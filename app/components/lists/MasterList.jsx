@@ -13,6 +13,9 @@ import Constants from '../../Constants';
 
 @observer
 class MasterList extends React.Component {
+    static propTypes    : Object;
+    static defaultProps : Object;
+
     render() : any {
         return (
             <List
@@ -25,9 +28,11 @@ class MasterList extends React.Component {
                 onItemClick={this.props.onItemClick}
                 onItemRightClick={this.props.onItemRightClick}>
                 {this.props.store.items.map((item : ListItemStore) => {
-                    const icon : any = item.icon ? (
+                    const iconName = item.icon ? item.icon : this.props.icon;
+
+                    const icon : any = iconName ? (
                         <i
-                            className={'fa fa-fw fa-' + item.icon}
+                            className={'fa fa-fw fa-' + iconName}
                             style={{ color : this.props.muiTheme.palette.textColor }} />
                         ): '';
 
@@ -71,8 +76,13 @@ class MasterList extends React.Component {
 
 MasterList.propTypes = {
     store            : React.PropTypes.instanceOf(ListStore).isRequired,
+    icon             : React.PropTypes.string,
     onItemClick      : React.PropTypes.func,
     onItemRightClick : React.PropTypes.func
+};
+
+MasterList.defaultProps = {
+    icon : 'tags'
 };
 
 export default muiThemeable()(MasterList);
