@@ -298,6 +298,7 @@ export default class App extends React.Component {
                                     <TabbedButtonBar
                                         icons={[ 'code', 'columns', 'eye' ]}
                                         initialSelectedIndex={1}
+                                        disabled={this.props.store.editor.record === undefined}
                                         onSelectedIndexChange={(index : number) => {
                                             if (!isNil(this.props.store.editor.record)) {
                                                 this.props.store.editor.editorShown  = index === 0 || index === 1;

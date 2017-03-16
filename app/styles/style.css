@@ -10,6 +10,12 @@ button > div > div {
     height : 36px !important;
 }
 
+blockquote {
+    margin       : 0;
+    padding-left : 1.5em;
+    border-left  : 0.5em #888 solid;
+}
+
 ::-webkit-scrollbar {
     width              : 7px;
     height             : 7px;

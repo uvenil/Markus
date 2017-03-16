@@ -13,8 +13,8 @@ const TabbedButtonBar = (props: Object) => {
     const muiTheme : Object = getMuiTheme({
         palette : {
             primary1Color      : 'rgba(0, 0, 0, 0)',
-            accent1Color       : props.muiTheme.palette.textColor,
-            alternateTextColor : props.muiTheme.palette.textColor
+            accent1Color       : props.disabled ? props.muiTheme.palette.disabledColor : props.muiTheme.palette.textColor,
+            alternateTextColor : props.disabled ? props.muiTheme.palette.disabledColor : props.muiTheme.palette.textColor
         }
     });
 
@@ -43,11 +43,13 @@ const TabbedButtonBar = (props: Object) => {
 TabbedButtonBar.propTypes = {
     icons                 : React.PropTypes.arrayOf(React.PropTypes.string),
     initialSelectedIndex  : React.PropTypes.number,
+    disabled              : React.PropTypes.bool,
     onSelectedIndexChange : React.PropTypes.func
 };
 
 TabbedButtonBar.defaultProps = {
-    initialSelectedIndex : 0
+    initialSelectedIndex : 0,
+    disabled             : false
 };
 
 export default muiThemeable()(TabbedButtonBar);
